@@ -1,0 +1,29 @@
+max_steps: 10000    # termination condition for the simulation, 0 means infinite
+num_of_agents: 100        # total number of agents in the simulation
+seed: _SEED_                 # seed for the random number generator
+
+world:
+  x: 50                # world x size
+  y: 50               # world y size
+  z: 1                 # world z size  
+
+movesFile: 	"/home/cscarbone/release/results/results_moves__ATTRACTION___REPULSION_.yaml"
+statusFile: 	"/home/cscarbone/release/results/results_status__ATTRACTION___REPULSION_.yaml"
+randomChoice: 	"/home/cscarbone/release/results/results_randomChoice__ATTRACTION___REPULSION_.yaml"
+timing: 	"/home/cscarbone/release/results/results_timing__ATTRACTION___REPULSION_.yaml"
+visitedCells: 	"/home/cscarbone/release/results/results_visitedCells__ATTRACTION___REPULSION_.yaml"
+
+weeds:
+    clusters: 4
+    maxweeds: 49
+    isolated: 40
+
+#orca
+linearVelocity : 0.1    # linear velocity of UAV
+orcaRadius: 0.3
+tau: 0.2
+collisionAvoidance: true
+
+#visit
+repulsion: _REPULSION_
+attraction: _ATTRACTION_

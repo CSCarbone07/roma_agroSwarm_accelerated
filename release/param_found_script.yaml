@@ -1,0 +1,29 @@
+max_steps: 10000    # termination condition for the simulation, 0 means infinite
+num_of_agents: 100        # total number of agents in the simulation
+seed: 50                 # seed for the random number generator
+
+world:
+  x: 50                # world x size
+  y: 50               # world y size
+  z: 1                 # world z size  
+
+movesFile: 	"/home/cscarbone/Desktop/release/results/results_moves_IG.yaml"
+statusFile: 	"/home/marco/Desktop/release/results/results_status_IG.yaml"
+randomChoice: 	"/home/marco/Desktop/release/results/results_randomChoice_IG.yaml"
+timing: 	"/home/marco/Desktop/release/results/results_timing_IG.yaml"
+visitedCells: 	"/home/marco/Desktop/release/results/results_visitedCells_IG.yaml"
+
+weeds:
+    clusters: 4
+    maxweeds: 49
+    isolated: 40
+
+#orca
+linearVelocity : 0.1    # linear velocity of UAV
+orcaRadius: 0.3
+tau: 0.2
+collisionAvoidance: true
+
+#visit
+repulsion: 0
+attraction: 0
