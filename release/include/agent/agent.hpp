@@ -1,6 +1,8 @@
 #ifndef AGENT_HPP
 #define AGENT_HPP
 
+
+
 #include "sim/steppable.hpp"
 #include "movementstrategies/randomwalk.hpp"
 #include "movementstrategies/informationGain.hpp"
@@ -9,6 +11,7 @@
 #include "sim/cell.hpp"
 #include <map>
 
+//#include "sim/world.hpp"
 
 /**
  * Generic agent implementing the stappble method.
@@ -20,10 +23,14 @@
 class Agent : public Steppable {
 
 protected:
+  
+ // World* myWorld;   //world of current agent
+
   unsigned id; /** < unique id for the agent */
   unsigned timeStep; /** < last execution time */
 
   float communicationsRange=-1;
+  std::string knowledgeBaseLocation = "World";
 
   std::array<float,3> position; /** < position 3d of agent */
   std::array<float,3> target; /** < target 3d of agent */
@@ -32,7 +39,9 @@ protected:
   std::array<float,3> velocity; /** < actual Agent velocity */
   float theta = 0; /* Agent orientation */
 
-  RandomWalkStrategy rw; /** < random walk strategy */
+  std::string currentInspectionStrategy = "rw";
+
+  RandomWalkStrategy* rw; /** < random walk strategy */
   InformationGainStrategy ig; /** < information gain strategy */
 
   unsigned targetLifeTime; /** < Time until agent junk target */
@@ -41,7 +50,7 @@ protected:
   unsigned collisions = 0; /** < Total collisions */
  
   void BroadcastCell(Cell* cellToSend); //sending cell with local data
-  void RecieveCell(Cell* recievedCell); //recieving cell with new data
+  void ReceiveCell(Cell* recievedCell); //recieving cell with new data
 
  
   /*
@@ -97,8 +106,10 @@ protected:
 public:
   bool sceltaRandom = 0;
 
+
   std::map<unsigned, Cell*> cells;             /** < in my agent knowledge there are cells */
 
+    
 
   Agent(unsigned id, float x, float y, float z);
   ~Agent();
@@ -148,6 +159,7 @@ public:
 
   inline unsigned getId() { return id; }
   inline unsigned get_time_step() { return timeStep; }
+  inline float GetCommunicationsRange() { return communicationsRange; }
   inline std::array<float,3> getPosition(){return this->position;}
   inline std::array<float,3> getTarget(){return this->target;}
   inline float getX(){return this->position.at(0);}

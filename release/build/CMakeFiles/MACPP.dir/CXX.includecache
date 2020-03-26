@@ -138,35 +138,35 @@ boost/random/mersenne_twister.hpp
 boost/random/seed_seq.hpp
 -
 
-/home/cscarbone/release/src/agent.cpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/agent.cpp
 agent/agent.hpp
-/home/cscarbone/release/src/agent/agent.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/agent/agent.hpp
 util/randomgenerator.hpp
-/home/cscarbone/release/src/util/randomgenerator.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/util/randomgenerator.hpp
 sim/engine.hpp
-/home/cscarbone/release/src/sim/engine.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
 eigen3/Eigen/Dense
-/home/cscarbone/release/src/eigen3/Eigen/Dense
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/eigen3/Eigen/Dense
 collisionavoidance/orca.hpp
-/home/cscarbone/release/src/collisionavoidance/orca.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/collisionavoidance/orca.hpp
 movementstrategies/randomwalk.hpp
-/home/cscarbone/release/src/movementstrategies/randomwalk.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/movementstrategies/randomwalk.hpp
 movementstrategies/informationGain.hpp
-/home/cscarbone/release/src/movementstrategies/informationGain.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/movementstrategies/informationGain.hpp
 
-/home/cscarbone/release/src/informationGain.cpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/informationGain.cpp
 sim/engine.hpp
-/home/cscarbone/release/src/sim/engine.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
 movementstrategies/informationGain.hpp
-/home/cscarbone/release/src/movementstrategies/informationGain.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/movementstrategies/informationGain.hpp
 sim/world.hpp
-/home/cscarbone/release/src/sim/world.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/world.hpp
 
-/home/cscarbone/release/src/macpp.cpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/macpp.cpp
 sim/engine.hpp
-/home/cscarbone/release/src/sim/engine.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
 util/randomgenerator.hpp
-/home/cscarbone/release/src/util/randomgenerator.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/util/randomgenerator.hpp
 iostream
 -
 boost/program_options.hpp
@@ -174,25 +174,25 @@ boost/program_options.hpp
 yaml-cpp/yaml.h
 -
 
-/home/cscarbone/release/src/orca.cpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/orca.cpp
 collisionavoidance/orca.hpp
-/home/cscarbone/release/src/collisionavoidance/orca.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/collisionavoidance/orca.hpp
 collisionavoidance/line.hpp
-/home/cscarbone/release/src/collisionavoidance/line.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/collisionavoidance/line.hpp
 sim/engine.hpp
-/home/cscarbone/release/src/sim/engine.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
 
-/home/cscarbone/release/src/randomwalk.cpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/randomwalk.cpp
 sim/engine.hpp
-/home/cscarbone/release/src/sim/engine.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
 movementstrategies/randomwalk.hpp
-/home/cscarbone/release/src/movementstrategies/randomwalk.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/movementstrategies/randomwalk.hpp
 sim/world.hpp
-/home/cscarbone/release/src/sim/world.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/world.hpp
 
-/home/cscarbone/release/src/world.cpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/world.cpp
 sim/world.hpp
-/home/cscarbone/release/src/sim/world.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/world.hpp
 sim/engine.hpp
-/home/cscarbone/release/src/sim/engine.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
 

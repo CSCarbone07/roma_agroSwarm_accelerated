@@ -7,7 +7,7 @@
 #include "movementstrategies/informationGain.hpp"
 
 //#define ONLY_COVERAGE
-#define IG
+//#define IG
 //#define PERFECT_COMMUNICATION      //according to the same define in informationGain.cpp or randomwalk.cpp
 
 
@@ -20,6 +20,18 @@ Agent::Agent(unsigned id, float x, float y, float z) {
   this->timeStep = 0;
 
   this->communicationsRange = Engine::getInstance().getCommunicationsRange();  
+  if(communicationsRange > 0)
+  {
+  knowledgeBaseLocation = "local";     
+  }
+  if(communicationsRange == -1)
+  {
+  knowledgeBaseLocation = "world";
+  }
+    
+  this->currentInspectionStrategy = Engine::getInstance().getInspectionStrategy();  
+   
+
 
   std::array<unsigned,3> size = Engine::getInstance().getWorld()->getSize();
 
@@ -33,6 +45,9 @@ Agent::Agent(unsigned id, float x, float y, float z) {
       cellId++;
     }
   }
+
+  rw = new RandomWalkStrategy(this);
+  
 }
 
 Agent::Action Agent::nextAction(){
@@ -157,12 +172,17 @@ void Agent::getNextTarget(){
   std::array<float,3> newTarget;
 
 //choose the strategy IG or RW
-#ifdef IG
-  newTarget = ig.pickNextTarget(this);
-#else
-  newTarget = rw.pickNextTarget(this);
-#endif
- 
+if(currentInspectionStrategy == "ig")
+{newTarget = ig.pickNextTarget(this);}
+else
+{newTarget = rw->pickNextTarget(this);}
+
+
+        //debug lines (can delete)       
+        //int tempTargetID=Engine::getInstance().getWorld()->getCellId(newTarget.at(0), newTarget.at(1), newTarget.at(2));   
+        //std::cout << "Debug ID cell " << tempTargetID << " has " << cells.at(tempTargetID)->isTargetOf.size() << " agents that had it as target." << std::endl;
+        //end of debug lines 
+
   if(newTarget.at(0) == -1){
     //the agent has no task! increase in altitude so as not to interfere with ORCA
     newTarget = {this->getX(), this->getY(), 4};
@@ -171,26 +191,53 @@ void Agent::getNextTarget(){
   this->target = {float(newTarget.at(0)),float(newTarget.at(1)),float(newTarget.at(2))};
 }
 
-
-void Agent::broadcastCellInfo(Cell* cellToSend)
+           
+void Agent::BroadcastCell(Cell* cellToSend)
 {
-
-
+    
+    std::cout << "Agent: " << this->getId() << ". Broadcasting cell: " << cellToSend->getId() << std::endl;
+    
+    if(communicationsRange == -1)
+    {
+    Cell* worldCell_REF = Engine::getInstance().getWorld()->getCells().at(cellToSend->getId());
+    worldCell_REF->isTargetOf = cellToSend->isTargetOf;
+    worldCell_REF->observationVectors.insert(cellToSend->observationVectors.begin(), cellToSend->observationVectors.end());
+    worldCell_REF->knowledgeVectors.insert(cellToSend->knowledgeVectors.begin(), cellToSend->knowledgeVectors.end());
+    std::cout << "World knowledge base recieving cell " << worldCell_REF->getId()<< " observations and isTargetOf data" << std::endl;
+    }
+    if(communicationsRange > 0)
+    {
+      for(auto t : Engine::getInstance().getWorld()->getAgents()){
+        if(this->getId() != t->getId()){ 
+          float distance_t = t->calculateLinearDistanceToTarget(this->getPosition());
+          if( distance_t != 0 && distance_t <= this->communicationsRange)
+          {
+            std::cout << "Agent " << this->getId() << " at " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
+            <<" sending cell " << cellToSend->getId() << " to agent " << t->getId() << " withing " << distance_t << "m of distance" << std::endl;
+            t->ReceiveCell(cellToSend); 
+          }   
+        }
+      } 
+    }
+    
 
 }
 
 
-void Agent::RecieveCell(Cell* recievedCell) //recieving broadcasted latest observation of cell by agent to updating knowledge 
+void Agent::ReceiveCell(Cell* receivedCell) //recieving broadcasted latest observation of cell by agent to updating knowledge 
 {
 
 //    Engine::getInstance()
 
+    std::cout << "Agent " << this->getId() << " at " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
+    << " Recieving cell: " << receivedCell->getId() << ". Its current target cell is: " << targetId << std::endl;
     
-    Cell* updatingCell = this->cells.at(recievedCell->getId());
-    updatingCell->isTargetOf = recievedCell->isTargetOf;
-    updatingCell->observationVectors.insert(recievedCell->observationVectors.begin(), recievedCell->observationVectors.end());
-    updatingCell->knowledgeVectors.insert(recievedCell->knowledgeVectors.begin(), recievedCell->knowledgeVectors.end());
-    
+    Cell* updatingCell = this->cells.at(receivedCell->getId());
+    updatingCell->isTargetOf = receivedCell->isTargetOf;
+    updatingCell->observationVectors.insert(receivedCell->observationVectors.begin(), receivedCell->observationVectors.end());
+    updatingCell->knowledgeVectors.insert(receivedCell->knowledgeVectors.begin(), receivedCell->knowledgeVectors.end());
+    if(receivedCell->isMapped())
+    {updatingCell->setMapped();} 
 
 /*
 #ifndef PERFECT_COMMUNICATION
@@ -225,16 +272,45 @@ void Agent::RecieveCell(Cell* recievedCell) //recieving broadcasted latest obser
 
 bool Agent::doStep(unsigned timeStep){
   this->timeStep = timeStep;  
-
   switch(nextAction()){
     case PICK:
     {
-	    this->velocity = {0.0,0.0,0.0};
-      getNextTarget();
-      if(this->getTargetZ() == 0){
-        this->setTargetId(Engine::getInstance().getWorld()->getCellId(this->getTargetX(), this->getTargetY(), this->getTargetZ()));
-      }
+        std::cout << "Agent " << this->getId() << " currently at: " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
+        << " is picking target cell using: " << this->currentInspectionStrategy << " strategy" << std::endl;
 
+        //std::cout << Engine::getInstance().getWorld()->getCellId(this->getX(), this->getY(), this->getZ()) << std::endl;   
+        //std::cout << cells.at(Engine::getInstance().getWorld()->getCellId(this->getX(), this->getY(), this->getZ()))->isTargetOf.size() << std::endl;   
+
+
+
+        this->velocity = {0.0,0.0,0.0};
+        getNextTarget();
+        if(this->getTargetZ() == 0){
+        this->setTargetId(Engine::getInstance().getWorld()->getCellId(this->getTargetX(), this->getTargetY(), this->getTargetZ()));   
+
+        Cell* chosenCell;        
+
+        if(communicationsRange == -1)
+        {
+            chosenCell = Engine::getInstance().getWorld()->getCells().at(this->getTargetId());
+        }
+        if(communicationsRange>0)
+        {
+            chosenCell = cells.at(this->getTargetId());
+        }
+	    
+        std::cout << "Agent " << this->getId() << " has picked "<< this->getTargetX() << "x + " << this->getTargetY() << "y in Cell " 
+        << chosenCell->getId() << " from " << knowledgeBaseLocation << " knowledge base as Target, which previously had " << cells.at(this->getTargetId())->isTargetOf.size() << " agents that had it as target." << std::endl;
+        
+        if(communicationsRange == -1)
+        {
+        std::cout << "Agent " << this->getId() << " pushing isTargetOf to cell " << chosenCell->getId() << std::endl;
+        BroadcastCell(chosenCell);
+        }
+        if(communicationsRange>0)
+        {BroadcastCell(chosenCell);} 
+        }
+   
       break;
     }
     case MOVE:
@@ -249,61 +325,76 @@ bool Agent::doStep(unsigned timeStep){
     }
     case SCAN:
 	  {
-
       Cell* c = Engine::getInstance().getWorld()->getCell(this->position.at(0),this->position.at(1),this->position.at(2));
       c->numOfVisits++;
       
       this->velocity = {0.0,0.0,0.0};
       Engine::getInstance().getWorld()->remainingTasksToVisit.erase(c->getId());
 
+      Cell* scanningCell;
       
-#ifndef PERFECT_COMMUNICATION
+      if(communicationsRange == -1)
+      {scanningCell = c;}
+      if(communicationsRange > 0)
+      {
       unsigned targetId = c->getId();
-      currentCell = this->cells.at(targetId);
-      currentCell->lastTimeVisit = timeStep;    
-      Cell* scanningCell = currentCell;
-#else 
-      Cell* scanningCell = c;
-#endif
-       
-
-        if(!scanningCell->isMapped()){
-        float currentObservation = scanCurrentLocation(scanningCell);
-        if(scanningCell->getResidual() < 0.27 ){ 
+      scanningCell = this->cells.at(targetId);
+      scanningCell->lastTimeVisit = timeStep;    
+      }
+     
+      
+      std::cout << "Agent " << this->getId() << " scanning cell " << scanningCell->getId() << std::endl;    
+        
+        float currentObservation = scanCurrentLocation(scanningCell);       
+        if(!scanningCell->isMapped())
+        {
+        if(scanningCell->getResidual() < 0.27 )
+        { 
           scanningCell->setMapped();
           Engine::getInstance().getWorld()->remainingTasksToMap.erase(c->getId());
           Engine::getInstance().getWorld()->remainingTasksIntoClusters.erase(c->getId());
-      #ifndef IG
-          //IG does not use beacons
-          if(scanningCell->getBeacon() != 0){
+
+          c->isTargetOf.clear();
+          this->cells.at(c->getId())->isTargetOf.clear();
+          this->targetId = -1;
+          this->target = {-1,-1,-1};
+       
+          if(scanningCell->getBeacon() != 0 && currentInspectionStrategy == "rw")
+          {
             Engine::getInstance().getWorld()->beacons.erase(scanningCell->getId());
             scanningCell->setBeacon(0);
           }
+
+
+          if(communicationsRange == -1)
+          {
+            std::cout << "Agent " << this->getId() << " starting to broadcast scan results of cell " << scanningCell->getId() << std::endl;
+            BroadcastCell(scanningCell);
+          }
+          if(communicationsRange>0)
+          {BroadcastCell(scanningCell);} 
         }
-        else{    // the cell is not yet mapped
-          float beacon = currentObservation/12;
-          scanningCell->setBeacon(beacon);
-          Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));
         }
-      #else
+        else
+        {    // the cell is not yet mapped
+            if(currentInspectionStrategy == "rw")
+             {
+                float beacon = currentObservation/12;
+                scanningCell->setBeacon(beacon);
+                Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));
+             }
+        }      
+        
+        break;              
+
         }
-      #endif        
-      }
-      else{
-        ; //cell was already mapped. This situation may occur using a fixed size valid set.
+      default:
+      break;
       }
 
-    c->isTargetOf.pop_back();
-    this->cells.at(c->getId())->isTargetOf.pop_back();
-    this->targetId = -1;
-    this->target = {-1,-1,-1};
-    break;
-  }
-    default:
-      break;
-  }
-  
   return true;
+  
+  
 };
 
 

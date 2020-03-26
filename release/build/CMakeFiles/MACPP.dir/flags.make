@@ -6,5 +6,5 @@ CXX_FLAGS =  -Wall -Wextra   -std=c++14
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/cscarbone/release/include -I/home/cscarbone/release/Eigen 
+CXX_INCLUDES = -I/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/include -I/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/Eigen 
 

@@ -14,10 +14,14 @@ class RandomWalkStrategy {
         *  @param Agent* a, is the reference to Agent a
         *  @return  std::array<float,3> with the real target
         */
+        
+        RandomWalkStrategy(Agent* ag);
+
         std::array<float,3> pickNextTarget(Agent* ag);
 
     private:
 
+        Agent* ownerAgent;  //Agent using this strategy class
         float max_range;
         float min_range;
         /**

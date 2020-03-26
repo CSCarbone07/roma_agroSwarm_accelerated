@@ -74,6 +74,9 @@ private:
   std::ofstream timing;
   std::ofstream visitedCells;
 
+  /*Strategies features*/
+  std::string inspectionStrategy;
+
   Engine() {}
 
 
@@ -93,6 +96,10 @@ public:
   inline float getCommunicationsRange() const {
     return communicationsRange;
   } 
+
+  inline std::string getInspectionStrategy() const {
+    return inspectionStrategy;
+  }
 
   inline unsigned getRepulsion() const {
     return repulsion;
@@ -158,6 +165,12 @@ public:
 
     repulsion = config["repulsion"].as<float>();
     attraction = config["attraction"].as<float>();
+
+    //Inspection Strategies
+    inspectionStrategy = config["InspectionStrategy"].as<std::string>();
+    if(inspectionStrategy != "ig")
+    {inspectionStrategy = "rw"; }
+
 
     //print info
     std::cout << "World size: " << size[0] << "x" << size[1] << "x" << size[2] << std::endl;
