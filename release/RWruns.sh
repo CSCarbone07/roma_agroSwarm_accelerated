@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RUNS=100
-ATTRACTION=(0)
+ATTRACTION=(0 4 8 16 32 64)
 REPULSION=(0 4 8 16 32 64)
 LOCALPATH=$(pwd)/
 for i in "${ATTRACTION[@]}"

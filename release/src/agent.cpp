@@ -195,7 +195,8 @@ else
 void Agent::BroadcastCell(Cell* cellToSend)
 {
     
-    std::cout << "Agent: " << this->getId() << ". Broadcasting cell: " << cellToSend->getId() << std::endl;
+    std::cout << "Agent: " << this->getId() << ". Broadcasting cell: " << cellToSend->getId() << " with " 
+    << cellToSend->observationVectors.size()  << " observations. Mapping: " << cellToSend->isMapped() << std::endl;
     
     if(communicationsRange == -1)
     {
@@ -208,7 +209,8 @@ void Agent::BroadcastCell(Cell* cellToSend)
     if(communicationsRange > 0)
     {
       for(auto t : Engine::getInstance().getWorld()->getAgents()){
-        if(this->getId() != t->getId()){ 
+        if(this->getId() != t->getId())
+        { 
           float distance_t = t->calculateLinearDistanceToTarget(this->getPosition());
           if( distance_t != 0 && distance_t <= this->communicationsRange)
           {
@@ -343,51 +345,52 @@ bool Agent::doStep(unsigned timeStep){
       }
      
       
-      std::cout << "Agent " << this->getId() << " scanning cell " << scanningCell->getId() << std::endl;    
+        std::cout << "Agent " << this->getId() << " scanning cell " << scanningCell->getId() << std::endl;    
         
-        float currentObservation = scanCurrentLocation(scanningCell);       
         if(!scanningCell->isMapped())
         {
-        if(scanningCell->getResidual() < 0.27 )
-        { 
-          scanningCell->setMapped();
-          Engine::getInstance().getWorld()->remainingTasksToMap.erase(c->getId());
-          Engine::getInstance().getWorld()->remainingTasksIntoClusters.erase(c->getId());
+        
+          float currentObservation = scanCurrentLocation(scanningCell);       
+          if(scanningCell->getResidual() < 0.27 )
+          { 
+            scanningCell->setMapped();
+            Engine::getInstance().getWorld()->remainingTasksToMap.erase(c->getId());
+            Engine::getInstance().getWorld()->remainingTasksIntoClusters.erase(c->getId());
 
-          c->isTargetOf.clear();
-          this->cells.at(c->getId())->isTargetOf.clear();
-          this->targetId = -1;
-          this->target = {-1,-1,-1};
+            c->isTargetOf.clear();
+            this->cells.at(c->getId())->isTargetOf.clear();
+            this->targetId = -1;
+            this->target = {-1,-1,-1};
        
-          if(scanningCell->getBeacon() != 0 && currentInspectionStrategy == "rw")
-          {
-            Engine::getInstance().getWorld()->beacons.erase(scanningCell->getId());
-            scanningCell->setBeacon(0);
+            if(scanningCell->getBeacon() != 0 && currentInspectionStrategy == "rw")
+            {
+              Engine::getInstance().getWorld()->beacons.erase(scanningCell->getId());
+              scanningCell->setBeacon(0);
+            }
+
           }
-
-
+          else
+          {    // the cell is not yet mapped
+              if(currentInspectionStrategy == "rw")
+               {
+                  float beacon = currentObservation/12;
+                  scanningCell->setBeacon(beacon);
+                  Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));
+               }
+          }      
+          
+          std::cout << "Agent " << this->getId() << " starting to broadcast scan results of cell " << scanningCell->getId() << std::endl;
           if(communicationsRange == -1)
           {
-            std::cout << "Agent " << this->getId() << " starting to broadcast scan results of cell " << scanningCell->getId() << std::endl;
             BroadcastCell(scanningCell);
           }
           if(communicationsRange>0)
           {BroadcastCell(scanningCell);} 
-        }
-        }
-        else
-        {    // the cell is not yet mapped
-            if(currentInspectionStrategy == "rw")
-             {
-                float beacon = currentObservation/12;
-                scanningCell->setBeacon(beacon);
-                Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));
-             }
-        }      
         
+        }
         break;              
 
-        }
+      }
       default:
       break;
       }
@@ -435,12 +438,24 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
     for(unsigned i = 0; i < 13; i++){
       currentCell->knowledgeVector[i] = currentCell->knowledgeVector[i] * Engine::getInstance().getWorld()->getSensorTable()[currentObservation][i] 
                                         / currentCell->observationVector[currentObservation];
-      //if i-th element is != 0  ---> calculate H(c)
-      if(currentCell->knowledgeVector[i] != 0)
-        entr +=  currentCell->knowledgeVector[i]*(std::log(currentCell->knowledgeVector[i]));
     }
-   
+  
     currentCell->knowledgeVectors.insert(std::pair<float, std::array<float, 13>>(timeStep, currentCell->knowledgeVector));
+
+    for (std::map<float, std::array<float,13>>::iterator it=currentCell->knowledgeVectors.begin(); it!=currentCell->knowledgeVectors.end(); ++it)
+    {
+      for(unsigned i = 0; i<13; i++)
+      {
+      //if i-th element is != 0  ---> calculate H(c)
+      if(it->second[i] != 0)
+        entr +=  it->second[i]*(std::log(it->second[i]));
+      } 
+    }  
+
+    //if i-th element is != 0  ---> calculate H(c)
+     // if(currentCell->knowledgeVector[i] != 0)
+       // entr +=  currentCell->knowledgeVector[i]*(std::log(currentCell->knowledgeVector[i]));
+ 
     
     
  
