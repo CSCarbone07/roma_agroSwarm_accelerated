@@ -31,6 +31,8 @@ protected:
 
   float communicationsRange=-1;
   std::string knowledgeBaseLocation = "World";
+  std::vector<Agent*> agentsBroadcasting;
+
 
   std::array<float,3> position; /** < position 3d of agent */
   std::array<float,3> target; /** < target 3d of agent */
@@ -49,7 +51,7 @@ protected:
   float agentRadius = 0.3; /** < Real space occupated by the agent */
   unsigned collisions = 0; /** < Total collisions */
  
-  void BroadcastCell(Cell* cellToSend); //sending cell with local data
+  void BroadcastCell(Agent* agent, Cell* cellToSend); //sending cell with local data
   void ReceiveCell(Cell* recievedCell); //recieving cell with new data
 
  

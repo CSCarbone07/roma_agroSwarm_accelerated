@@ -269,6 +269,7 @@ public:
     bool isMappedOnlyClusters = false;
 
     while(timeStep < maxSteps || maxSteps == 0) {
+    std::cout << "Time step: " << timeStep << std::endl;
       if(!isCovered && this->world->isCovered()){
         timeToCoverage = timeStep;
         isCovered = true;

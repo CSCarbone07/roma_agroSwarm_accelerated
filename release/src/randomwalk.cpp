@@ -205,6 +205,7 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
   std::vector<std::pair<Cell*, float>> ret2;
   std::vector<std::pair<Cell*, float>> ret3;
   std::vector<std::pair<Cell*, float>> ret4;
+  std::vector<std::pair<Cell*, float>> ret5;
 
 #ifndef FIXEDSIZE3x3
     max_range = 3*sqrt(2);
@@ -214,6 +215,11 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
     min_range = sqrt(2);
 #endif
 
+    float max_range_5x5 = 3*sqrt(2);
+    float min_range_5x5 = 2*sqrt(2);
+
+    float max_range_3x3 = 2*sqrt(2);
+    float min_range_3x3 = sqrt(2);
   
   Cell* cella; 
 
@@ -222,7 +228,7 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
     for(std::vector<std::pair<int,int>>::iterator it2=it->second.begin(); it2!=it->second.end(); ++it2){
       int newX = it2->first + int (agentDiscretePos.at(0));
       int newY = it2->second + int (agentDiscretePos.at(1));      
-      if(it->first > max_range){
+      if(it->first > max_range_5x5){
         break;
       }
       if(isInBounds(newX, newY)){
@@ -233,17 +239,20 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
         if(ownerAgent->GetCommunicationsRange() > 0)
         {cella = ownerAgent->cells.at(worldCell_REF->getId());}  
 
-      if(it->first > min_range){
+      if(it->first > min_range_3x3 && it->first < max_range_3x3){
           if(isElegible(cella, ownerAgent)){
             ret2.push_back(std::make_pair<>(cella, it->first));
           }
-          else if(cella->isTargetOf.size() == 0)
-            ret3.push_back(std::make_pair<>(cella, it->first));
-          
-          ret4.push_back(std::make_pair<>(cella, it->first));    
         }
-        if(it->first <= min_range && isElegible(cella, ownerAgent)){
-          ret.push_back(std::make_pair<>(cella, it->first));
+        if(it->first > min_range_5x5 && it->first < max_range_5x5 && cella->isTargetOf.size() == 0)
+        {
+            if(isElegible(cella, ownerAgent))
+            ret3.push_back(std::make_pair<>(cella, it->first));
+        }
+        if(it->first > min_range_3x3 && it->first < max_range_5x5 && cella->isTargetOf.size() == 0) 
+            ret4.push_back(std::make_pair<>(cella, it->first));    
+        if(it->first <= min_range_3x3 && isElegible(cella, ownerAgent)){
+            ret.push_back(std::make_pair<>(cella, it->first));
         }
       }
     }

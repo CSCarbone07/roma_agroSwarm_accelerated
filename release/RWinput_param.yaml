@@ -1,8 +1,8 @@
 max_steps: 10000    # termination condition for the simulation, 0 means infinite
-num_of_agents: 100        # total number of agents in the simulation
+num_of_agents: _NUM_OF_AGENTS_        # total number of agents in the simulation
 seed: _SEED_                 # seed for the random number generator
 
-communications_range: -1      #-1 if communication range is unlimited
+communications_range: _COMMUNICATIONS_RANGE_      #-1 if communication range is unlimited
 
 world:
   x: 50                # world x size

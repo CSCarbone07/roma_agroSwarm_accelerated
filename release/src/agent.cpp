@@ -192,18 +192,22 @@ else
 }
 
            
-void Agent::BroadcastCell(Cell* cellToSend)
+void Agent::BroadcastCell(Agent* agent, Cell* cellToSend)
 {
-    
-    std::cout << "Agent: " << this->getId() << ". Broadcasting cell: " << cellToSend->getId() << " with " 
+   
+     
+    std::cout << "Agent: " << this->getId() << ". Broadcasting through agent " << agent->getId() <<  " cell: " << cellToSend->getId() << " with " 
     << cellToSend->observationVectors.size()  << " observations. Mapping: " << cellToSend->isMapped() << std::endl;
-    
+       
+
     if(communicationsRange == -1)
     {
     Cell* worldCell_REF = Engine::getInstance().getWorld()->getCells().at(cellToSend->getId());
     worldCell_REF->isTargetOf = cellToSend->isTargetOf;
-    worldCell_REF->observationVectors.insert(cellToSend->observationVectors.begin(), cellToSend->observationVectors.end());
-    worldCell_REF->knowledgeVectors.insert(cellToSend->knowledgeVectors.begin(), cellToSend->knowledgeVectors.end());
+    worldCell_REF->observationVector = cellToSend->observationVector;
+    worldCell_REF->knowledgeVector = cellToSend->knowledgeVector;
+    //worldCell_REF->observationVectors.insert(cellToSend->observationVectors.begin(), cellToSend->observationVectors.end());
+    //worldCell_REF->knowledgeVectors.insert(cellToSend->knowledgeVectors.begin(), cellToSend->knowledgeVectors.end());
 
     std::cout << "World knowledge base recieving cell " << worldCell_REF->getId()<< " observations and isTargetOf agent "; 
     if(cellToSend->isTargetOf.size() >= 1)
@@ -215,20 +219,28 @@ void Agent::BroadcastCell(Cell* cellToSend)
     }
     if(communicationsRange > 0)
     {
+      
       for(auto t : Engine::getInstance().getWorld()->getAgents()){
-        if(this->getId() != t->getId())
+        if(agent->getId() != t->getId() && std::find(agentsBroadcasting.begin(), agentsBroadcasting.end(), t) == agentsBroadcasting.end())
         { 
-          float distance_t = t->calculateLinearDistanceToTarget(this->getPosition());
-          if( distance_t != 0 && distance_t <= this->communicationsRange)
+          float distance_t = t->calculateLinearDistanceToTarget(agent->getPosition());
+          if( distance_t != 0 && distance_t <= agent->communicationsRange)
           {
-            std::cout << "Agent " << this->getId() << " at " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
-            <<" sending cell " << cellToSend->getId() << " to agent " << t->getId() << " withing " << distance_t << "m of distance" << std::endl;
+            std::cout << "Agent " << agent->getId() << " at " << agent->getX() << "x + " << agent->getY() << "y + " << agent->getZ() << "z"
+            <<" sending cell " << cellToSend->getId() << " to agent " << t->getId() << " within " << distance_t << "m of distance" << std::endl;
             t->ReceiveCell(cellToSend); 
+            agentsBroadcasting.push_back(agent);
+            BroadcastCell(t, cellToSend);
+            //if(agent == this)
+            //{agentsBroadcasting.clear();} 
+                        
           }   
         }
       } 
+        
+    if(agent == this)
+    {agentsBroadcasting.clear();} 
     }
-    
 
 }
 
@@ -243,8 +255,10 @@ void Agent::ReceiveCell(Cell* receivedCell) //recieving broadcasted latest obser
     
     Cell* updatingCell = this->cells.at(receivedCell->getId());
     updatingCell->isTargetOf = receivedCell->isTargetOf;
-    updatingCell->observationVectors.insert(receivedCell->observationVectors.begin(), receivedCell->observationVectors.end());
-    updatingCell->knowledgeVectors.insert(receivedCell->knowledgeVectors.begin(), receivedCell->knowledgeVectors.end());
+    updatingCell->observationVector = receivedCell->observationVector;
+    updatingCell->knowledgeVector = receivedCell->knowledgeVector;
+    //updatingCell->observationVectors.insert(receivedCell->observationVectors.begin(), receivedCell->observationVectors.end());
+    //updatingCell->knowledgeVectors.insert(receivedCell->knowledgeVectors.begin(), receivedCell->knowledgeVectors.end());
     if(receivedCell->isMapped())
     {updatingCell->setMapped();} 
 
@@ -315,10 +329,10 @@ bool Agent::doStep(unsigned timeStep){
         if(communicationsRange == -1)
         {
         std::cout << "Agent " << this->getId() << " pushing isTargetOf to cell " << chosenCell->getId() << std::endl;
-        BroadcastCell(chosenCell);
+        BroadcastCell(this, chosenCell);
         }
         if(communicationsRange>0)
-        {BroadcastCell(chosenCell);} 
+        {BroadcastCell(this, chosenCell);} 
         }
    
       break;
@@ -384,20 +398,21 @@ bool Agent::doStep(unsigned timeStep){
                }
           }      
           
-          std::cout << "Agent " << this->getId() << " starting to broadcast scan results of cell " << scanningCell->getId() << std::endl;
-          if(communicationsRange == -1)
-          {
-            BroadcastCell(scanningCell);
-          }
-          if(communicationsRange>0)
-          {BroadcastCell(scanningCell);} 
         
         }
         else
         {
         ;
         }
-            //std::cout << "Agent " << this->getId() << " visited cell " << scanningCell->getId() << ". But it was already mapped according to current KB" << std::endl;
+          std::cout << "Agent " << this->getId() << " starting to broadcast scan results of cell " << scanningCell->getId() << std::endl;
+          if(communicationsRange == -1)
+          {
+            BroadcastCell(this, scanningCell);
+          }
+          if(communicationsRange>0)
+          {BroadcastCell(this, scanningCell);} 
+           
+             //std::cout << "Agent " << this->getId() << " visited cell " << scanningCell->getId() << ". But it was already mapped according to current KB" << std::endl;
             scanningCell->isTargetOf.clear();
             this->cells.at(scanningCell->getId())->isTargetOf.clear();
             this->targetId = -1;
@@ -443,7 +458,7 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
       }
     }                        
      
-    currentCell->observationVectors.insert(std::pair<float, std::array<float, 13>>(timeStep, currentCell->observationVector));
+    //currentCell->observationVectors.insert(std::pair<float, std::array<float, 13>>(timeStep, currentCell->observationVector));
     
     currentCell->residual_uncertainty = 0.0;
     float entr = 0;
@@ -454,8 +469,8 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
                                         / currentCell->observationVector[currentObservation];
     }
   
-    currentCell->knowledgeVectors.insert(std::pair<float, std::array<float, 13>>(timeStep, currentCell->knowledgeVector));
-
+    //currentCell->knowledgeVectors.insert(std::pair<float, std::array<float, 13>>(timeStep, currentCell->knowledgeVector));
+    /*
     for (std::map<float, std::array<float,13>>::iterator it=currentCell->knowledgeVectors.begin(); it!=currentCell->knowledgeVectors.end(); ++it)
     {
       for(unsigned i = 0; i<13; i++)
@@ -468,7 +483,7 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
         }
       } 
     }  
-
+    */
 
     
     for(unsigned i = 0; i<13; i++)
