@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RUNS=50
+RUNS=100
 LOCALPATH=$(pwd)/
 
     for (( c=1; c<=$RUNS; c++ ))
@@ -34,7 +34,7 @@ LOCALPATH=$(pwd)/
         cp input_param.yaml param_found_script.yaml
         sed -i -e "s/_SEED_/$c/g" param_found_script.yaml
         sed -Ei "s|_PATH_|$LOCALPATH|g" param_found_script.yaml
-        /home/cscarbone/release/build/MACPP -i param_found_script.yaml
+        /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/MACPP -i param_found_script.yaml
     done	
 
 : <<'END'

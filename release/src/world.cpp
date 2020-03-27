@@ -45,6 +45,7 @@ World::World(std::array<unsigned,3> size) {
       }
     }
   }
+  communication_range = Engine::getInstance().getCommunicationsRange();
   std::cout<<"numero celle   "<<id<<std::endl;
 };
 

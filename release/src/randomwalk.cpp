@@ -4,7 +4,7 @@
 
 //#define INCREMENTAL_SET
 #define FIXEDSIZE3x3    //ifndef  --> defalut 5x5
-#define PERFECT_COMMUNICATION        //change also in agent.cpp
+//#define PERFECT_COMMUNICATION        //change also in agent.cpp
 
 
 RandomWalkStrategy::RandomWalkStrategy(Agent* ag)
@@ -24,6 +24,14 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
 
   elegibles = getElegibles(ag, agentDiscretePos, id);
 
+/*
+  for(auto &ele : elegibles)
+  {
+    if(ele.first->isMapped())
+        std::cout << "ERROR! Cell: " << ele.first->getId() << " was found as elegible although it was mapped" << std::endl;
+  }
+*/
+
   std::vector<float> probabilities; // where to store probabilities
   probabilities.reserve(elegibles.size());
 
@@ -31,6 +39,7 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
     Cell* c = elegibles.at(0).first;
     //c->isTargetOf.push_back(id);
     std::array<unsigned,3> cellPos = c->getPosition();
+    //std::cout << "returning position of current picked cell " << c->getId() << ". Mapped:" << Engine::getInstance().getWorld()->getCells().at(c->getId()) << std::endl;
     return {cellPos.at(0)+0.5f,cellPos.at(1)+0.5f,float(cellPos.at(2))};
   }
 
@@ -75,6 +84,7 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
         Cell* c = elegibles.at(i).first;
         //c->isTargetOf.push_back(id);
         std::array<unsigned,3> cellPos = c->getPosition();
+        //std::cout << "returning chosen position" << std::endl;
         return {cellPos.at(0)+0.5f,cellPos.at(1)+0.5f,float(cellPos.at(2))};
       }
     }
@@ -89,14 +99,16 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
 
 bool RandomWalkStrategy::isElegible(Cell* c, Agent* ag)
 {
+  
   if(ownerAgent->GetCommunicationsRange() == -1)
   {
-    return ((!ag->cells.at(c->getId())->isMapped()) && (c->isTargetOf.size())==0);
-    //return ((!ag->cells.at(c->getId())->isMapped()) && (ag->cells.at(c->getId())->isTargetOf.size())<=0);
+    Cell* worldCell_REF = Engine::getInstance().getWorld()->getCells().at(c->getId());
+    return (!(worldCell_REF->isMapped()) && (worldCell_REF->isTargetOf.size())==0);
   }
   else
   {
-    return ((!c->isMapped()) && (c->isTargetOf.size())==0);
+    return ((!ownerAgent->cells.at(c->getId())->isMapped()) && (!(ownerAgent->cells.at(c->getId())->isTargetOf.size())==0));
+    //return ((!ag->cells.at(c->getId())->isMapped()) && (ag->cells.at(c->getId())->isTargetOf.size())<=0);
   }
 }
 bool inRadius(unsigned x, unsigned y, Cell* c, unsigned radius){
@@ -158,12 +170,12 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
   //check first current cell
   if((Engine::getInstance().getWorld()->unCommittedAgents == Engine::getInstance().getWorld()->getAgents().size()-1 || Engine::getInstance().getWorld()->getAgent(id)->getTargetId() == -2) && isElegible(currentOccupiedCell, ag))
   {
-    ret.push_back(std::make_pair<>(currentOccupiedCell, 0));
+    ret.push_back(std::make_pair<>(currentOccupiedCell, 0));  //returning cell, distance
 #ifndef PERFECT_COMMUNICATION        
   //updateKBrw(Engine::getInstance().getWorld()->getCell(agentDiscretePos), ag);
 #endif
 
-    //std::cout << "Agent: " << ownerAgent->getId() << ", Found as elegibles cells: " ; 
+    //std::cout << "Agent: " << ownerAgent->getId() << ", found current cell as elegible" ; 
 
     return ret;
   }
@@ -239,13 +251,16 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
 
   if(ret.size()== 0){
     if(ret2.size()!=0){
+      //std::cout << "returning ret2" << std::endl;
       return ret2;   
     }
     else if(ret3.size()!=0){
+      //std::cout << "returning ret3" << std::endl;
       Engine::getInstance().getWorld()->getAgent(id)->sceltaRandom = true;
       return ret3;
     }
     else{
+      //std::cout << "returning ret4" << std::endl;
       Engine::getInstance().getWorld()->getAgent(id)->sceltaRandom = true;
       return ret4;
     }
@@ -300,19 +315,16 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
   float newY = 0;
   for(auto t : Engine::getInstance().getWorld()->getAgents()){
     if(t->getId() != ag->getId()){
-#ifndef PERFECT_COMMUNICATION
+
       float distance_t = t->calculateLinearDistanceToTarget(ag->getPosition());
-      if( distance_t != 0 && distance_t < Engine::getInstance().getWorld()->communication_range){
-#endif
+      if(( distance_t != 0 && distance_t < Engine::getInstance().getWorld()->communication_range) ||  Engine::getInstance().getWorld()->communication_range == -1){
         std::array<float,3> otherPos = t->getPosition();
         Eigen::Vector2f tv(agentPos.at(0) - otherPos.at(0), agentPos.at(1) - otherPos.at(1));
 
         float weight = 2*Engine::getInstance().gaussianPDF(tv.norm(), 0, Engine::getInstance().getRepulsion());  //(tc.length(), 0, Mav.potentialSpread, 2);
         newX += weight*tv[0];
         newY += weight*tv[1];
-#ifndef PERFECT_COMMUNICATION
       }
-#endif
     }
   }
   Eigen::Vector2f repulsion(newX,newY);
@@ -328,17 +340,12 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
   float newY = 0;
   std::map<unsigned, Cell*> beaconsCell = Engine::getInstance().getWorld()->beacons;
   for (std::map<unsigned, Cell*>::iterator i = beaconsCell.begin(); i != beaconsCell.end(); ++i) { 
-#ifndef PERFECT_COMMUNICATION    
-    //updateKBrw((*i).second, ag);
-    if(ag->cells.at((*i).second->getId())->getBeacon() != 0){
-#endif 
+    if(ag->cells.at((*i).second->getId())->getBeacon() != 0 || Engine::getInstance().getWorld()->communication_range == -1){
       Eigen::Vector2f tv(((*i).second->getX()+0.5) - agentPos.at(0), ((*i).second->getY()+0.5) - agentPos.at(1));
       float weight = (*i).second->getBeacon()* 2*Engine::getInstance().gaussianPDF(tv.norm(), 0, Engine::getInstance().getAttraction());  //(tc.length(), 0, Mav.potentialSpread, 2);
       newX += weight*tv[0];
       newY += weight*tv[1];
-#ifndef PERFECT_COMMUNICATION
     }
-#endif
   }
   Eigen::Vector2f attraction(newX,newY);
   //avoid normalizing a zero vector

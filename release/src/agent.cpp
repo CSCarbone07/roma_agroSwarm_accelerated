@@ -204,7 +204,14 @@ void Agent::BroadcastCell(Cell* cellToSend)
     worldCell_REF->isTargetOf = cellToSend->isTargetOf;
     worldCell_REF->observationVectors.insert(cellToSend->observationVectors.begin(), cellToSend->observationVectors.end());
     worldCell_REF->knowledgeVectors.insert(cellToSend->knowledgeVectors.begin(), cellToSend->knowledgeVectors.end());
-    std::cout << "World knowledge base recieving cell " << worldCell_REF->getId()<< " observations and isTargetOf data" << std::endl;
+
+    std::cout << "World knowledge base recieving cell " << worldCell_REF->getId()<< " observations and isTargetOf agent "; 
+    if(cellToSend->isTargetOf.size() >= 1)
+    {std::cout << cellToSend->isTargetOf.at(0) << std::endl;}
+    else
+    {std::cout << "NONE" << std::endl;}
+    
+
     }
     if(communicationsRange > 0)
     {
@@ -303,7 +310,8 @@ bool Agent::doStep(unsigned timeStep){
 	    
         std::cout << "Agent " << this->getId() << " has picked "<< this->getTargetX() << "x + " << this->getTargetY() << "y in Cell " 
         << chosenCell->getId() << " from " << knowledgeBaseLocation << " knowledge base as Target, which previously had " << cells.at(this->getTargetId())->isTargetOf.size() << " agents that had it as target." << std::endl;
-        
+       
+        chosenCell->isTargetOf.push_back(this->getId()); 
         if(communicationsRange == -1)
         {
         std::cout << "Agent " << this->getId() << " pushing isTargetOf to cell " << chosenCell->getId() << std::endl;
@@ -342,23 +350,20 @@ bool Agent::doStep(unsigned timeStep){
       unsigned targetId = c->getId();
       scanningCell = this->cells.at(targetId);
       scanningCell->lastTimeVisit = timeStep;    
-      }
-     
-      
-        std::cout << "Agent " << this->getId() << " scanning cell " << scanningCell->getId() << std::endl;    
-        
+      }        
         if(!scanningCell->isMapped())
-        {
-        
+        {          
+        std::cout << "Agent " << this->getId() << " scanning cell " << scanningCell->getId() << std::endl;    
           float currentObservation = scanCurrentLocation(scanningCell);       
           if(scanningCell->getResidual() < 0.27 )
           { 
+            std::cout<< "Cell " << scanningCell->getId() << " was mapped by agent " << this->getId()  << std::endl;
             scanningCell->setMapped();
             Engine::getInstance().getWorld()->remainingTasksToMap.erase(c->getId());
             Engine::getInstance().getWorld()->remainingTasksIntoClusters.erase(c->getId());
 
-            c->isTargetOf.clear();
-            this->cells.at(c->getId())->isTargetOf.clear();
+            scanningCell->isTargetOf.clear();
+            this->cells.at(scanningCell->getId())->isTargetOf.clear();
             this->targetId = -1;
             this->target = {-1,-1,-1};
        
@@ -388,7 +393,16 @@ bool Agent::doStep(unsigned timeStep){
           {BroadcastCell(scanningCell);} 
         
         }
-        break;              
+        else
+        {
+        ;
+        }
+            //std::cout << "Agent " << this->getId() << " visited cell " << scanningCell->getId() << ". But it was already mapped according to current KB" << std::endl;
+            scanningCell->isTargetOf.clear();
+            this->cells.at(scanningCell->getId())->isTargetOf.clear();
+            this->targetId = -1;
+            this->target = {-1,-1,-1};
+            break;          
 
       }
       default:
@@ -447,18 +461,25 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
       for(unsigned i = 0; i<13; i++)
       {
       //if i-th element is != 0  ---> calculate H(c)
-      if(it->second[i] != 0)
-        entr +=  it->second[i]*(std::log(it->second[i]));
+        if(it->second[i] != 0)
+        {
+        //std::cout << "Adding " << it->second[i]*(std::log(it->second[i])) << " entropy" << std::endl;
+        //entr +=  it->second[i]*(std::log(it->second[i]));
+        }
       } 
     }  
 
+
+    
+    for(unsigned i = 0; i<13; i++)
+    {
     //if i-th element is != 0  ---> calculate H(c)
-     // if(currentCell->knowledgeVector[i] != 0)
-       // entr +=  currentCell->knowledgeVector[i]*(std::log(currentCell->knowledgeVector[i]));
- 
+      if(currentCell->knowledgeVector[i] != 0)
+      {entr +=  currentCell->knowledgeVector[i]*(std::log(currentCell->knowledgeVector[i]));}
+    }
     
     
- 
+    //std::cout << "total residual uncertainty " << -entr << " of cell " << currentCell->getId() << std::endl; 
     //store H(c) for the current cell
     currentCell->residual_uncertainty = -entr;
 

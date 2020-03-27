@@ -2,16 +2,19 @@ max_steps: 10000    # termination condition for the simulation, 0 means infinite
 num_of_agents: 100        # total number of agents in the simulation
 seed: _SEED_                 # seed for the random number generator
 
+communications_range: -1      #-1 if communication range is unlimited
+
 world:
   x: 50                # world x size
   y: 50               # world y size
   z: 1                 # world z size  
 
-movesFile:  	"/home/cscarbone/release/results/results_moves_IG.yaml"
-statusFile: 	"/home/cscarbone/release/results/results_status_IG.yaml"
-randomChoice: 	"/home/cscarbone/release/results/results_randomChoice_IG.yaml"
-timing: 	"/home/cscarbone/release/results/results_timing_IG.yaml"
-visitedCells: 	"/home/cscarbone/release/results/results_visitedCells_IG.yaml"
+knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases.yaml"
+movesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves.yaml"
+statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status.yaml"
+randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice.yaml"
+timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing.yaml"
+visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells.yaml"
 
 weeds:
     clusters: 4
@@ -24,6 +27,7 @@ orcaRadius: 0.3
 tau: 0.2
 collisionAvoidance: true
 
+InspectionStrategy: "rw" #rw = randomwalk (default), ig = information gain 
 
 #visit
 repulsion: 0
