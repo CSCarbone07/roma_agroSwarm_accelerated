@@ -11,11 +11,11 @@ world:
 
 
 
-movesFile: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves__ATTRACTION___REPULSION_.yaml"
-statusFile: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status__ATTRACTION___REPULSION_.yaml"
-randomChoice: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice__ATTRACTION___REPULSION_.yaml"
-timing: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing__ATTRACTION___REPULSION_.yaml"
-visitedCells: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells__ATTRACTION___REPULSION_.yaml"
+movesFile: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+statusFile: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+randomChoice: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+timing: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+visitedCells: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
 
 weeds:
     clusters: 4
