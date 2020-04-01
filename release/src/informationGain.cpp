@@ -9,6 +9,15 @@
 //#define RELAXED_VERSION
 
 
+InformationGainStrategy::InformationGainStrategy(Agent* ag)
+{
+    ownerAgent = ag;
+
+}
+
+
+
+
 std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
   unsigned id = ag->getId();
   unsigned sizex = Engine::getInstance().getWorld()->getSize().at(0)-1;
@@ -58,10 +67,9 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
     return {cellPos.at(0)+0.5f,cellPos.at(1)+0.5f,float(cellPos.at(2))};
   }
 
-#ifndef RELAXED_VERSION     //complete version  
+float ig=0, sum=0, ig2=0, sum2=0, tot=0;
 
   //compute the probabilities for the elegibles
-  float ig=0, sum=0, ig2=0, sum2=0, tot=0;
   for(unsigned i = 0; i<elegibles.size(); i++){
     ig = computeInformationGain(ag, elegibles.at(i).first);  //agent ag respect to elegible cell i
     myProbabilities.push_back((1/elegibles.at(i).second)*ig); // compute my probability for elegible i considering also the distance
@@ -92,12 +100,24 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
     tot = 0;
   }
 
+  if(ownerAgent->GetUseSocialInfo())
+  {
   //merge probabilities of this agent with the sum of each other
   tot = 0; sum2=0;
   for(unsigned i = 0; i<elegibles.size(); i++){
     finalProbabilitiesVector.push_back(myProbabilities.at(i)/sum * allNearAgentsProbabilities.at(i));
     sum2+=finalProbabilitiesVector.at(i);
   }
+  }
+  else
+  {
+  finalProbabilitiesVector = myProbabilities;
+  }
+
+//#ifndef RELAXED_VERSION     //complete version  
+if(ownerAgent->GetTargetSelectionStrategy() == "random")
+{
+
 
   //extract cell
   if(sum != 0){
@@ -114,18 +134,25 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
       }
     }
   }
-#else  //relaxed version: only the contribution of the individual agent is considered. The cell with the highest probability is chosen.
+}
+
+if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
+{
+  
   float max = 0;
   int index = -1;
+//#else  //relaxed version: only the contribution of the individual agent is considered. The cell with the highest probability is chosen.
+/*
   for(unsigned i = 0; i<elegibles.size(); i++){
     float ig = computeInformationGain(ag, elegibles.at(i).first);
     myProbabilities.push_back((1/elegibles.at(i).second)*ig);
     sum += myProbabilities.at(i);
   }
+*/
 
-  for(unsigned i = 0; i<myProbabilities.size(); i++){
-    if(myProbabilities.at(i) > max){
-      max = myProbabilities.at(i);
+  for(unsigned i = 0; i<finalProbabilitiesVector.size(); i++){
+    if(finalProbabilitiesVector.at(i) > max){
+      max = finalProbabilitiesVector.at(i);
       index = i;
     }
   }
@@ -136,21 +163,30 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
     std::array<unsigned,3> cellPos = c->getPosition();
     return {cellPos.at(0)+0.5f,cellPos.at(1)+0.5f,float(cellPos.at(2))};
   }
-#endif
+}
+//#endif
 
   // if there are no elegibles
   Engine::getInstance().getWorld()->unCommittedAgents ++;
   return {-1,-1,-1};
 }
 
-bool InformationGainStrategy::isElegible(Cell* c, Agent* ag){
-  #ifdef PERFECT_COMMUNICATION
-    return ((!c->isMapped()) && (c->isTargetOf.size())==0);
-  #else
-  return ((!ag->cells.at(c->getId())->isMapped()) && (c->isTargetOf.size())==0);
-  //return ((!ag->cells.at(c->getId())->isMapped()) && (ag->cells.at(c->getId())->isTargetOf.size())<=0);
-#endif
+
+bool InformationGainStrategy::isElegible(Cell* c, Agent* ag)
+{
+ 
+   if(ownerAgent->GetCommunicationsRange() == -1)
+   {
+     Cell* worldCell_REF = Engine::getInstance().getWorld()->getCells().at(c->getId());
+     return (!(worldCell_REF->isMapped()) && (worldCell_REF->isTargetOf.size())==0);
+   }
+   else
+   {
+     return ((!ownerAgent->cells.at(c->getId())->isMapped()) && (!(ownerAgent->cells.at(c->getId())->isTargetOf.size())==0));
+     //return ((!ag->cells.at(c->getId())->isMapped()) && (ag->cells.at(c->getId())->isTargetOf.size())<=0);
+   }
 }
+
 
 /**
 * @return true, if x and y are within width and height
@@ -191,11 +227,22 @@ void updateKB(Cell* cell, Agent* a){
 
 std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent* ag, std::array<unsigned,3> agentDiscretePos){
   std::vector<std::pair<Cell*, float>> ret;
+
+  Cell* currentOccupiedCell; // cell where agent is located
+  if(ownerAgent->GetCommunicationsRange()==-1)
+  {
+    currentOccupiedCell = Engine::getInstance().getWorld()->getCell(agentDiscretePos);
+  }
+  if(ownerAgent->GetCommunicationsRange()>0)
+  {
+    currentOccupiedCell = ownerAgent->cells.at(Engine::getInstance().getWorld()->getCell(agentDiscretePos)->getId());
+  }
+
   //check first current cell
-  if((Engine::getInstance().getWorld()->unCommittedAgents == Engine::getInstance().getWorld()->getAgents().size()-1 || Engine::getInstance().getWorld()->getAgent(ag->getId())->getTargetId() == -2) && isElegible(Engine::getInstance().getWorld()->getCell(agentDiscretePos), ag)){
-    ret.push_back(std::make_pair<>(Engine::getInstance().getWorld()->getCell(agentDiscretePos), 0));
+  if((Engine::getInstance().getWorld()->unCommittedAgents == Engine::getInstance().getWorld()->getAgents().size()-1 || Engine::getInstance().getWorld()->getAgent(ag->getId())->getTargetId() == -2) && isElegible(currentOccupiedCell, ag)){
+    ret.push_back(std::make_pair<>(currentOccupiedCell, 0));
     #ifndef PERFECT_COMMUNICATION        
-      updateKB(Engine::getInstance().getWorld()->getCell(agentDiscretePos), ag);
+      //updateKB(Engine::getInstance().getWorld()->getCell(agentDiscretePos), ag);
     #endif
       return ret;
   }
@@ -208,7 +255,16 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
       int newX = it2->first + int (agentDiscretePos.at(0));
       int newY = it2->second + int (agentDiscretePos.at(1));
       if(isInBound(newX, newY)){
-        Cell* cell = Engine::getInstance().getWorld()->getCell(it2->first + agentDiscretePos.at(0), it2->second + agentDiscretePos.at(1), 0);
+        
+        //Cell* cell = Engine::getInstance().getWorld()->getCell(it2->first + agentDiscretePos.at(0), it2->second + agentDiscretePos.at(1), 0);
+         Cell* cell;
+
+         Cell* worldCell_REF = Engine::getInstance().getWorld()->getCell(it2->first + agentDiscretePos.at(0), it2->second + agentDiscretePos.at(1), 0);
+         if(ownerAgent->GetCommunicationsRange() == -1)
+         {cell = worldCell_REF;}
+         if(ownerAgent->GetCommunicationsRange() > 0)
+         {cell = ownerAgent->cells.at(worldCell_REF->getId());}  
+
         if(isElegible(cell, ag)){
           found = true;
           ret.push_back(std::make_pair<>(cell, it->first));
@@ -225,6 +281,14 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
   std::vector<std::pair<Cell*, float>> ret3;   //mapped but not targeted cells on the boundary
   std::vector<std::pair<Cell*, float>> ret4;   //all boundary cells
 
+  float max_range_5x5 = 3*sqrt(2);
+  float min_range_5x5 = 2*sqrt(2);
+  float max_range_3x3 = 2*sqrt(2);
+  float min_range_3x3 = sqrt(2);
+
+  Cell* cella;
+
+
   for (std::map<float, std::vector<std::pair<int, int>>>::iterator it=Engine::getInstance().getWorld()->distanceVectors.begin(); it!=Engine::getInstance().getWorld()->distanceVectors.end(); ++it){
     for(std::vector<std::pair<int,int>>::iterator it2=it->second.begin(); it2!=it->second.end(); ++it2){
       int newX = it2->first + int (agentDiscretePos.at(0));
@@ -233,28 +297,33 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
         break;
       }
       if(isInBound(newX, newY)){
-        Cell* cell = Engine::getInstance().getWorld()->getCell(it2->first + agentDiscretePos.at(0), it2->second + agentDiscretePos.at(1), 0);
-        #ifndef PERFECT_COMMUNICATION        
-          updateKB(cell, ag);
-        #endif
-        if(it->first > min_range){
-          if(isElegible(cell, ag)){
-            ret2.push_back(std::make_pair<>(cell, it->first));
-          }
-          else if(ag->cells.at(cell->getId())->isTargetOf.empty())
-            ret3.push_back(std::make_pair<>(cell, it->first));
-          
-          ret4.push_back(std::make_pair<>(cell, it->first));    
-        }
-        if(it->first <= min_range && isElegible(cell, ag)){
-          ret.push_back(std::make_pair<>(cell, it->first));
-        }
-        if(!ag->cells.at(cell->getId())->isTargetOf.empty() && ag->cells.at(cell->getId())->isTargetOf.at(0) != ag->getId()){         
-          ag->cells.at(cell->getId())->isTargetOf.clear();
-        }
-      }
-    }
-  }
+        //Cell* cell = Engine::getInstance().getWorld()->getCell(it2->first + agentDiscretePos.at(0), it2->second + agentDiscretePos.at(1), 0);
+        Cell* worldCell_REF = Engine::getInstance().getWorld()->getCell(it2->first + agentDiscretePos.at(0), it2->second + agentDiscretePos.at(1), 0);
+        if(ownerAgent->GetCommunicationsRange() == -1)
+        {cella = worldCell_REF;}
+        if(ownerAgent->GetCommunicationsRange() > 0)
+        {cella = ownerAgent->cells.at(worldCell_REF->getId());}  
+       
+        if(it->first > min_range_3x3 && it->first < max_range_3x3){
+           if(isElegible(cella, ownerAgent)){
+             ret2.push_back(std::make_pair<>(cella, it->first));
+           }
+         }
+         if(it->first > min_range_5x5 && it->first < max_range_5x5 && cella->isTargetOf.empty())
+         {
+             if(isElegible(cella, ownerAgent))
+             ret3.push_back(std::make_pair<>(cella, it->first));
+         }
+         if(it->first > min_range_3x3 && it->first < max_range_5x5 && cella->isTargetOf.empty())
+             ret4.push_back(std::make_pair<>(cella, it->first));
+         if(it->first <= min_range_3x3 && isElegible(cella, ownerAgent)){
+             ret.push_back(std::make_pair<>(cella, it->first));
+         }
+       }
+     }
+   }
+
+
   //if there are no eligible cells
   if(ret.size()== 0){
     //check for not mapped cells on the boundary
@@ -278,11 +347,16 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
 
 //compute H(c|o)
 float InformationGainStrategy::computeInformationGain(Agent* a, Cell* cell){
+
+  Cell* targetCell = cell;
+/*
 #ifdef PERFECT_COMMUNICATION
   Cell* targetCell = cell;
 #else
   Cell* targetCell = a->cells.at(cell->getId());
 #endif
+  */
+
     
   targetCell->observationVector.fill(0);
 

@@ -30,8 +30,9 @@ Agent::Agent(unsigned id, float x, float y, float z) {
   }
     
   this->currentInspectionStrategy = Engine::getInstance().getInspectionStrategy();  
-   
-
+  this->targetSelectionStrategy = Engine::getInstance().getTargetSelectionStrategy();
+  this->useSocialInfo = Engine::getInstance().getUseSocialInfo(); 
+  
 
   std::array<unsigned,3> size = Engine::getInstance().getWorld()->getSize();
 
@@ -46,7 +47,10 @@ Agent::Agent(unsigned id, float x, float y, float z) {
     }
   }
 
-  rw = new RandomWalkStrategy(this);
+    if(currentInspectionStrategy == "ig")
+    {ig = new InformationGainStrategy(this);}
+    else
+    {rw = new RandomWalkStrategy(this);}
   
 }
 
@@ -173,7 +177,7 @@ void Agent::getNextTarget(){
 
 //choose the strategy IG or RW
 if(currentInspectionStrategy == "ig")
-{newTarget = ig.pickNextTarget(this);}
+{newTarget = ig->pickNextTarget(this);}
 else
 {newTarget = rw->pickNextTarget(this);}
 
@@ -255,13 +259,15 @@ void Agent::ReceiveCell(Cell* receivedCell) //recieving broadcasted latest obser
     
     Cell* updatingCell = this->cells.at(receivedCell->getId());
     updatingCell->isTargetOf = receivedCell->isTargetOf;
+    if(receivedCell->lastTimeVisit > updatingCell->lastTimeVisit)
+    {
     updatingCell->observationVector = receivedCell->observationVector;
     updatingCell->knowledgeVector = receivedCell->knowledgeVector;
     //updatingCell->observationVectors.insert(receivedCell->observationVectors.begin(), receivedCell->observationVectors.end());
     //updatingCell->knowledgeVectors.insert(receivedCell->knowledgeVectors.begin(), receivedCell->knowledgeVectors.end());
     if(receivedCell->isMapped())
     {updatingCell->setMapped();} 
-
+    }
 /*
 #ifndef PERFECT_COMMUNICATION
       // non-ideal case, communication range limited

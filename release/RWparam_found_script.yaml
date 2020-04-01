@@ -9,6 +9,7 @@ world:
   y: 50               # world y size
   z: 1                 # world z size  
 
+knowledgeBasesFile:  	"/home/cscarbone/release/results/knowledgeBases_0_0.yaml"
 movesFile: 	"/home/cscarbone/release/results/results_moves_0_0.yaml"
 statusFile: 	"/home/cscarbone/release/results/results_status_0_0.yaml"
 randomChoice: 	"/home/cscarbone/release/results_randomChoice_0_0.yaml"

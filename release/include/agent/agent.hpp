@@ -44,7 +44,10 @@ protected:
   std::string currentInspectionStrategy = "rw";
 
   RandomWalkStrategy* rw; /** < random walk strategy */
-  InformationGainStrategy ig; /** < information gain strategy */
+  InformationGainStrategy* ig; /** < information gain strategy */
+
+  std::string targetSelectionStrategy = "greedy";
+  bool useSocialInfo = false;
 
   unsigned targetLifeTime; /** < Time until agent junk target */
 
@@ -162,6 +165,8 @@ public:
   inline unsigned getId() { return id; }
   inline unsigned get_time_step() { return timeStep; }
   inline float GetCommunicationsRange() { return communicationsRange; }
+  inline std::string GetTargetSelectionStrategy() {return targetSelectionStrategy; }
+  inline bool GetUseSocialInfo() { return useSocialInfo; }
   inline std::array<float,3> getPosition(){return this->position;}
   inline std::array<float,3> getTarget(){return this->target;}
   inline float getX(){return this->position.at(0);}

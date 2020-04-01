@@ -76,6 +76,9 @@ private:
 
   /*Strategies features*/
   std::string inspectionStrategy;
+  std::string targetSelectionStrategy;
+  bool useSocialInfo;
+  
 
   Engine() {}
 
@@ -99,6 +102,14 @@ public:
 
   inline std::string getInspectionStrategy() const {
     return inspectionStrategy;
+  }
+
+  inline std::string getTargetSelectionStrategy() const {
+    return targetSelectionStrategy;
+  }
+
+  inline bool getUseSocialInfo() const {
+    return useSocialInfo;
   }
 
   inline unsigned getRepulsion() const {
@@ -140,7 +151,7 @@ public:
     numOfAgents = config["num_of_agents"].as<unsigned>();
     communicationsRange = config["communications_range"].as<float>();
     size = {config["world"]["x"].as<unsigned>(), config["world"]["y"].as<unsigned>(), config["world"]["z"].as<unsigned>()};
-    knowledgeBasesFile.open(config["knowledgeBasesFile"].as<std::string>());
+    //knowledgeBasesFile.open(config["knowledgeBasesFile"].as<std::string>());
     movesFile.open(config["movesFile"].as<std::string>());
     statusFile.open(config["statusFile"].as<std::string>(), std::ios_base::app);
     randomChoice.open(config["randomChoice"].as<std::string>(), std::ios_base::app);
@@ -170,7 +181,20 @@ public:
     inspectionStrategy = config["InspectionStrategy"].as<std::string>();
     if(inspectionStrategy != "ig")
     {inspectionStrategy = "rw"; }
+    std::cout << "Inspection Strategy: " << inspectionStrategy << std::endl;
 
+    if(inspectionStrategy == "ig")
+    {
+        targetSelectionStrategy = config["TargetSelectionStrategy"].as<std::string>();
+        if(targetSelectionStrategy != "greedy" && targetSelectionStrategy != "softmax")
+        {
+        targetSelectionStrategy = "random";
+        }
+        useSocialInfo = config["UseSocialInfo"].as<bool>();
+
+    }
+
+    std::cout << std::endl;    
 
     //print info
     std::cout << "World size: " << size[0] << "x" << size[1] << "x" << size[2] << std::endl;
@@ -236,7 +260,7 @@ public:
   void run() {
   
 
-    knowledgeBasesFile << "Agents Knowledge Base:" << std::endl;
+    //knowledgeBasesFile << "Agents Knowledge Base:" << std::endl;
        
     #ifdef PERFECT_COMMUNICATION
 

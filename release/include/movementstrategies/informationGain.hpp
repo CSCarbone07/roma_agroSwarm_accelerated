@@ -15,8 +15,13 @@ class InformationGainStrategy {
         *  @return  std::array<float,3> with the real target
         */
         std::array<float,3> pickNextTarget(Agent* a);
-    private:
 
+        InformationGainStrategy(Agent* ag);
+
+    private:
+    
+        Agent* ownerAgent;            
+ 
         float max_range;
         float min_range;
         /*

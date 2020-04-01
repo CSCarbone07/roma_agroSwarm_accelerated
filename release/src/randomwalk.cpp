@@ -103,7 +103,7 @@ bool RandomWalkStrategy::isElegible(Cell* c, Agent* ag)
   if(ownerAgent->GetCommunicationsRange() == -1)
   {
     Cell* worldCell_REF = Engine::getInstance().getWorld()->getCells().at(c->getId());
-    return (!(worldCell_REF->isMapped()) && (worldCell_REF->isTargetOf.size())==0);
+    return (!(worldCell_REF->isMapped()) && (worldCell_REF->isTargetOf.empty()));
   }
   else
   {
@@ -244,12 +244,12 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
             ret2.push_back(std::make_pair<>(cella, it->first));
           }
         }
-        if(it->first > min_range_5x5 && it->first < max_range_5x5 && cella->isTargetOf.size() == 0)
+        if(it->first > min_range_5x5 && it->first < max_range_5x5 && cella->isTargetOf.empty())
         {
             if(isElegible(cella, ownerAgent))
             ret3.push_back(std::make_pair<>(cella, it->first));
         }
-        if(it->first > min_range_3x3 && it->first < max_range_5x5 && cella->isTargetOf.size() == 0) 
+        if(it->first > min_range_3x3 && it->first < max_range_5x5 && cella->isTargetOf.empty()) 
             ret4.push_back(std::make_pair<>(cella, it->first));    
         if(it->first <= min_range_3x3 && isElegible(cella, ownerAgent)){
             ret.push_back(std::make_pair<>(cella, it->first));
