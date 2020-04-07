@@ -75,10 +75,13 @@ private:
   std::ofstream visitedCells;
 
   /*Strategies features*/
+  float knowledgeClusterRadius = 0;
   std::string inspectionStrategy;
   std::string targetSelectionStrategy;
-  bool useSocialInfo;
-  
+  float softmaxLambda = 1;
+  bool useSocialInfo = false;
+  bool useDistanceForIG = false;
+
 
   Engine() {}
 
@@ -100,6 +103,10 @@ public:
     return communicationsRange;
   } 
 
+  inline float getKnowledgeClusterRadius() const {
+    return knowledgeClusterRadius;
+  } 
+  
   inline std::string getInspectionStrategy() const {
     return inspectionStrategy;
   }
@@ -108,10 +115,18 @@ public:
     return targetSelectionStrategy;
   }
 
+  inline float getSoftmaxLambda() const {
+    return softmaxLambda;
+  }
+
   inline bool getUseSocialInfo() const {
     return useSocialInfo;
   }
 
+  inline bool getUseDistanceForIG() const {
+    return useDistanceForIG;
+  }
+  
   inline unsigned getRepulsion() const {
     return repulsion;
   }
@@ -177,6 +192,8 @@ public:
     repulsion = config["repulsion"].as<float>();
     attraction = config["attraction"].as<float>();
 
+    knowledgeClusterRadius = config["KnowledgeClusterRadius"].as<float>();
+
     //Inspection Strategies
     inspectionStrategy = config["InspectionStrategy"].as<std::string>();
     if(inspectionStrategy != "ig")
@@ -190,7 +207,16 @@ public:
         {
         targetSelectionStrategy = "random";
         }
+        if(targetSelectionStrategy == "softmax")
+        {
+        softmaxLambda = config["Softmax_Lambda"].as<float>();
+        std::cout << "Lambda for softmax on target selection strategy: " << softmaxLambda << std::endl; 
+        }
+        std::cout << "Target selection strategy: " << targetSelectionStrategy << std::endl;
         useSocialInfo = config["UseSocialInfo"].as<bool>();
+        std::cout << "Include social info: " << useSocialInfo << std::endl;
+        useDistanceForIG = config["UseDistanceForIG"].as<bool>();
+        std::cout << "Include distance for IG weights: " << useDistanceForIG << std::endl;        
 
     }
 

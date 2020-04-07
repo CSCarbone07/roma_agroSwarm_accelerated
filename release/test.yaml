@@ -27,11 +27,17 @@ orcaRadius: 0.3
 tau: 0.2
 collisionAvoidance: true
 
+KnowledgeClusterRadius: 1   #radius around main scanning cell to included in knowledge update
+
 InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain 
 
 #if ig is the strategy:
-TargetSelectionStrategy: "random"   #greedy, softmax, random (default) with weights. 
+TargetSelectionStrategy: "softmax"   #greedy, softmax, random (default) with weights. 
+Softmax_Lambda: 1       #lambda for softmax equation 
 UseSocialInfo: false    #include information from other agents
+UseDistanceForIG: false #include distance in ig weights
+
+
 
 #visit
 repulsion: 64

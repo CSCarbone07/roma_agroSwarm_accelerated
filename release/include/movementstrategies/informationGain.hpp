@@ -22,8 +22,15 @@ class InformationGainStrategy {
     
         Agent* ownerAgent;            
  
-        float max_range;
-        float min_range;
+        //float max_range;
+        //float min_range;
+
+        float max_range_5x5 = 3*sqrt(2);
+        float min_range_5x5 = 2*sqrt(2);
+        float max_range_3x3 = 2*sqrt(2);
+        float min_range_3x3 = sqrt(2);
+
+
         /*
         * Get cells that can be choosen by the agent
         * @param Agent* a, is the reference to Agent a

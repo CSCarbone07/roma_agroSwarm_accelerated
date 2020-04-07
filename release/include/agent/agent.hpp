@@ -46,8 +46,11 @@ protected:
   RandomWalkStrategy* rw; /** < random walk strategy */
   InformationGainStrategy* ig; /** < information gain strategy */
 
+  float knowledgeClusterRadius = 0;
   std::string targetSelectionStrategy = "greedy";
+  float softmaxLambda = 1;
   bool useSocialInfo = false;
+  bool useDistanceForIG = false;
 
   unsigned targetLifeTime; /** < Time until agent junk target */
 
@@ -56,6 +59,11 @@ protected:
  
   void BroadcastCell(Agent* agent, Cell* cellToSend); //sending cell with local data
   void ReceiveCell(Cell* recievedCell); //recieving cell with new data
+
+  float max_range_5x5 = 3*sqrt(2);
+  float min_range_5x5 = 2*sqrt(2);
+  float max_range_3x3 = 2*sqrt(2);
+  float min_range_3x3 = sqrt(2);
 
  
   /*
@@ -136,10 +144,15 @@ public:
   /**
   * @return true, if x and y are within width and height
   */
-  bool isInBounds(unsigned x, unsigned y, unsigned size_x, unsigned size_y){     
+  
+  bool isInBound(unsigned x, unsigned y);
+  /*
+  bool isInBound(unsigned x, unsigned y, unsigned size_x, unsigned size_y);
+  {     
 	  return x >= 0 && y >= 0 && x < size_x && y < size_y;
   }
-  
+  */
+
   /* Set Agent Position */
   inline void setPosition(float x, float y, float z){
     this->position.at(0) = x;
@@ -166,7 +179,9 @@ public:
   inline unsigned get_time_step() { return timeStep; }
   inline float GetCommunicationsRange() { return communicationsRange; }
   inline std::string GetTargetSelectionStrategy() {return targetSelectionStrategy; }
+  inline float GetSoftmaxLambda() {return softmaxLambda; }
   inline bool GetUseSocialInfo() { return useSocialInfo; }
+  inline bool GetUseDistanceForIG() { return useDistanceForIG; }
   inline std::array<float,3> getPosition(){return this->position;}
   inline std::array<float,3> getTarget(){return this->target;}
   inline float getX(){return this->position.at(0);}

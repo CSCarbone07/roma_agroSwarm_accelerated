@@ -34,6 +34,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
 
   std::array<unsigned,3> agentDiscretePos = {unsigned(fmax(0,fmin(agentPos.at(0),sizex))),unsigned(fmax(0,fmin(agentPos.at(1),sizey))),0}; // Discretization of agent position
 
+/*
   #ifdef INCREMENTAL
     max_range = 50*sqrt(2);
     min_range = 2*sqrt(2);  
@@ -46,8 +47,13 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
       min_range = sqrt(2);
     #endif
   #endif
+*/
 
+
+  
   elegibles = getElegibles(ag, agentDiscretePos);
+
+  std::cout << "Agent: " << ownerAgent->getId() << " found " << elegibles.size() << " cells as elegible" << std::endl;
 
   std::vector<float> myProbabilities; // where to store probabilities for this agent
   myProbabilities.reserve(elegibles.size());
@@ -72,17 +78,24 @@ float ig=0, sum=0, ig2=0, sum2=0, tot=0;
   //compute the probabilities for the elegibles
   for(unsigned i = 0; i<elegibles.size(); i++){
     ig = computeInformationGain(ag, elegibles.at(i).first);  //agent ag respect to elegible cell i
+    if(ownerAgent->GetUseSocialInfo())
     myProbabilities.push_back((1/elegibles.at(i).second)*ig); // compute my probability for elegible i considering also the distance
+    else
+    {myProbabilities.push_back(ig);}
     sum += myProbabilities.at(i);
     //for all agents in swarm  
     for(auto t : Engine::getInstance().getWorld()->getAgents()){
       //if agent t is near 
       float distance_t = t->calculateLinearDistanceToTarget(elegibles.at(i).first->getPosition());
-      if(t->getId()!= id && distance_t != 0 && distance_t < max_range){
+      if(t->getId()!= id && distance_t != 0 && (distance_t <= ownerAgent->GetCommunicationsRange() || ownerAgent->GetCommunicationsRange() == -1) && ownerAgent->GetUseSocialInfo())
+      {
         for(unsigned j = 0; j<elegibles.size(); j++){
           //compute IG of agent t w.r.t. elegibles j
           ig2 = computeInformationGain(t, elegibles.at(j).first);
-          float distance_t2 = t->calculateLinearDistanceToTarget(elegibles.at(j).first->getPosition());
+          float distance_t2 = 1;
+          if(ownerAgent->GetUseDistanceForIG()) 
+          {float distance_t2 = t->calculateLinearDistanceToTarget(elegibles.at(j).first->getPosition());}
+          
           nextNearAgentProbabilities.push_back((1/distance_t2)*ig2); // probability of t to choose j 
           sum2 += nextNearAgentProbabilities.at(j);
         }
@@ -100,25 +113,35 @@ float ig=0, sum=0, ig2=0, sum2=0, tot=0;
     tot = 0;
   }
 
-  if(ownerAgent->GetUseSocialInfo())
-  {
   //merge probabilities of this agent with the sum of each other
   tot = 0; sum2=0;
-  for(unsigned i = 0; i<elegibles.size(); i++){
+  for(unsigned i = 0; i<elegibles.size(); i++)
+  {
+  if(ownerAgent->GetUseSocialInfo())
+  {
     finalProbabilitiesVector.push_back(myProbabilities.at(i)/sum * allNearAgentsProbabilities.at(i));
     sum2+=finalProbabilitiesVector.at(i);
   }
-  }
   else
   {
-  finalProbabilitiesVector = myProbabilities;
+    finalProbabilitiesVector.push_back(myProbabilities.at(i)/sum);
+  }
   }
 
+  //std::cout << "Using social info with " << finalProbabilitiesVector.size() << " as probability vector" << std::endl;
+/*
+  else
+  {
+    for(unsigned i = 0; i<elegibles.size(); i++)
+    { 
+    finalProbabilitiesVector = myProbabilities;
+    }
+    std::cout << "Not using social info with " << finalProbabilitiesVector.size() << " as probability vector" << std::endl;
+  }
+*/
 //#ifndef RELAXED_VERSION     //complete version  
 if(ownerAgent->GetTargetSelectionStrategy() == "random")
 {
-
-
   //extract cell
   if(sum != 0){
     float random = RandomGenerator::getInstance().nextFloat(1);
@@ -127,13 +150,42 @@ if(ownerAgent->GetTargetSelectionStrategy() == "random")
       cumulative += finalProbabilitiesVector.at(i);
       if(random <= cumulative){
                 Cell* c = elegibles.at(i).first;
-                c->isTargetOf.push_back(id);
-                ag->cells.at(c->getId())->isTargetOf.push_back(id);
+                //c->isTargetOf.push_back(id);
+                //ag->cells.at(c->getId())->isTargetOf.push_back(id);
                 std::array<unsigned,3> cellPos = c->getPosition();
                 return {cellPos.at(0)+0.5f,cellPos.at(1)+0.5f,float(cellPos.at(2))};
       }
     }
   }
+}
+
+if(ownerAgent->GetTargetSelectionStrategy() == "softmax")
+{
+    float expSum = 0;
+    for(float i : finalProbabilitiesVector)
+    {
+    expSum += exp(ownerAgent->GetSoftmaxLambda()*i);
+    }
+    for(unsigned i =0; i<finalProbabilitiesVector.size(); i++)
+    {
+    finalProbabilitiesVector[i]=(exp(ownerAgent->GetSoftmaxLambda()*finalProbabilitiesVector[i]))/expSum;
+    }
+
+  if(sum != 0){
+    float random = RandomGenerator::getInstance().nextFloat(1);
+    float cumulative = .0;
+    for(unsigned i=0; i<elegibles.size(); i++){
+      cumulative += finalProbabilitiesVector.at(i);
+      if(random <= cumulative){
+                Cell* c = elegibles.at(i).first;
+                //c->isTargetOf.push_back(id);
+                //ag->cells.at(c->getId())->isTargetOf.push_back(id);
+                std::array<unsigned,3> cellPos = c->getPosition();
+                return {cellPos.at(0)+0.5f,cellPos.at(1)+0.5f,float(cellPos.at(2))};
+      }
+    }
+  }
+
 }
 
 if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
@@ -158,8 +210,8 @@ if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
   }
   if(index != -1){
     Cell* c = elegibles.at(index).first;
-    c->isTargetOf.push_back(id);
-    ag->cells.at(c->getId())->isTargetOf.push_back(id);
+    //c->isTargetOf.push_back(id);
+    //ag->cells.at(c->getId())->isTargetOf.push_back(id);
     std::array<unsigned,3> cellPos = c->getPosition();
     return {cellPos.at(0)+0.5f,cellPos.at(1)+0.5f,float(cellPos.at(2))};
   }
@@ -281,11 +333,12 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
   std::vector<std::pair<Cell*, float>> ret3;   //mapped but not targeted cells on the boundary
   std::vector<std::pair<Cell*, float>> ret4;   //all boundary cells
 
+/*
   float max_range_5x5 = 3*sqrt(2);
   float min_range_5x5 = 2*sqrt(2);
   float max_range_3x3 = 2*sqrt(2);
   float min_range_3x3 = sqrt(2);
-
+*/
   Cell* cella;
 
 
@@ -293,7 +346,7 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
     for(std::vector<std::pair<int,int>>::iterator it2=it->second.begin(); it2!=it->second.end(); ++it2){
       int newX = it2->first + int (agentDiscretePos.at(0));
       int newY = it2->second + int (agentDiscretePos.at(1));
-      if(it->first > max_range){
+      if(it->first > max_range_5x5){
         break;
       }
       if(isInBound(newX, newY)){

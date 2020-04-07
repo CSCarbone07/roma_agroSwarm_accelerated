@@ -28,11 +28,13 @@ Agent::Agent(unsigned id, float x, float y, float z) {
   {
   knowledgeBaseLocation = "world";
   }
-    
+   
+  this->knowledgeClusterRadius = Engine::getInstance().getKnowledgeClusterRadius(); 
   this->currentInspectionStrategy = Engine::getInstance().getInspectionStrategy();  
   this->targetSelectionStrategy = Engine::getInstance().getTargetSelectionStrategy();
+  this->softmaxLambda = Engine::getInstance().getSoftmaxLambda();
   this->useSocialInfo = Engine::getInstance().getUseSocialInfo(); 
-  
+  this->useDistanceForIG = Engine::getInstance().getUseDistanceForIG(); 
 
   std::array<unsigned,3> size = Engine::getInstance().getWorld()->getSize();
 
@@ -305,7 +307,7 @@ bool Agent::doStep(unsigned timeStep){
     case PICK:
     {
         std::cout << "Agent " << this->getId() << " currently at: " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
-        << " is picking target cell using: " << this->currentInspectionStrategy << " strategy" << std::endl;
+        << " is picking its target cell using: " << this->currentInspectionStrategy << " strategy" << std::endl;
 
         //std::cout << Engine::getInstance().getWorld()->getCellId(this->getX(), this->getY(), this->getZ()) << std::endl;   
         //std::cout << cells.at(Engine::getInstance().getWorld()->getCellId(this->getX(), this->getY(), this->getZ()))->isTargetOf.size() << std::endl;   
@@ -435,6 +437,10 @@ bool Agent::doStep(unsigned timeStep){
   
 };
 
+bool Agent::isInBound(unsigned x, unsigned y){     
+     return x >= 0 && y >= 0 && x < Engine::getInstance().getWorld()->getSize().at(0) && y < Engine::getInstance().getWorld()->getSize().at(1);;
+}
+
 
 /**
  * Perform a scan at the current location (that is supposed to be the targetLocation)
@@ -471,10 +477,65 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
 
     //update knowledgeVector given the currentObervation
     for(unsigned i = 0; i < 13; i++){
+      std::cout << "Updating own cell, previous knowledge vector: " << currentCell->knowledgeVector[i] << std::endl;
       currentCell->knowledgeVector[i] = currentCell->knowledgeVector[i] * Engine::getInstance().getWorld()->getSensorTable()[currentObservation][i] 
                                         / currentCell->observationVector[currentObservation];
+      std::cout << "Updating own cell, new knowledge vector: " << currentCell->knowledgeVector[i] << std::endl;
     }
-  
+
+
+    if(knowledgeClusterRadius > 0)
+    {
+
+    unsigned sizex = Engine::getInstance().getWorld()->getSize().at(0)-1;
+    unsigned sizey = Engine::getInstance().getWorld()->getSize().at(1)-1;
+
+    std::array<unsigned,3> agentDiscretePos = {unsigned(fmax(0,fmin(this->position.at(0),sizex))),unsigned(fmax(0,fmin(this->position.at(1),sizey))),0}; // Discretization of agent positioni
+    
+    Cell* cella;
+ 
+ 
+    for (std::map<float, std::vector<std::pair<int, int>>>::iterator it=Engine::getInstance().getWorld()->distanceVectors.begin(); it!=Engine::getInstance().getWorld()->distanceVectors.end(); ++it){
+     for(std::vector<std::pair<int,int>>::iterator it2=it->second.begin(); it2!=it->second.end(); ++it2){
+       int newX = it2->first + int (agentDiscretePos.at(0));
+       int newY = it2->second + int (agentDiscretePos.at(1));
+       if(it->first > max_range_5x5){
+         break;
+       }
+       if(isInBound(newX, newY)){
+         //Cell* cell = Engine::getInstance().getWorld()->getCell(it2->first + agentDiscretePos.at(0), it2->second + agentDiscretePos.at(1), 0);
+         Cell* worldCell_REF = Engine::getInstance().getWorld()->getCell(it2->first + agentDiscretePos.at(0), it2->second + agentDiscretePos.at(1), 0);
+         if(this->GetCommunicationsRange() == -1)
+         {cella = worldCell_REF;}
+         if(this->GetCommunicationsRange() > 0)
+         {cella = this->cells.at(worldCell_REF->getId());}  
+        
+         if(it->first > min_range_3x3 && it->first < max_range_3x3 && !(cella->isMapped())){
+            //if(isElegible(cella, ownerAgent)){
+              //ret2.push_back(std::make_pair<>(cella, it->first));
+            //}
+            for(unsigned i = 0; i < 13; i++){
+            float newKnowledge = cella->knowledgeVector[i] * Engine::getInstance().getWorld()->getSensorTable()[currentObservation][i] 
+                                        / (currentCell->observationVector[currentObservation]);// * it->first)
+            std::cout << "Updating neighboor cells, previous knowledge vector: " << cella->knowledgeVector[i] << std::endl;
+            if(newKnowledge>cella->knowledgeVector[i])
+            {
+            cella->knowledgeVector[i] = newKnowledge;
+            BroadcastCell(this, cella);
+            }
+            std::cout << "Updating neighboor cells, new knowledge vector: " << cella->knowledgeVector[i] << std::endl;            
+            }
+          }
+        }
+      }
+    }
+ 
+
+    
+    }
+    
+    
+
     //currentCell->knowledgeVectors.insert(std::pair<float, std::array<float, 13>>(timeStep, currentCell->knowledgeVector));
     /*
     for (std::map<float, std::array<float,13>>::iterator it=currentCell->knowledgeVectors.begin(); it!=currentCell->knowledgeVectors.end(); ++it)
