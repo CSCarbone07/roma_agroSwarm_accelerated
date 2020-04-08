@@ -1,6 +1,10 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
+#include "graphics/VertexShader.h"
 #include "agent/agent.hpp"
 #include "sim/world.hpp"
 #include "sim/steppable.hpp"
@@ -28,6 +32,20 @@
 
 #define PERFECT_COMMUNICATION      //according to the same define in informationGain.cpp or randomwalk.cpp
 
+const GLint WIDTH = 800, HEIGHT = 600;
+static GLuint VAO, VBO, shader;
+
+static const char* vShader = "version 330";
+/*
+    static const char* vShader = "                \n\
+    #version 330                                  \n\
+    layout (location = 0) in vec3 pos;            \n\
+    
+    gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);   \n\
+                                                   \n\
+                                                   \n\
+   ";
+*/
 class Engine {
 
 public:
@@ -41,6 +59,7 @@ public:
 private:
   /* Simulation Settings */
   YAML::Node config; /** < configuration file as a map */
+  bool displaySimulation = false;
   unsigned maxSteps; /** < maximum number of steps for the simulation */
   unsigned numOfAgents; /** < total number of agents in the simulation */
   std::array<unsigned, 3> size; /** < world size */
@@ -161,7 +180,105 @@ public:
    * @param inputFile the yaml input file with all the simulation settings
    * @param movesFile (optional) the yaml output file where simulation results are stored
    */
+
+  void CompileShaders()
+  {
+    shader = glCreateProgram(); 
+
+    if(!shader)
+    {
+        printf("Error creating shader program! \n");
+        return;
+
+    }  
+
+    AddShader(shader, vShader, GL_VERTEX_SHADER);
+
+    GLint result = 0;
+    GLchar eLog[1024] = {0};
+
+    glLinkProgram(shader);
+    glGetProgramiv(shader, GL_LINK_STATUS, &result);
+    if(!result)
+    {
+        glGetProgramInfoLog(shader, sizeof(eLog), NULL, eLog);
+        printf("Error linking program: '%s'\n", eLog);
+        return;
+    }
+
+    glValidateProgram(shader);
+    glGetProgramiv(shader, GL_VALIDATE_STATUS, &result);
+    if(!result)
+    {
+        glGetProgramInfoLog(shader, sizeof(eLog), NULL, eLog);
+        printf("Error validating program: '%s'\n", eLog);
+        return;
+    }
+
+
+  }
+
+  void AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
+  {
+    GLuint theShader = glCreateShader(shaderType);
+    
+    const GLchar* theCode[1];
+    theCode[0] = shaderCode;
+   
+    GLint codeLenght[1];
+    codeLenght[0] = strlen(shaderCode);
+    
+    glShaderSource(theShader, 1, theCode, codeLenght);
+    glCompileShader(theShader);
+
+    GLint result = 0;
+    GLchar eLog[1024] = {0};
+
+    glGetProgramiv(theShader, GL_COMPILE_STATUS, &result);
+    if(!result)
+    {
+        glGetProgramInfoLog(theShader, sizeof(eLog), NULL, eLog);
+        printf("Error compiling the %d shader: '%s'\n", shaderType, eLog);
+        return;
+    }
+
+    glAttachShader(theProgram, theShader);
+    
+
+  }
+
+  void CreateTriangle()
+    {
+        GLfloat vertices[] = {
+            -1.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+            0.0f, 1.0f, 0.0f
+        };
+
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
+
+        glGenBuffers(1, &VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glEnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glBindVertexArray(0);
+
+
+    }
+
+
   void init(YAML::Node config) {
+
+    displaySimulation = config["Display_Simulation"].as<bool>();
+
+
+    // Initilize agents and world
     maxSteps = config["max_steps"].as<unsigned>();
     numOfAgents = config["num_of_agents"].as<unsigned>();
     communicationsRange = config["communications_range"].as<float>();
@@ -286,6 +403,62 @@ public:
   void run() {
   
 
+    // Initialize GLFW
+    if(!glfwInit())
+    {
+        printf("GLFW init failed!");
+        glfwTerminate();
+        return;
+    }
+    
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    // Core profile = no backwards compability
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // Allow forward compatiblity
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+    GLFWwindow *mainWindow = glfwCreateWindow(WIDTH, HEIGHT, "Swarm Simulator", NULL, NULL);
+    if(!mainWindow)
+    {
+        printf("GLFW window creation failed!");
+        glfwTerminate();
+        return;
+    }
+
+    int bufferWidth, bufferHeight;
+    glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
+
+    // Set context for GLEW to use
+    glfwMakeContextCurrent(mainWindow);
+    
+
+    // Allow modern extension features
+    glewExperimental = GL_TRUE;    
+
+    if(glewInit() != GLEW_OK)
+    {
+        printf("GLEW initialisation failed!");
+        glfwDestroyWindow(mainWindow);
+        glfwTerminate();
+        return;
+
+    }
+
+    // Setup viewport size
+    glViewport(0, 0, bufferWidth, bufferHeight);
+    
+    
+    /*
+    while(!glfwWindowShouldClose())
+    {
+    }
+    */
+    
+    CreateTriangle();
+    CompileShaders();
+
+
     //knowledgeBasesFile << "Agents Knowledge Base:" << std::endl;
        
     #ifdef PERFECT_COMMUNICATION
@@ -320,6 +493,30 @@ public:
 
     while(timeStep < maxSteps || maxSteps == 0) {
     std::cout << "Time step: " << timeStep << std::endl;
+
+
+    // Get + handle user input events
+    glfwPollEvents();
+
+    // clear window
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glUseProgram(shader);
+
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(0);
+
+
+    glUseProgram(0);
+
+    glfwSwapBuffers(mainWindow);
+
+    
+    
+
+
       if(!isCovered && this->world->isCovered()){
         timeToCoverage = timeStep;
         isCovered = true;
