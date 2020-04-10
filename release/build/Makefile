@@ -274,32 +274,113 @@ src/agent.cpp.s:
 	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/agent.cpp.s
 .PHONY : src/agent.cpp.s
 
-src/graphics/VertexShader.o: src/graphics/VertexShader.cpp.o
+src/engine.o: src/engine.cpp.o
 
-.PHONY : src/graphics/VertexShader.o
+.PHONY : src/engine.o
 
 # target to build an object file
-src/graphics/VertexShader.cpp.o:
-	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/VertexShader.cpp.o
-.PHONY : src/graphics/VertexShader.cpp.o
+src/engine.cpp.o:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/engine.cpp.o
+.PHONY : src/engine.cpp.o
 
-src/graphics/VertexShader.i: src/graphics/VertexShader.cpp.i
+src/engine.i: src/engine.cpp.i
 
-.PHONY : src/graphics/VertexShader.i
+.PHONY : src/engine.i
 
 # target to preprocess a source file
-src/graphics/VertexShader.cpp.i:
-	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/VertexShader.cpp.i
-.PHONY : src/graphics/VertexShader.cpp.i
+src/engine.cpp.i:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/engine.cpp.i
+.PHONY : src/engine.cpp.i
 
-src/graphics/VertexShader.s: src/graphics/VertexShader.cpp.s
+src/engine.s: src/engine.cpp.s
 
-.PHONY : src/graphics/VertexShader.s
+.PHONY : src/engine.s
 
 # target to generate assembly for a file
-src/graphics/VertexShader.cpp.s:
-	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/VertexShader.cpp.s
-.PHONY : src/graphics/VertexShader.cpp.s
+src/engine.cpp.s:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/engine.cpp.s
+.PHONY : src/engine.cpp.s
+
+src/graphics/Mesh.o: src/graphics/Mesh.cpp.o
+
+.PHONY : src/graphics/Mesh.o
+
+# target to build an object file
+src/graphics/Mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o
+.PHONY : src/graphics/Mesh.cpp.o
+
+src/graphics/Mesh.i: src/graphics/Mesh.cpp.i
+
+.PHONY : src/graphics/Mesh.i
+
+# target to preprocess a source file
+src/graphics/Mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.i
+.PHONY : src/graphics/Mesh.cpp.i
+
+src/graphics/Mesh.s: src/graphics/Mesh.cpp.s
+
+.PHONY : src/graphics/Mesh.s
+
+# target to generate assembly for a file
+src/graphics/Mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.s
+.PHONY : src/graphics/Mesh.cpp.s
+
+src/graphics/Shader.o: src/graphics/Shader.cpp.o
+
+.PHONY : src/graphics/Shader.o
+
+# target to build an object file
+src/graphics/Shader.cpp.o:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o
+.PHONY : src/graphics/Shader.cpp.o
+
+src/graphics/Shader.i: src/graphics/Shader.cpp.i
+
+.PHONY : src/graphics/Shader.i
+
+# target to preprocess a source file
+src/graphics/Shader.cpp.i:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.i
+.PHONY : src/graphics/Shader.cpp.i
+
+src/graphics/Shader.s: src/graphics/Shader.cpp.s
+
+.PHONY : src/graphics/Shader.s
+
+# target to generate assembly for a file
+src/graphics/Shader.cpp.s:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.s
+.PHONY : src/graphics/Shader.cpp.s
+
+src/graphics/Window.o: src/graphics/Window.cpp.o
+
+.PHONY : src/graphics/Window.o
+
+# target to build an object file
+src/graphics/Window.cpp.o:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Window.cpp.o
+.PHONY : src/graphics/Window.cpp.o
+
+src/graphics/Window.i: src/graphics/Window.cpp.i
+
+.PHONY : src/graphics/Window.i
+
+# target to preprocess a source file
+src/graphics/Window.cpp.i:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Window.cpp.i
+.PHONY : src/graphics/Window.cpp.i
+
+src/graphics/Window.s: src/graphics/Window.cpp.s
+
+.PHONY : src/graphics/Window.s
+
+# target to generate assembly for a file
+src/graphics/Window.cpp.s:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Window.cpp.s
+.PHONY : src/graphics/Window.cpp.s
 
 src/informationGain.o: src/informationGain.cpp.o
 
@@ -458,9 +539,18 @@ help:
 	@echo "... src/agent.o"
 	@echo "... src/agent.i"
 	@echo "... src/agent.s"
-	@echo "... src/graphics/VertexShader.o"
-	@echo "... src/graphics/VertexShader.i"
-	@echo "... src/graphics/VertexShader.s"
+	@echo "... src/engine.o"
+	@echo "... src/engine.i"
+	@echo "... src/engine.s"
+	@echo "... src/graphics/Mesh.o"
+	@echo "... src/graphics/Mesh.i"
+	@echo "... src/graphics/Mesh.s"
+	@echo "... src/graphics/Shader.o"
+	@echo "... src/graphics/Shader.i"
+	@echo "... src/graphics/Shader.s"
+	@echo "... src/graphics/Window.o"
+	@echo "... src/graphics/Window.i"
+	@echo "... src/graphics/Window.s"
 	@echo "... src/informationGain.o"
 	@echo "... src/informationGain.i"
 	@echo "... src/informationGain.s"

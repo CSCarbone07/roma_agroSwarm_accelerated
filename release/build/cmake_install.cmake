@@ -41,6 +41,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glew-2.2.0/build/cmake/cmake_install.cmake")
   include("/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glfw-3.3.2/cmake_install.cmake")
+  include("/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/cmake_install.cmake")
 
 endif()
 

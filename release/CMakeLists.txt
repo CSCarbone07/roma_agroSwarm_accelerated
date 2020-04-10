@@ -20,6 +20,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(libraries/glew-2.2.0/build/cmake)
 add_subdirectory(libraries/glfw-3.3.2)
+add_subdirectory(libraries/glm-0.9.9.7)
 
 #include headers
 include_directories(
@@ -30,9 +31,12 @@ include_directories(
 # add the executable
 add_executable(
   MACPP
+  src/engine.cpp
   src/macpp.cpp
   src/world.cpp
-  src/graphics/VertexShader.cpp
+  src/graphics/Window.cpp
+  src/graphics/Shader.cpp
+  src/graphics/Mesh.cpp
   src/agent.cpp
   src/randomwalk.cpp
   src/informationGain.cpp
@@ -43,6 +47,7 @@ target_link_libraries(
   glfw
   ${GLFW_LIBRARIES}
   glew
+  glm
   yaml-cpp
   ${Boost_LIBRARIES}
 )

@@ -1,7 +1,10 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/MACPP.dir/src/engine.cpp.o"
   "CMakeFiles/MACPP.dir/src/macpp.cpp.o"
   "CMakeFiles/MACPP.dir/src/world.cpp.o"
-  "CMakeFiles/MACPP.dir/src/graphics/VertexShader.cpp.o"
+  "CMakeFiles/MACPP.dir/src/graphics/Window.cpp.o"
+  "CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o"
+  "CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o"
   "CMakeFiles/MACPP.dir/src/agent.cpp.o"
   "CMakeFiles/MACPP.dir/src/randomwalk.cpp.o"
   "CMakeFiles/MACPP.dir/src/informationGain.cpp.o"

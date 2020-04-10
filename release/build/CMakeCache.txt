@@ -526,6 +526,12 @@ glew_s_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libGL.so;general;/us
 //Dependencies for the target
 glfw_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/librt.so;general;/usr/lib/x86_64-linux-gnu/libm.so;general;dl;general;/usr/lib/x86_64-linux-gnu/libX11.so;general;-lpthread;
 
+//Value Computed by CMake
+glm_BINARY_DIR:STATIC=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7
+
+//Value Computed by CMake
+glm_SOURCE_DIR:STATIC=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/libraries/glm-0.9.9.7
+
 
 ########################
 # INTERNAL cache entries
@@ -687,7 +693,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=6
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

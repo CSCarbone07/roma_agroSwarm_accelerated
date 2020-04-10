@@ -29,3 +29,15 @@
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glfw-3.3.2/src/CMakeFiles/list_install_components.dir
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glfw-3.3.2/src/CMakeFiles/install/local.dir
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glfw-3.3.2/src/CMakeFiles/install.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/CMakeFiles/install/strip.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/CMakeFiles/install.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/CMakeFiles/install/local.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/CMakeFiles/list_install_components.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/CMakeFiles/edit_cache.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/CMakeFiles/rebuild_cache.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/glm/CMakeFiles/install/strip.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/glm/CMakeFiles/edit_cache.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/glm/CMakeFiles/rebuild_cache.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/glm/CMakeFiles/list_install_components.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/glm/CMakeFiles/install/local.dir
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glm-0.9.9.7/glm/CMakeFiles/install.dir

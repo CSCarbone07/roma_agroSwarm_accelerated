@@ -21,6 +21,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "../libraries/glfw-3.3.2/src/glfw3.pc.in"
   "../libraries/glfw-3.3.2/src/glfw3Config.cmake.in"
   "../libraries/glfw-3.3.2/src/glfw_config.h.in"
+  "../libraries/glm-0.9.9.7/CMakeLists.txt"
+  "../libraries/glm-0.9.9.7/glm/CMakeLists.txt"
   "/usr/share/cmake-3.10/Modules/BasicConfigVersion-SameMajorVersion.cmake.in"
   "/usr/share/cmake-3.10/Modules/CMakeCCompiler.cmake.in"
   "/usr/share/cmake-3.10/Modules/CMakeCCompilerABI.c"
@@ -140,6 +142,8 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "libraries/glew-2.2.0/build/cmake/CMakeFiles/CMakeDirectoryInformation.cmake"
   "libraries/glfw-3.3.2/CMakeFiles/CMakeDirectoryInformation.cmake"
   "libraries/glfw-3.3.2/src/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "libraries/glm-0.9.9.7/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "libraries/glm-0.9.9.7/glm/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
