@@ -7,6 +7,8 @@
 #IncludeRegexTransform: 
 
 ../include/agent/agent.hpp
+graphics/Mesh.h
+../include/agent/graphics/Mesh.h
 sim/steppable.hpp
 ../include/agent/sim/steppable.hpp
 movementstrategies/randomwalk.hpp
@@ -44,6 +46,16 @@ vector
 limits
 -
 math.h
+-
+
+../include/graphics/Camera.h
+GL/glew.h
+-
+glm/glm.hpp
+-
+glm/gtc/matrix_transform.hpp
+-
+GLFW/glfw3.h
 -
 
 ../include/graphics/Mesh.h
@@ -117,6 +129,8 @@ cmath
 -
 graphics/Window.h
 ../include/sim/graphics/Window.h
+graphics/Camera.h
+../include/sim/graphics/Camera.h
 graphics/Shader.h
 ../include/sim/graphics/Shader.h
 graphics/Mesh.h
@@ -304,6 +318,20 @@ type_mat3x2.inl
 
 ../libraries/glm-0.9.9.7/glm/../glm/./detail/type_mat3x2.inl
 
+../libraries/glm-0.9.9.7/glm/../glm/./detail/type_mat3x3.hpp
+type_vec3.hpp
+../libraries/glm-0.9.9.7/glm/../glm/./detail/type_vec3.hpp
+limits
+-
+cstddef
+-
+type_mat3x3.inl
+../libraries/glm-0.9.9.7/glm/../glm/./detail/type_mat3x3.inl
+
+../libraries/glm-0.9.9.7/glm/../glm/./detail/type_mat3x3.inl
+../matrix.hpp
+../libraries/glm-0.9.9.7/glm/../glm/./matrix.hpp
+
 ../libraries/glm-0.9.9.7/glm/../glm/./detail/type_mat3x4.hpp
 type_vec3.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/./detail/type_vec3.hpp
@@ -379,6 +407,18 @@ type_vec2.inl
 ../libraries/glm-0.9.9.7/glm/../glm/./detail/type_vec2.inl
 ./compute_vector_relational.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/./detail/./compute_vector_relational.hpp
+
+../libraries/glm-0.9.9.7/glm/../glm/./detail/type_vec3.hpp
+qualifier.hpp
+../libraries/glm-0.9.9.7/glm/../glm/./detail/qualifier.hpp
+_swizzle.hpp
+../libraries/glm-0.9.9.7/glm/../glm/./detail/_swizzle.hpp
+_swizzle_func.hpp
+../libraries/glm-0.9.9.7/glm/../glm/./detail/_swizzle_func.hpp
+cstddef
+-
+type_vec3.inl
+../libraries/glm-0.9.9.7/glm/../glm/./detail/type_vec3.inl
 
 ../libraries/glm-0.9.9.7/glm/../glm/./detail/type_vec4.hpp
 qualifier.hpp
@@ -658,32 +698,6 @@ type_vec4.inl
 ../detail/type_vec4.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/./detail/type_vec4.hpp
 
-../libraries/glm-0.9.9.7/glm/../glm/./simd/neon.h
-arm_neon.h
--
-
-../libraries/glm-0.9.9.7/glm/../glm/./simd/platform.h
-cuda.h
--
-immintrin.h
--
-immintrin.h
--
-popcntintrin.h
--
-nmmintrin.h
--
-smmintrin.h
--
-tmmintrin.h
--
-pmmintrin.h
--
-emmintrin.h
--
-neon.h
-../libraries/glm-0.9.9.7/glm/../glm/./simd/neon.h
-
 ../libraries/glm-0.9.9.7/glm/../glm/common.hpp
 detail/qualifier.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/detail/qualifier.hpp
@@ -691,6 +705,12 @@ detail/_fixes.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/detail/_fixes.hpp
 detail/func_common.inl
 ../libraries/glm-0.9.9.7/glm/../glm/detail/func_common.inl
+
+../libraries/glm-0.9.9.7/glm/../glm/detail/./compute_vector_relational.hpp
+setup.hpp
+../libraries/glm-0.9.9.7/glm/../glm/detail/./setup.hpp
+limits
+-
 
 ../libraries/glm-0.9.9.7/glm/../glm/detail/_fixes.hpp
 cmath
@@ -770,6 +790,20 @@ func_geometric_simd.inl
 ../simd/geometric.h
 ../libraries/glm-0.9.9.7/glm/../glm/simd/geometric.h
 
+../libraries/glm-0.9.9.7/glm/../glm/detail/func_integer.inl
+_vectorize.hpp
+../libraries/glm-0.9.9.7/glm/../glm/detail/_vectorize.hpp
+intrin.h
+-
+limits
+-
+func_integer_simd.inl
+../libraries/glm-0.9.9.7/glm/../glm/detail/func_integer_simd.inl
+
+../libraries/glm-0.9.9.7/glm/../glm/detail/func_integer_simd.inl
+../simd/integer.h
+../libraries/glm-0.9.9.7/glm/../glm/simd/integer.h
+
 ../libraries/glm-0.9.9.7/glm/../glm/detail/func_matrix.inl
 ../geometric.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/geometric.hpp
@@ -787,6 +821,16 @@ type_mat4x4.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/simd/matrix.h
 cstring
 -
+
+../libraries/glm-0.9.9.7/glm/../glm/detail/func_packing.inl
+../common.hpp
+../libraries/glm-0.9.9.7/glm/../glm/common.hpp
+type_half.hpp
+../libraries/glm-0.9.9.7/glm/../glm/detail/type_half.hpp
+func_packing_simd.inl
+../libraries/glm-0.9.9.7/glm/../glm/detail/func_packing_simd.inl
+
+../libraries/glm-0.9.9.7/glm/../glm/detail/func_packing_simd.inl
 
 ../libraries/glm-0.9.9.7/glm/../glm/detail/func_trigonometric.inl
 _vectorize.hpp
@@ -829,6 +873,14 @@ type_traits
 ../libraries/glm-0.9.9.7/glm/../glm/detail/type_float.hpp
 setup.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/detail/setup.hpp
+
+../libraries/glm-0.9.9.7/glm/../glm/detail/type_half.hpp
+setup.hpp
+../libraries/glm-0.9.9.7/glm/../glm/detail/setup.hpp
+type_half.inl
+../libraries/glm-0.9.9.7/glm/../glm/detail/type_half.inl
+
+../libraries/glm-0.9.9.7/glm/../glm/detail/type_half.inl
 
 ../libraries/glm-0.9.9.7/glm/../glm/detail/type_mat3x3.hpp
 type_vec3.hpp
@@ -915,6 +967,10 @@ cstddef
 -
 type_vec2.inl
 ../libraries/glm-0.9.9.7/glm/../glm/detail/type_vec2.inl
+
+../libraries/glm-0.9.9.7/glm/../glm/detail/type_vec2.inl
+./compute_vector_relational.hpp
+../libraries/glm-0.9.9.7/glm/../glm/detail/./compute_vector_relational.hpp
 
 ../libraries/glm-0.9.9.7/glm/../glm/detail/type_vec3.hpp
 qualifier.hpp
@@ -1158,11 +1214,73 @@ vector_relational.inl
 ../detail/type_vec1.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/detail/type_vec1.hpp
 
+../libraries/glm-0.9.9.7/glm/../glm/fwd.hpp
+detail/qualifier.hpp
+../libraries/glm-0.9.9.7/glm/../glm/detail/qualifier.hpp
+
 ../libraries/glm-0.9.9.7/glm/../glm/geometric.hpp
 detail/type_vec3.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/detail/type_vec3.hpp
 detail/func_geometric.inl
 ../libraries/glm-0.9.9.7/glm/../glm/detail/func_geometric.inl
+
+../libraries/glm-0.9.9.7/glm/../glm/glm.hpp
+detail/_fixes.hpp
+../libraries/glm-0.9.9.7/glm/../glm/detail/_fixes.hpp
+detail/setup.hpp
+../libraries/glm-0.9.9.7/glm/../glm/detail/setup.hpp
+cmath
+-
+climits
+-
+cfloat
+-
+limits
+-
+cassert
+-
+fwd.hpp
+../libraries/glm-0.9.9.7/glm/../glm/fwd.hpp
+vec2.hpp
+../libraries/glm-0.9.9.7/glm/../glm/vec2.hpp
+vec3.hpp
+../libraries/glm-0.9.9.7/glm/../glm/vec3.hpp
+vec4.hpp
+../libraries/glm-0.9.9.7/glm/../glm/vec4.hpp
+mat2x2.hpp
+../libraries/glm-0.9.9.7/glm/../glm/mat2x2.hpp
+mat2x3.hpp
+../libraries/glm-0.9.9.7/glm/../glm/mat2x3.hpp
+mat2x4.hpp
+../libraries/glm-0.9.9.7/glm/../glm/mat2x4.hpp
+mat3x2.hpp
+../libraries/glm-0.9.9.7/glm/../glm/mat3x2.hpp
+mat3x3.hpp
+../libraries/glm-0.9.9.7/glm/../glm/mat3x3.hpp
+mat3x4.hpp
+../libraries/glm-0.9.9.7/glm/../glm/mat3x4.hpp
+mat4x2.hpp
+../libraries/glm-0.9.9.7/glm/../glm/mat4x2.hpp
+mat4x3.hpp
+../libraries/glm-0.9.9.7/glm/../glm/mat4x3.hpp
+mat4x4.hpp
+../libraries/glm-0.9.9.7/glm/../glm/mat4x4.hpp
+trigonometric.hpp
+../libraries/glm-0.9.9.7/glm/../glm/trigonometric.hpp
+exponential.hpp
+../libraries/glm-0.9.9.7/glm/../glm/exponential.hpp
+common.hpp
+../libraries/glm-0.9.9.7/glm/../glm/common.hpp
+packing.hpp
+../libraries/glm-0.9.9.7/glm/../glm/packing.hpp
+geometric.hpp
+../libraries/glm-0.9.9.7/glm/../glm/geometric.hpp
+matrix.hpp
+../libraries/glm-0.9.9.7/glm/../glm/matrix.hpp
+vector_relational.hpp
+../libraries/glm-0.9.9.7/glm/../glm/vector_relational.hpp
+integer.hpp
+../libraries/glm-0.9.9.7/glm/../glm/integer.hpp
 
 ../libraries/glm-0.9.9.7/glm/../glm/gtc/constants.hpp
 ../ext/scalar_constants.hpp
@@ -1324,6 +1442,16 @@ cstring
 ../ext/vector_uint1_precision.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/ext/vector_uint1_precision.hpp
 
+../libraries/glm-0.9.9.7/glm/../glm/integer.hpp
+detail/qualifier.hpp
+../libraries/glm-0.9.9.7/glm/../glm/detail/qualifier.hpp
+common.hpp
+../libraries/glm-0.9.9.7/glm/../glm/common.hpp
+vector_relational.hpp
+../libraries/glm-0.9.9.7/glm/../glm/vector_relational.hpp
+detail/func_integer.inl
+../libraries/glm-0.9.9.7/glm/../glm/detail/func_integer.inl
+
 ../libraries/glm-0.9.9.7/glm/../glm/mat2x2.hpp
 ./ext/matrix_double2x2.hpp
 ../libraries/glm-0.9.9.7/glm/../glm/./ext/matrix_double2x2.hpp
@@ -1446,6 +1574,16 @@ mat4x4.hpp
 detail/func_matrix.inl
 ../libraries/glm-0.9.9.7/glm/../glm/detail/func_matrix.inl
 
+../libraries/glm-0.9.9.7/glm/../glm/packing.hpp
+./ext/vector_uint2.hpp
+../libraries/glm-0.9.9.7/glm/../glm/./ext/vector_uint2.hpp
+./ext/vector_float2.hpp
+../libraries/glm-0.9.9.7/glm/../glm/./ext/vector_float2.hpp
+./ext/vector_float4.hpp
+../libraries/glm-0.9.9.7/glm/../glm/./ext/vector_float4.hpp
+detail/func_packing.inl
+../libraries/glm-0.9.9.7/glm/../glm/detail/func_packing.inl
+
 ../libraries/glm-0.9.9.7/glm/../glm/simd/common.h
 platform.h
 ../libraries/glm-0.9.9.7/glm/../glm/simd/platform.h
@@ -1458,9 +1596,15 @@ platform.h
 common.h
 ../libraries/glm-0.9.9.7/glm/../glm/simd/common.h
 
+../libraries/glm-0.9.9.7/glm/../glm/simd/integer.h
+
 ../libraries/glm-0.9.9.7/glm/../glm/simd/matrix.h
 geometric.h
 ../libraries/glm-0.9.9.7/glm/../glm/simd/geometric.h
+
+../libraries/glm-0.9.9.7/glm/../glm/simd/neon.h
+arm_neon.h
+-
 
 ../libraries/glm-0.9.9.7/glm/../glm/simd/platform.h
 cuda.h
@@ -1585,6 +1729,10 @@ movementstrategies/informationGain.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/engine.cpp
 sim/engine.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
+
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Camera.cpp
+graphics/Camera.h
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/graphics/Camera.h
 
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Mesh.cpp
 graphics/Mesh.h

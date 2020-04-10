@@ -26,6 +26,7 @@ public:
 	GLuint GetXmoveLocation();
 	GLuint GetProjectionLocation();
 	GLuint GetModelLocation();
+	GLuint GetViewLocation();
 
 	void UseShader();
 
@@ -33,7 +34,7 @@ public:
 
 
 private:
-	GLuint shaderID, uniformProjection, uniformModel, uniformXmove;
+	GLuint shaderID, uniformView, uniformProjection, uniformModel, uniformXmove;
 
 	void CompileShader(const char* vertexCode, const char* fragmentCode);
 	void AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);

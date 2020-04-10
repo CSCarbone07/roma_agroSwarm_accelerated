@@ -3,6 +3,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/MACPP.dir/src/macpp.cpp.o"
   "CMakeFiles/MACPP.dir/src/world.cpp.o"
   "CMakeFiles/MACPP.dir/src/graphics/Window.cpp.o"
+  "CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o"
   "CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o"
   "CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o"
   "CMakeFiles/MACPP.dir/src/agent.cpp.o"

@@ -1,7 +1,7 @@
 #ifndef AGENT_HPP
 #define AGENT_HPP
 
-
+#include "graphics/Mesh.h"
 
 #include "sim/steppable.hpp"
 #include "movementstrategies/randomwalk.hpp"
@@ -28,6 +28,7 @@ protected:
 
   unsigned id; /** < unique id for the agent */
   unsigned timeStep; /** < last execution time */
+  Mesh* mesh;
 
   float communicationsRange=-1;
   std::string knowledgeBaseLocation = "World";
@@ -174,7 +175,8 @@ public:
   inline void setTargetId(int id){this->targetId = id;}
 
   /* Getters */
-
+  inline Mesh* getMesh() { return mesh; }
+  inline void setMesh(Mesh* inMesh) { mesh = inMesh; }
   inline unsigned getId() { return id; }
   inline unsigned get_time_step() { return timeStep; }
   inline float GetCommunicationsRange() { return communicationsRange; }

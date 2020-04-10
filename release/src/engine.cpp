@@ -156,12 +156,13 @@ static float minScale = 0.1f;
 
 
 
-    mainWindow = Window(800, 600);
+    mainWindow = Window(1080, 1080);
 	mainWindow.Initialise();
     CreateShaders();
 
+	camera = Camera(glm::vec3(25.0f, 25.0f, 100.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 20.0f, 0.5f);
 
-	projection = glm::perspective(glm::radians(45.0f), (GLfloat)mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 100.0f);
+	projection = glm::perspective(glm::radians(FOV), (GLfloat)mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
 
   }
 
@@ -210,112 +211,15 @@ void Engine::run() {
     while(timeStep < maxSteps || maxSteps == 0) {
     //std::cout << "Time step: " << timeStep << std::endl;
 
+	GLfloat now = glfwGetTime(); // SDL_GetPerformanceCounter();
+	deltaTime = now - lastTime; // (now - lastTime)*1000/SDL_GetPerformanceFrequency();
+	lastTime = now;
 
-    // Get + handle user input events
-    glfwPollEvents();
-
-
-    if(direction)
-    {
-        triOffset += triIncrement;
-    }
-    else
-    {
-        triOffset -= triIncrement;
-    }
-
-    if(abs(triOffset) >= triMaxoffset )
-    {
-    direction = !direction;
-    }
-    
-    currentAngle += 1.0f;
-    if(currentAngle >= 360)
-    {
-        currentAngle -= 360;
-    }
-    
-    if(scaleDirection)
-    {
-    currentScale += 0.01f;
-    }
-    else
-    {
-    currentScale -= 0.01f;
-    }
-    
-    if(currentScale >= maxScale )
-    {
-    scaleDirection = false;
-    }
-    if(currentScale <= minScale)
-    {
-    scaleDirection = true;
-    }
-
-    // clear window
-    glClearColor(0.0f, 0.0f, 0.75f, 1.0f);
-    //glClear(GL_COLOR_BUFFER_BIT);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //glUseProgram(shaderList[0].GetShaderID());
-	shaderList[0]->UseShader();
-	uniformModel = shaderList[0]->GetModelLocation();
-	uniformProjection = shaderList[0]->GetProjectionLocation();
-
-    glUniform1f(shaderList[0]->GetXmoveLocation(), triOffset);
-    //glUseProgram(shader1->GetShaderID());
-    //glUniform1f(shader1->GetXmoveLocation(), triOffset);
-    //glUniform1f(0, triOffset);
-    
-      
-    glm::mat4 model = glm::mat4(1.0f); 
-    //glm::mat model = glm::mat(1.0f); 
-    /*
-    //model = glm::translate(model, glm::vec3(triOffset, 0.0f, -2.5f));
-    model = glm::translate(model, glm::vec3(triOffset, 0.0f, -2.5f));
-    //model = glm::rotate(model, currentAngle * tR, glm::vec3(0.0f, 1.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));        
-
-    //glUniform1f(shaderList[0].GetXmoveLocation(), triOffset);
-    glUniformMatrix4fv(shaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
-
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));    
-    */
-
-	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
-	model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-	meshList[0]->RenderMesh();
-
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, 1.0f, -2.5f));
-	model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	meshList[1]->RenderMesh();
-
-    meshList[0]->RenderMesh();
-
-    glBindVertexArray(VAO);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);    
-    glBindVertexArray(0);
-
-
-    glUseProgram(0);
-
-    mainWindow.swapBuffers();
+    RenderScene();
 
 
 
-    /*
-    
-
-
+     
       if(!isCovered && this->world->isCovered()){
         timeToCoverage = timeStep;
         isCovered = true;
@@ -362,7 +266,7 @@ void Engine::run() {
       }
       randomChoice << rand<<' '<<rand2<<"\n";
       timing << this->world->remainingTasksToVisit.size()<<' '<<this->world->remainingTasksToMap.size()<<' '<<this->world->remainingTasksIntoClusters.size()<<"\n";
-      */
+      
       ++timeStep;
     }
     
@@ -384,7 +288,132 @@ void Engine::run() {
       std::cout << "Agent " << a->getId() << " : " << a->getCollisions()  << std::endl;
     } 
     std::cout << "Collisions " << tot_collisions  << std::endl;
-  }
+}
+
+
+void Engine::RenderScene()
+{
+    // Get + handle user input events
+    glfwPollEvents();
+
+	camera.keyControl(mainWindow.getKeys(), deltaTime);
+	camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+
+/*
+    if(direction)
+    {
+        triOffset += triIncrement;
+    }
+    else
+    {
+        triOffset -= triIncrement;
+    }
+
+    if(abs(triOffset) >= triMaxoffset )
+    {
+    direction = !direction;
+    }
+    
+    currentAngle += 1.0f;
+    if(currentAngle >= 360)
+    {
+        currentAngle -= 360;
+    }
+    
+    if(scaleDirection)
+    {
+    currentScale += 0.01f;
+    }
+    else
+    {
+    currentScale -= 0.01f;
+    }
+    
+    if(currentScale >= maxScale )
+    {
+    scaleDirection = false;
+    }
+    if(currentScale <= minScale)
+    {
+    scaleDirection = true;
+    }
+*/
+    // clear window
+    glClearColor(0.0f, 0.0f, 0.75f, 1.0f);
+    //glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //glUseProgram(shaderList[0].GetShaderID());
+	shaderList[0]->UseShader();
+	uniformModel = shaderList[0]->GetModelLocation();
+	uniformProjection = shaderList[0]->GetProjectionLocation();
+	uniformView = shaderList[0]->GetViewLocation();
+
+    glUniform1f(shaderList[0]->GetXmoveLocation(), triOffset);
+    //glUseProgram(shader1->GetShaderID());
+    //glUniform1f(shader1->GetXmoveLocation(), triOffset);
+    //glUniform1f(0, triOffset);
+    
+      
+    glm::mat4 model = glm::mat4(1.0f); 
+    //glm::mat model = glm::mat(1.0f); 
+    /*
+    //model = glm::translate(model, glm::vec3(triOffset, 0.0f, -2.5f));
+    model = glm::translate(model, glm::vec3(triOffset, 0.0f, -2.5f));
+    //model = glm::rotate(model, currentAngle * tR, glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));        
+
+    //glUniform1f(shaderList[0].GetXmoveLocation(), triOffset);
+    glUniformMatrix4fv(shaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
+
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));    
+    */
+
+
+
+/*
+	model = glm::translate(model, glm::vec3(0.0f, -1.0f, -2.5f));
+	model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	meshList[0]->RenderMesh();
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(0.0f, 1.0f, -2.5f));
+	model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	meshList[1]->RenderMesh();
+*/
+
+    for(Agent* ag : agents)
+    {
+  	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(ag->getX(), ag->getY(), -2.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+	ag->getMesh()->RenderMesh();
+    }
+
+
+
+/*
+    glBindVertexArray(VAO);
+    //glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);    
+    glBindVertexArray(0);
+*/
+
+    glUseProgram(0);
+
+    mainWindow.swapBuffers();
+
+
+}
+
 
 
 void Engine::CreateShaders()
@@ -409,12 +438,12 @@ void Engine::CreateObjects()
 
     GLfloat vertices[] = {
         -1.0f, -1.0f, 0.0f,
-        0.0f, -1.0f, 1.0f,
+        0.0f, 0.0f, -1.0f,
         1.0f, -1.0f, 0.0f,
         0.0f, 1.0f, 0.0f
     };
 
-
+/*
 	Mesh *obj1 = new Mesh();
 	obj1->CreateMesh(vertices, indices, 12, 12);
 	meshList.push_back(obj1);
@@ -422,27 +451,20 @@ void Engine::CreateObjects()
 	Mesh *obj2 = new Mesh();
 	obj2->CreateMesh(vertices, indices, 12, 12);
 	meshList.push_back(obj2);
-
-/*
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    glGenBuffers(1, &IBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);   //You should unbind the IBO/EBO AFTER you unbind the VAO!
-    
-    glBindVertexArray(0);
 */
+    for(Agent* ag: agents)
+    {
+	Mesh* obj = new Mesh();
+    obj->CreateMesh(vertices, indices, 12, 12);
+    ag->setMesh(obj);
+    if(ag->getMesh() != nullptr)
+    {meshList.push_back(ag->getMesh());}
+    }
+
+
+
+
+
 
 }
 

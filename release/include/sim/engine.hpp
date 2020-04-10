@@ -9,6 +9,7 @@
 #include <cmath>
 
 #include "graphics/Window.h"
+#include "graphics/Camera.h"
 #include "graphics/Shader.h"
 #include "graphics/Mesh.h"
 
@@ -53,6 +54,9 @@ public:
 
 
 private:
+  void RenderScene();
+
+
   /* Simulation Settings */
   YAML::Node config; /** < configuration file as a map */
   bool displaySimulation = false;
@@ -80,13 +84,17 @@ private:
 
   bool stop = false;
 
+  GLfloat deltaTime = 0.0f;
+  GLfloat lastTime = 0.0f;
 
   Window mainWindow;
+  Camera camera;
+  float FOV = 45.0f;
   glm::mat4 projection;
   std::vector<Mesh*> meshList;
   std::vector<Shader*> shaderList;
   Shader* shader1;
-  GLuint uniformProjection = 0, uniformModel = 0;
+  GLuint uniformProjection = 0, uniformView = 0, uniformModel = 0;
   
 
   // Vertex Shader

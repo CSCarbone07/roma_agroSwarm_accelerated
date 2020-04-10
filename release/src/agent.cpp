@@ -12,6 +12,9 @@
 
 
 Agent::Agent(unsigned id, float x, float y, float z) {
+  //Mesh* mesh = new Mesh();
+  //mesh->CreateMesh(vertices, indices, 12, 12);
+
   this->id = id;
   this->position = {float(x),float(y),float(z)};
   this->target = {-1,-1,-1};

@@ -6,6 +6,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/agent.cpp" "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles/MACPP.dir/src/agent.cpp.o"
   "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/engine.cpp" "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles/MACPP.dir/src/engine.cpp.o"
+  "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Camera.cpp" "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o"
   "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Mesh.cpp" "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o"
   "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Shader.cpp" "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o"
   "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Window.cpp" "/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles/MACPP.dir/src/graphics/Window.cpp.o"

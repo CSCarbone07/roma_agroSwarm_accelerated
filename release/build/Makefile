@@ -301,6 +301,33 @@ src/engine.cpp.s:
 	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/engine.cpp.s
 .PHONY : src/engine.cpp.s
 
+src/graphics/Camera.o: src/graphics/Camera.cpp.o
+
+.PHONY : src/graphics/Camera.o
+
+# target to build an object file
+src/graphics/Camera.cpp.o:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o
+.PHONY : src/graphics/Camera.cpp.o
+
+src/graphics/Camera.i: src/graphics/Camera.cpp.i
+
+.PHONY : src/graphics/Camera.i
+
+# target to preprocess a source file
+src/graphics/Camera.cpp.i:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.i
+.PHONY : src/graphics/Camera.cpp.i
+
+src/graphics/Camera.s: src/graphics/Camera.cpp.s
+
+.PHONY : src/graphics/Camera.s
+
+# target to generate assembly for a file
+src/graphics/Camera.cpp.s:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.s
+.PHONY : src/graphics/Camera.cpp.s
+
 src/graphics/Mesh.o: src/graphics/Mesh.cpp.o
 
 .PHONY : src/graphics/Mesh.o
@@ -542,6 +569,9 @@ help:
 	@echo "... src/engine.o"
 	@echo "... src/engine.i"
 	@echo "... src/engine.s"
+	@echo "... src/graphics/Camera.o"
+	@echo "... src/graphics/Camera.i"
+	@echo "... src/graphics/Camera.s"
 	@echo "... src/graphics/Mesh.o"
 	@echo "... src/graphics/Mesh.i"
 	@echo "... src/graphics/Mesh.s"

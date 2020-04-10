@@ -153,9 +153,33 @@ CMakeFiles/MACPP.dir/src/graphics/Window.cpp.o.provides: CMakeFiles/MACPP.dir/sr
 CMakeFiles/MACPP.dir/src/graphics/Window.cpp.o.provides.build: CMakeFiles/MACPP.dir/src/graphics/Window.cpp.o
 
 
+CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o: CMakeFiles/MACPP.dir/flags.make
+CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o: ../src/graphics/Camera.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o -c /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Camera.cpp
+
+CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Camera.cpp > CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.i
+
+CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Camera.cpp -o CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.s
+
+CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o.requires:
+
+.PHONY : CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o.requires
+
+CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o.provides: CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o.requires
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o.provides.build
+.PHONY : CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o.provides
+
+CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o.provides.build: CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o
+
+
 CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o: CMakeFiles/MACPP.dir/flags.make
 CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o: ../src/graphics/Shader.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o -c /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Shader.cpp
 
 CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.i: cmake_force
@@ -179,7 +203,7 @@ CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o.provides.build: CMakeFiles/MACPP.
 
 CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o: CMakeFiles/MACPP.dir/flags.make
 CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o: ../src/graphics/Mesh.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o -c /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Mesh.cpp
 
 CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.i: cmake_force
@@ -203,7 +227,7 @@ CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o.provides.build: CMakeFiles/MACPP.di
 
 CMakeFiles/MACPP.dir/src/agent.cpp.o: CMakeFiles/MACPP.dir/flags.make
 CMakeFiles/MACPP.dir/src/agent.cpp.o: ../src/agent.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/MACPP.dir/src/agent.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/MACPP.dir/src/agent.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MACPP.dir/src/agent.cpp.o -c /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/agent.cpp
 
 CMakeFiles/MACPP.dir/src/agent.cpp.i: cmake_force
@@ -227,7 +251,7 @@ CMakeFiles/MACPP.dir/src/agent.cpp.o.provides.build: CMakeFiles/MACPP.dir/src/ag
 
 CMakeFiles/MACPP.dir/src/randomwalk.cpp.o: CMakeFiles/MACPP.dir/flags.make
 CMakeFiles/MACPP.dir/src/randomwalk.cpp.o: ../src/randomwalk.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/MACPP.dir/src/randomwalk.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/MACPP.dir/src/randomwalk.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MACPP.dir/src/randomwalk.cpp.o -c /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/randomwalk.cpp
 
 CMakeFiles/MACPP.dir/src/randomwalk.cpp.i: cmake_force
@@ -251,7 +275,7 @@ CMakeFiles/MACPP.dir/src/randomwalk.cpp.o.provides.build: CMakeFiles/MACPP.dir/s
 
 CMakeFiles/MACPP.dir/src/informationGain.cpp.o: CMakeFiles/MACPP.dir/flags.make
 CMakeFiles/MACPP.dir/src/informationGain.cpp.o: ../src/informationGain.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/MACPP.dir/src/informationGain.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/MACPP.dir/src/informationGain.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MACPP.dir/src/informationGain.cpp.o -c /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/informationGain.cpp
 
 CMakeFiles/MACPP.dir/src/informationGain.cpp.i: cmake_force
@@ -275,7 +299,7 @@ CMakeFiles/MACPP.dir/src/informationGain.cpp.o.provides.build: CMakeFiles/MACPP.
 
 CMakeFiles/MACPP.dir/src/orca.cpp.o: CMakeFiles/MACPP.dir/flags.make
 CMakeFiles/MACPP.dir/src/orca.cpp.o: ../src/orca.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/MACPP.dir/src/orca.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/MACPP.dir/src/orca.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MACPP.dir/src/orca.cpp.o -c /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/orca.cpp
 
 CMakeFiles/MACPP.dir/src/orca.cpp.i: cmake_force
@@ -303,6 +327,7 @@ MACPP_OBJECTS = \
 "CMakeFiles/MACPP.dir/src/macpp.cpp.o" \
 "CMakeFiles/MACPP.dir/src/world.cpp.o" \
 "CMakeFiles/MACPP.dir/src/graphics/Window.cpp.o" \
+"CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o" \
 "CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o" \
 "CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o" \
 "CMakeFiles/MACPP.dir/src/agent.cpp.o" \
@@ -317,6 +342,7 @@ MACPP: CMakeFiles/MACPP.dir/src/engine.cpp.o
 MACPP: CMakeFiles/MACPP.dir/src/macpp.cpp.o
 MACPP: CMakeFiles/MACPP.dir/src/world.cpp.o
 MACPP: CMakeFiles/MACPP.dir/src/graphics/Window.cpp.o
+MACPP: CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o
 MACPP: CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o
 MACPP: CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o
 MACPP: CMakeFiles/MACPP.dir/src/agent.cpp.o
@@ -336,7 +362,7 @@ MACPP: /usr/lib/x86_64-linux-gnu/libICE.so
 MACPP: /usr/lib/x86_64-linux-gnu/libX11.so
 MACPP: /usr/lib/x86_64-linux-gnu/libXext.so
 MACPP: CMakeFiles/MACPP.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable MACPP"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable MACPP"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/MACPP.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -348,6 +374,7 @@ CMakeFiles/MACPP.dir/requires: CMakeFiles/MACPP.dir/src/engine.cpp.o.requires
 CMakeFiles/MACPP.dir/requires: CMakeFiles/MACPP.dir/src/macpp.cpp.o.requires
 CMakeFiles/MACPP.dir/requires: CMakeFiles/MACPP.dir/src/world.cpp.o.requires
 CMakeFiles/MACPP.dir/requires: CMakeFiles/MACPP.dir/src/graphics/Window.cpp.o.requires
+CMakeFiles/MACPP.dir/requires: CMakeFiles/MACPP.dir/src/graphics/Camera.cpp.o.requires
 CMakeFiles/MACPP.dir/requires: CMakeFiles/MACPP.dir/src/graphics/Shader.cpp.o.requires
 CMakeFiles/MACPP.dir/requires: CMakeFiles/MACPP.dir/src/graphics/Mesh.cpp.o.requires
 CMakeFiles/MACPP.dir/requires: CMakeFiles/MACPP.dir/src/agent.cpp.o.requires

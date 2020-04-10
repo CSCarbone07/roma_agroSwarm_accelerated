@@ -35,6 +35,7 @@ add_executable(
   src/macpp.cpp
   src/world.cpp
   src/graphics/Window.cpp
+  src/graphics/Camera.cpp
   src/graphics/Shader.cpp
   src/graphics/Mesh.cpp
   src/agent.cpp
