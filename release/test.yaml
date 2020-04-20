@@ -2,9 +2,9 @@ max_steps: 10000	    # termination condition for the simulation, 0 means infinit
 num_of_agents: 50	        # total number of agents in the simulatio0
 seed: 1	          	# seed for the random number generator
 
-Display_Simulation: true
+Display_Simulation: true 
 
-communications_range: -1     #-1 if communication range is unlimited
+communications_range: 25     #-1 if communication range is unlimited
 
 world:
   x: 50                # world x size
@@ -34,7 +34,7 @@ KnowledgeClusterRadius: 1   #radius around main scanning cell to included in kno
 InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain 
 
 #if ig is the strategy:
-TargetSelectionStrategy: "softmax"   #greedy, softmax, random (default) with weights. 
+TargetSelectionStrategy: "random"   #greedy, softmax, random (default) with weights. 
 Softmax_Lambda: 1       #lambda for softmax equation 
 UseSocialInfo: false    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights

@@ -12,8 +12,14 @@
 
 
 Agent::Agent(unsigned id, float x, float y, float z) {
-  //Mesh* mesh = new Mesh();
-  //mesh->CreateMesh(vertices, indices, 12, 12);
+  if(Engine::getInstance().getDisplaySimulation())
+  { 
+    mesh = new Mesh();
+    mesh->SetParent(this);
+    mesh->SetInvertedPyramid();
+    mesh->SetCurrentColor(glm::vec4(0.0f,1.0f,0.0f,1.0f));
+  }
+
 
   this->id = id;
   this->position = {float(x),float(y),float(z)};
@@ -21,6 +27,9 @@ Agent::Agent(unsigned id, float x, float y, float z) {
   this->targetId = -2;
   this->velocity = {0,0,0};
   this->timeStep = 0;
+
+  SetWorldLocation(std::vector<float> {float(x),float(y),float(z)});
+  SetWorldScale(std::vector<float> {1.0f, 1.0f, 1.0f});
 
   this->communicationsRange = Engine::getInstance().getCommunicationsRange();  
   if(communicationsRange > 0)
@@ -203,7 +212,8 @@ else
            
 void Agent::BroadcastCell(Agent* agent, Cell* cellToSend)
 {
-   
+    if(mesh != nullptr)
+    {mesh->SetCurrentColor(sendingMessageColor);}
      
     std::cout << "Agent: " << this->getId() << ". Broadcasting through agent " << agent->getId() <<  " cell: " << cellToSend->getId() << " with " 
     << cellToSend->observationVectors.size()  << " observations. Mapping: " << cellToSend->isMapped() << std::endl;
@@ -256,6 +266,8 @@ void Agent::BroadcastCell(Agent* agent, Cell* cellToSend)
 
 void Agent::ReceiveCell(Cell* receivedCell) //recieving broadcasted latest observation of cell by agent to updating knowledge 
 {
+      if(mesh != nullptr)
+      {mesh->SetCurrentColor(receivingMessageColor);}
 
 //    Engine::getInstance()
 
@@ -306,6 +318,10 @@ void Agent::ReceiveCell(Cell* receivedCell) //recieving broadcasted latest obser
 
 bool Agent::doStep(unsigned timeStep){
   this->timeStep = timeStep;  
+
+  SetWorldLocation(std::vector<float> {getX(), getY(), getZ()});
+  //mesh->SetWorldLocation(std::vector<float> {getX(), getY(), getZ()});
+
   switch(nextAction()){
     case PICK:
     {
@@ -350,6 +366,8 @@ bool Agent::doStep(unsigned timeStep){
     }
     case MOVE:
     {
+      if(mesh != nullptr)
+      {mesh->SetCurrentColor(movingColor);}
       std::array<float,3> nextPose = getNextPosition();
       if(!Engine::getInstance().moveAgentTo(nextPose.at(0),nextPose.at(1),nextPose.at(2),this->id)){
         std::cout << "I'M NOT MOVING" << std::endl;
@@ -386,7 +404,8 @@ bool Agent::doStep(unsigned timeStep){
             scanningCell->setMapped();
             Engine::getInstance().getWorld()->remainingTasksToMap.erase(c->getId());
             Engine::getInstance().getWorld()->remainingTasksIntoClusters.erase(c->getId());
-
+            Engine::getInstance().getWorld()->getCells().at(c->getId())->setMapped();
+            
             scanningCell->isTargetOf.clear();
             this->cells.at(scanningCell->getId())->isTargetOf.clear();
             this->targetId = -1;
@@ -403,9 +422,13 @@ bool Agent::doStep(unsigned timeStep){
           {    // the cell is not yet mapped
               if(currentInspectionStrategy == "rw")
                {
+                  if(mesh != nullptr)
+                  {mesh->SetCurrentColor(scanningColor);}
                   float beacon = currentObservation/12;
                   scanningCell->setBeacon(beacon);
                   Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));
+                  if(mesh != nullptr)
+                  {mesh->SetCurrentColor(scanningColor);}
                }
           }      
           

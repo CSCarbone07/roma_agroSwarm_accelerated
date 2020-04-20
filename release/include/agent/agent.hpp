@@ -1,15 +1,23 @@
+#pragma once
+
 #ifndef AGENT_HPP
 #define AGENT_HPP
 
 #include "graphics/Mesh.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "sim/steppable.hpp"
+#include "sim/WObject.h"
 #include "movementstrategies/randomwalk.hpp"
 #include "movementstrategies/informationGain.hpp"
 
 #include "eigen3/Eigen/Dense"
 #include "sim/cell.hpp"
-#include <map>
+#include <map>  
 
 //#include "sim/world.hpp"
 
@@ -20,7 +28,7 @@
  * @author Dario Albani
  */
 
-class Agent : public Steppable {
+class Agent : public Steppable, public WObject {
 
 protected:
   
@@ -28,7 +36,14 @@ protected:
 
   unsigned id; /** < unique id for the agent */
   unsigned timeStep; /** < last execution time */
-  Mesh* mesh;
+  Mesh* mesh = nullptr;
+  glm::vec4 currentColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+  glm::vec4 movingColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+  glm::vec4 sendingMessageColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+  glm::vec4 receivingMessageColor = glm::vec4(0.0f, 0.0f, 0.5f, 1.0f);
+  glm::vec4 scanningColor = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
+
+
 
   float communicationsRange=-1;
   std::string knowledgeBaseLocation = "World";
@@ -177,6 +192,7 @@ public:
   /* Getters */
   inline Mesh* getMesh() { return mesh; }
   inline void setMesh(Mesh* inMesh) { mesh = inMesh; }
+  inline glm::vec4 getCurrentColor(){return currentColor;}
   inline unsigned getId() { return id; }
   inline unsigned get_time_step() { return timeStep; }
   inline float GetCommunicationsRange() { return communicationsRange; }

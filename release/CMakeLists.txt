@@ -21,6 +21,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(libraries/glew-2.2.0/build/cmake)
 add_subdirectory(libraries/glfw-3.3.2)
 add_subdirectory(libraries/glm-0.9.9.7)
+add_subdirectory(libraries/freetype-2.10.1)
 
 #include headers
 include_directories(
@@ -34,10 +35,13 @@ add_executable(
   src/engine.cpp
   src/macpp.cpp
   src/world.cpp
+  src/WObject.cpp
   src/graphics/Window.cpp
   src/graphics/Camera.cpp
   src/graphics/Shader.cpp
   src/graphics/Mesh.cpp
+  src/cell.cpp
+  src/weed.cpp
   src/agent.cpp
   src/randomwalk.cpp
   src/informationGain.cpp
@@ -49,6 +53,7 @@ target_link_libraries(
   ${GLFW_LIBRARIES}
   glew
   glm
+  freetype
   yaml-cpp
   ${Boost_LIBRARIES}
 )

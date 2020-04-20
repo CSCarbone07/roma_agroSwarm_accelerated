@@ -54,7 +54,7 @@ void Camera::keyControl(bool* keys, GLfloat deltaTime)
 
 void Camera::mouseControl(GLfloat xChange, GLfloat yChange)
 {
-    /*
+    
 	xChange *= turnSpeed;
 	yChange *= turnSpeed;
 
@@ -72,7 +72,7 @@ void Camera::mouseControl(GLfloat xChange, GLfloat yChange)
 	}
 
 	update();
-    */
+    
 }
 
 glm::mat4 Camera::calculateViewMatrix()

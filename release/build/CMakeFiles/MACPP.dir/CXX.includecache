@@ -9,8 +9,20 @@
 ../include/agent/agent.hpp
 graphics/Mesh.h
 ../include/agent/graphics/Mesh.h
+GL/glew.h
+-
+GLFW/glfw3.h
+-
+glm/mat4x4.hpp
+-
+glm/gtc/matrix_transform.hpp
+-
+glm/gtc/type_ptr.hpp
+-
 sim/steppable.hpp
 ../include/agent/sim/steppable.hpp
+sim/WObject.h
+../include/agent/sim/WObject.h
 movementstrategies/randomwalk.hpp
 ../include/agent/movementstrategies/randomwalk.hpp
 movementstrategies/informationGain.hpp
@@ -61,6 +73,16 @@ GLFW/glfw3.h
 ../include/graphics/Mesh.h
 GL/glew.h
 -
+GLFW/glfw3.h
+-
+glm/mat4x4.hpp
+-
+glm/gtc/matrix_transform.hpp
+-
+glm/gtc/type_ptr.hpp
+-
+sim/WObject.h
+../include/graphics/sim/WObject.h
 
 ../include/graphics/Shader.h
 stdio.h
@@ -104,7 +126,17 @@ sim/cell.hpp
 eigen3/Eigen/Dense
 ../include/movementstrategies/eigen3/Eigen/Dense
 
+../include/sim/WObject.h
+vector
+-
+algorithm
+-
+
 ../include/sim/cell.hpp
+sim/WObject.h
+../include/sim/sim/WObject.h
+graphics/Mesh.h
+../include/sim/graphics/Mesh.h
 sim/weed.hpp
 ../include/sim/sim/weed.hpp
 vector
@@ -165,6 +197,10 @@ iostream
 -
 
 ../include/sim/weed.hpp
+sim/WObject.h
+../include/sim/sim/WObject.h
+graphics/Mesh.h
+../include/sim/graphics/Mesh.h
 
 ../include/sim/world.hpp
 sim/cell.hpp
@@ -194,6 +230,12 @@ boost/random/normal_distribution.hpp
 boost/random/mersenne_twister.hpp
 -
 boost/random/seed_seq.hpp
+-
+
+../libraries/freetype-2.10.1/include/freetype/config/ftheader.h
+
+../libraries/freetype-2.10.1/include/ft2build.h
+freetype/config/ftheader.h
 -
 
 ../libraries/glfw-3.3.2/include/GLFW/glfw3.h
@@ -1710,6 +1752,10 @@ detail/setup.hpp
 detail/func_vector_relational.inl
 ../libraries/glm-0.9.9.7/glm/../glm/detail/func_vector_relational.inl
 
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/WObject.cpp
+sim/WObject.h
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/WObject.h
+
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/agent.cpp
 agent/agent.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/agent/agent.hpp
@@ -1726,6 +1772,12 @@ movementstrategies/randomwalk.hpp
 movementstrategies/informationGain.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/movementstrategies/informationGain.hpp
 
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/cell.cpp
+sim/cell.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/cell.hpp
+sim/engine.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
+
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/engine.cpp
 sim/engine.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
@@ -1737,6 +1789,8 @@ graphics/Camera.h
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Mesh.cpp
 graphics/Mesh.h
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/graphics/Mesh.h
+sim/engine.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/sim/engine.hpp
 
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/graphics/Shader.cpp
 sim/engine.hpp
@@ -1767,6 +1821,8 @@ boost/program_options.hpp
 -
 yaml-cpp/yaml.h
 -
+ft2build.h
+-
 
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/orca.cpp
 collisionavoidance/orca.hpp
@@ -1783,6 +1839,12 @@ movementstrategies/randomwalk.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/movementstrategies/randomwalk.hpp
 sim/world.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/world.hpp
+
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/weed.cpp
+sim/weed.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/weed.hpp
+sim/engine.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
 
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/world.cpp
 sim/world.hpp

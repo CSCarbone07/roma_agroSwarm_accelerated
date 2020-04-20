@@ -1,12 +1,16 @@
+#pragma once
+
 #ifndef CELL_HPP
 #define CELL_HPP
 
+#include "sim/WObject.h"
+#include "graphics/Mesh.h"
 #include "sim/weed.hpp"
 #include <vector>
 #include <array>
 #include <map>
 
-class Cell {
+class Cell : public WObject {
 
 private:
   unsigned id; /** < Id associated to this cell (must be unique) */
@@ -23,6 +27,12 @@ private:
   float beacon = 0;  
   Weed* weed;
 
+  Mesh* mesh = nullptr; 
+  glm::vec4 nonInspectedColor = glm::vec4(0.309f, 0.176f, 0.152f, 1.0f);
+  glm::vec4 inspectedColor = glm::vec4(0.725f, 0.564f, 0.533f, 1.0f);
+  
+
+
 public:
   float residual_uncertainty = 1;
   unsigned lastTimeVisit = 0;
@@ -33,22 +43,12 @@ public:
                                           the probablty that the cell has the corresponding number of balls**/
   std::array<float, 13> observationVector;  /** p(o i,j ) Is the marginal probability of having a given 
                                             observation given the current knowledge about the state of cell c i,j*/
-
   
   std::map<float, std::array<float,13>> knowledgeVectors;
   std::map<float, std::array<float,13>> observationVectors;
 
-  Cell(unsigned id, unsigned x, unsigned y, unsigned z, unsigned size, bool mapped, float utility=0){
-    this->id = id;
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    this->size = size;
-    this->utility = utility;
-    this->knowledgeVector.fill(1.0/13.0);
-    this->observationVector.fill(0.0);
-    this->mapped = mapped;
-  }
+  Cell(unsigned id, unsigned x, unsigned y, unsigned z, unsigned size, bool mapped, float utility=0);
+  
 
   inline unsigned getId() const { return id;}
   inline unsigned getX() const { return x; }
@@ -64,7 +64,6 @@ public:
   inline float getUtility() const { return utility; }
   inline float getResidual() const {return residual_uncertainty;}
   inline bool isMapped() const { return mapped; }
-  inline void setMapped() { mapped = true; }
   inline float getBeacon() const { return beacon; }
   inline void setBeacon(float beacon) { this->beacon = beacon; }
 
@@ -72,6 +71,9 @@ public:
   inline void setResidual(float residual_uncertainty){this->residual_uncertainty = residual_uncertainty;}
 
   inline void addWeed(Weed* weed){this->weed = weed;}
+
+  void setMapped();
+
 };
 
 

@@ -34,6 +34,10 @@ GLuint Shader::GetXmoveLocation()
 {
 	return uniformXmove;
 }
+GLuint Shader::GetInColor()
+{
+	return uniformInColor;
+}
 GLuint Shader::GetProjectionLocation()
 {
 	return uniformProjection;
@@ -121,10 +125,11 @@ void Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 		return;
 	}
 
-	uniformXmove = glGetUniformLocation(shaderID, "xMove");
 	uniformProjection = glGetUniformLocation(shaderID, "projection");
     uniformView = glGetUniformLocation(shaderID, "view");
 	uniformModel = glGetUniformLocation(shaderID, "model");
+	uniformXmove = glGetUniformLocation(shaderID, "xMove");
+	uniformInColor = glGetUniformLocation(shaderID, "inColor");
     
 
     printf("Shader succesfully compiled \n");

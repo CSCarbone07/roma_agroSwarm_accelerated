@@ -23,10 +23,11 @@ public:
 	std::string ReadFile(const char* fileLocation);
     GLuint GetShaderID();
 
-	GLuint GetXmoveLocation();
 	GLuint GetProjectionLocation();
-	GLuint GetModelLocation();
 	GLuint GetViewLocation();
+	GLuint GetModelLocation();
+	GLuint GetXmoveLocation();
+    GLuint GetInColor();
 
 	void UseShader();
 
@@ -34,7 +35,7 @@ public:
 
 
 private:
-	GLuint shaderID, uniformView, uniformProjection, uniformModel, uniformXmove;
+	GLuint shaderID, uniformProjection, uniformView, uniformModel, uniformInColor, uniformXmove;
 
 	void CompileShader(const char* vertexCode, const char* fragmentCode);
 	void AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);

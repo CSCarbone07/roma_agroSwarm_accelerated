@@ -146,6 +146,7 @@ void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int m
 
 void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)    
 {
+    /*
     Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
     
     if(theWindow->mouseFirstMoved)
@@ -163,7 +164,7 @@ void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)
   
     //printf("x:%.6f, y:%.6f\n", theWindow->xChange, theWindow->yChange);
 
-
+    */
 }
 
 

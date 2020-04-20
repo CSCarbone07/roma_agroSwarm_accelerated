@@ -68,38 +68,6 @@ install/strip/fast: preinstall/fast
 	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip/fast
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-
-.PHONY : list_install_components/fast
-
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
@@ -123,6 +91,60 @@ install/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
 	/usr/bin/cmake -P cmake_install.cmake
 .PHONY : install/fast
+
+# Special rule for the target package
+package: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
+	/usr/bin/cpack --config ./CPackConfig.cmake
+.PHONY : package
+
+# Special rule for the target package
+package/fast: package
+
+.PHONY : package/fast
+
+# Special rule for the target package_source
+package_source:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
+	/usr/bin/cpack --config ./CPackSourceConfig.cmake /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CPackSourceConfig.cmake
+.PHONY : package_source
+
+# Special rule for the target package_source
+package_source/fast: package_source
+
+.PHONY : package_source/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\" \"headers\" \"pkgconfig\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -247,6 +269,46 @@ glfw/fast:
 	$(MAKE) -f libraries/glfw-3.3.2/src/CMakeFiles/glfw.dir/build.make libraries/glfw-3.3.2/src/CMakeFiles/glfw.dir/build
 .PHONY : glfw/fast
 
+#=============================================================================
+# Target rules for targets named freetype
+
+# Build rule for target.
+freetype: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 freetype
+.PHONY : freetype
+
+# fast build rule for target.
+freetype/fast:
+	$(MAKE) -f libraries/freetype-2.10.1/CMakeFiles/freetype.dir/build.make libraries/freetype-2.10.1/CMakeFiles/freetype.dir/build
+.PHONY : freetype/fast
+
+src/WObject.o: src/WObject.cpp.o
+
+.PHONY : src/WObject.o
+
+# target to build an object file
+src/WObject.cpp.o:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/WObject.cpp.o
+.PHONY : src/WObject.cpp.o
+
+src/WObject.i: src/WObject.cpp.i
+
+.PHONY : src/WObject.i
+
+# target to preprocess a source file
+src/WObject.cpp.i:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/WObject.cpp.i
+.PHONY : src/WObject.cpp.i
+
+src/WObject.s: src/WObject.cpp.s
+
+.PHONY : src/WObject.s
+
+# target to generate assembly for a file
+src/WObject.cpp.s:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/WObject.cpp.s
+.PHONY : src/WObject.cpp.s
+
 src/agent.o: src/agent.cpp.o
 
 .PHONY : src/agent.o
@@ -273,6 +335,33 @@ src/agent.s: src/agent.cpp.s
 src/agent.cpp.s:
 	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/agent.cpp.s
 .PHONY : src/agent.cpp.s
+
+src/cell.o: src/cell.cpp.o
+
+.PHONY : src/cell.o
+
+# target to build an object file
+src/cell.cpp.o:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/cell.cpp.o
+.PHONY : src/cell.cpp.o
+
+src/cell.i: src/cell.cpp.i
+
+.PHONY : src/cell.i
+
+# target to preprocess a source file
+src/cell.cpp.i:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/cell.cpp.i
+.PHONY : src/cell.cpp.i
+
+src/cell.s: src/cell.cpp.s
+
+.PHONY : src/cell.s
+
+# target to generate assembly for a file
+src/cell.cpp.s:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/cell.cpp.s
+.PHONY : src/cell.cpp.s
 
 src/engine.o: src/engine.cpp.o
 
@@ -517,6 +606,33 @@ src/randomwalk.cpp.s:
 	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/randomwalk.cpp.s
 .PHONY : src/randomwalk.cpp.s
 
+src/weed.o: src/weed.cpp.o
+
+.PHONY : src/weed.o
+
+# target to build an object file
+src/weed.cpp.o:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/weed.cpp.o
+.PHONY : src/weed.cpp.o
+
+src/weed.i: src/weed.cpp.i
+
+.PHONY : src/weed.i
+
+# target to preprocess a source file
+src/weed.cpp.i:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/weed.cpp.i
+.PHONY : src/weed.cpp.i
+
+src/weed.s: src/weed.cpp.s
+
+.PHONY : src/weed.s
+
+# target to generate assembly for a file
+src/weed.cpp.s:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/weed.cpp.s
+.PHONY : src/weed.cpp.s
+
 src/world.o: src/world.cpp.o
 
 .PHONY : src/world.o
@@ -551,21 +667,30 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... install/strip"
-	@echo "... edit_cache"
-	@echo "... MACPP"
-	@echo "... rebuild_cache"
-	@echo "... list_install_components"
 	@echo "... install/local"
 	@echo "... install"
+	@echo "... package"
+	@echo "... package_source"
+	@echo "... MACPP"
+	@echo "... rebuild_cache"
+	@echo "... edit_cache"
+	@echo "... list_install_components"
 	@echo "... glew_s"
 	@echo "... glew"
 	@echo "... glewinfo"
 	@echo "... visualinfo"
 	@echo "... uninstall"
 	@echo "... glfw"
+	@echo "... freetype"
+	@echo "... src/WObject.o"
+	@echo "... src/WObject.i"
+	@echo "... src/WObject.s"
 	@echo "... src/agent.o"
 	@echo "... src/agent.i"
 	@echo "... src/agent.s"
+	@echo "... src/cell.o"
+	@echo "... src/cell.i"
+	@echo "... src/cell.s"
 	@echo "... src/engine.o"
 	@echo "... src/engine.i"
 	@echo "... src/engine.s"
@@ -593,6 +718,9 @@ help:
 	@echo "... src/randomwalk.o"
 	@echo "... src/randomwalk.i"
 	@echo "... src/randomwalk.s"
+	@echo "... src/weed.o"
+	@echo "... src/weed.i"
+	@echo "... src/weed.s"
 	@echo "... src/world.o"
 	@echo "... src/world.i"
 	@echo "... src/world.s"

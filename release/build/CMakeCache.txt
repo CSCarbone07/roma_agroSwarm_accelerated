@@ -20,6 +20,15 @@ BUILD_SHARED_LIBS:BOOL=OFF
 //utilities
 BUILD_UTILS:BOOL=ON
 
+//Path to a file.
+BZIP2_INCLUDE_DIR:PATH=/usr/include
+
+//Path to a library.
+BZIP2_LIBRARY_DEBUG:FILEPATH=BZIP2_LIBRARY_DEBUG-NOTFOUND
+
+//Path to a library.
+BZIP2_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libbz2.so
+
 //The directory containing a CMake configuration file for Boost.
 Boost_DIR:PATH=Boost_DIR-NOTFOUND
 
@@ -253,6 +262,36 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//Enable to build RPM source packages
+CPACK_SOURCE_RPM:BOOL=OFF
+
+//Enable to build TBZ2 source packages
+CPACK_SOURCE_TBZ2:BOOL=ON
+
+//Enable to build TGZ source packages
+CPACK_SOURCE_TGZ:BOOL=ON
+
+//Enable to build TXZ source packages
+CPACK_SOURCE_TXZ:BOOL=ON
+
+//Enable to build TZ source packages
+CPACK_SOURCE_TZ:BOOL=ON
+
+//Enable to build ZIP source packages
+CPACK_SOURCE_ZIP:BOOL=OFF
+
+//Support bzip2 compressed fonts.
+FT_WITH_BZIP2:BOOL=OFF
+
+//Improve auto-hinting of OpenType fonts.
+FT_WITH_HARFBUZZ:BOOL=OFF
+
+//Support PNG compressed OpenType embedded bitmaps.
+FT_WITH_PNG:BOOL=OFF
+
+//Use system zlib instead of internal library.
+FT_WITH_ZLIB:BOOL=OFF
+
 //OSMesa mode
 GLEW_OSMESA:BOOL=OFF
 
@@ -285,6 +324,12 @@ GLFW_USE_WAYLAND:BOOL=OFF
 
 //Assume the Vulkan loader is linked with the application
 GLFW_VULKAN_STATIC:BOOL=OFF
+
+//Path to a file.
+HARFBUZZ_INCLUDE_DIRS:PATH=/usr/include/harfbuzz
+
+//Path to a library.
+HARFBUZZ_LIBRARIES:FILEPATH=/usr/lib/x86_64-linux-gnu/libharfbuzz.so
 
 //Value Computed by CMake
 MACPP_BINARY_DIR:STATIC=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build
@@ -324,6 +369,15 @@ OPENGL_xmesa_INCLUDE_DIR:PATH=OPENGL_xmesa_INCLUDE_DIR-NOTFOUND
 
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
+
+//Path to a library.
+PNG_LIBRARY_DEBUG:FILEPATH=PNG_LIBRARY_DEBUG-NOTFOUND
+
+//Path to a library.
+PNG_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libpng.so
+
+//Path to a file.
+PNG_PNG_INCLUDE_DIR:PATH=/usr/include
 
 //Path to a library.
 RT_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/librt.so
@@ -511,6 +565,24 @@ X11_xf86misc_INCLUDE_PATH:PATH=X11_xf86misc_INCLUDE_PATH-NOTFOUND
 //Path to a file.
 X11_xf86vmode_INCLUDE_PATH:PATH=/usr/include
 
+//Path to a file.
+ZLIB_INCLUDE_DIR:PATH=/usr/include
+
+//Path to a library.
+ZLIB_LIBRARY_DEBUG:FILEPATH=ZLIB_LIBRARY_DEBUG-NOTFOUND
+
+//Path to a library.
+ZLIB_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libz.so
+
+//Value Computed by CMake
+freetype_BINARY_DIR:STATIC=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/freetype-2.10.1
+
+//Dependencies for the target
+freetype_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libz.so;general;/usr/lib/x86_64-linux-gnu/libbz2.so;general;/usr/lib/x86_64-linux-gnu/libpng.so;general;/usr/lib/x86_64-linux-gnu/libz.so;general;/usr/lib/x86_64-linux-gnu/libharfbuzz.so;
+
+//Value Computed by CMake
+freetype_SOURCE_DIR:STATIC=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/libraries/freetype-2.10.1
+
 //Value Computed by CMake
 glew_BINARY_DIR:STATIC=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/libraries/glew-2.2.0/build/cmake
 
@@ -537,6 +609,14 @@ glm_SOURCE_DIR:STATIC=/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimul
 # INTERNAL cache entries
 ########################
 
+//ADVANCED property for variable: BZIP2_INCLUDE_DIR
+BZIP2_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: BZIP2_LIBRARY_DEBUG
+BZIP2_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: BZIP2_LIBRARY_RELEASE
+BZIP2_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//Have symbol BZ2_bzCompressInit
+BZIP2_NEED_PREFIX:INTERNAL=1
 //ADVANCED property for variable: Boost_DIR
 Boost_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_INCLUDE_DIR
@@ -693,7 +773,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=6
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=7
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -734,14 +814,44 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_RPM
+CPACK_SOURCE_RPM-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_TBZ2
+CPACK_SOURCE_TBZ2-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_TGZ
+CPACK_SOURCE_TGZ-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_TXZ
+CPACK_SOURCE_TXZ-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_TZ
+CPACK_SOURCE_TZ-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_ZIP
+CPACK_SOURCE_ZIP-ADVANCED:INTERNAL=1
+//Details about finding BZip2
+FIND_PACKAGE_MESSAGE_DETAILS_BZip2:INTERNAL=[/usr/lib/x86_64-linux-gnu/libbz2.so][/usr/include][v1.0.6()]
 //Details about finding OpenGL
 FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/usr/lib/x86_64-linux-gnu/libOpenGL.so][/usr/lib/x86_64-linux-gnu/libGLX.so][/usr/include][c ][v()]
+//Details about finding PNG
+FIND_PACKAGE_MESSAGE_DETAILS_PNG:INTERNAL=[/usr/lib/x86_64-linux-gnu/libpng.so][/usr/include][v1.6.34()]
 //Details about finding PkgConfig
 FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig:INTERNAL=[/usr/bin/pkg-config][v0.29.1()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding X11
 FIND_PACKAGE_MESSAGE_DETAILS_X11:INTERNAL=[/usr/lib/x86_64-linux-gnu/libX11.so][/usr/include]
+//Details about finding ZLIB
+FIND_PACKAGE_MESSAGE_DETAILS_ZLIB:INTERNAL=[/usr/lib/x86_64-linux-gnu/libz.so][/usr/include][v1.2.11()]
+//Details about finding harfbuzz
+FIND_PACKAGE_MESSAGE_DETAILS_harfbuzz:INTERNAL=[/usr/include/harfbuzz][/usr/lib/x86_64-linux-gnu/libharfbuzz.so][v1.7.2()]
+//ADVANCED property for variable: HARFBUZZ_INCLUDE_DIRS
+HARFBUZZ_INCLUDE_DIRS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: HARFBUZZ_LIBRARIES
+HARFBUZZ_LIBRARIES-ADVANCED:INTERNAL=1
+//Have include fcntl.h
+HAVE_FCNTL_H:INTERNAL=1
+//Have include stdint.h
+HAVE_STDINT_H:INTERNAL=1
+//Have include unistd.h
+HAVE_UNISTD_H:INTERNAL=1
 //ADVANCED property for variable: MATH_LIBRARY
 MATH_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_EGL_INCLUDE_DIR
@@ -762,8 +872,48 @@ OPENGL_glx_LIBRARY-ADVANCED:INTERNAL=1
 OPENGL_opengl_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_xmesa_INCLUDE_DIR
 OPENGL_xmesa_INCLUDE_DIR-ADVANCED:INTERNAL=1
+PC_HARFBUZZ_CFLAGS:INTERNAL=-I/usr/include/harfbuzz;-I/usr/include/glib-2.0;-I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+PC_HARFBUZZ_CFLAGS_I:INTERNAL=
+PC_HARFBUZZ_CFLAGS_OTHER:INTERNAL=
+PC_HARFBUZZ_FOUND:INTERNAL=1
+PC_HARFBUZZ_INCLUDEDIR:INTERNAL=/usr/include
+PC_HARFBUZZ_INCLUDE_DIRS:INTERNAL=/usr/include/harfbuzz;/usr/include/glib-2.0;/usr/lib/x86_64-linux-gnu/glib-2.0/include
+PC_HARFBUZZ_LDFLAGS:INTERNAL=-lharfbuzz
+PC_HARFBUZZ_LDFLAGS_OTHER:INTERNAL=
+PC_HARFBUZZ_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
+PC_HARFBUZZ_LIBRARIES:INTERNAL=harfbuzz
+PC_HARFBUZZ_LIBRARY_DIRS:INTERNAL=
+PC_HARFBUZZ_LIBS:INTERNAL=
+PC_HARFBUZZ_LIBS_L:INTERNAL=
+PC_HARFBUZZ_LIBS_OTHER:INTERNAL=
+PC_HARFBUZZ_LIBS_PATHS:INTERNAL=
+PC_HARFBUZZ_PREFIX:INTERNAL=/usr
+PC_HARFBUZZ_STATIC_CFLAGS:INTERNAL=-I/usr/include/harfbuzz;-I/usr/include/glib-2.0;-I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+PC_HARFBUZZ_STATIC_CFLAGS_I:INTERNAL=
+PC_HARFBUZZ_STATIC_CFLAGS_OTHER:INTERNAL=
+PC_HARFBUZZ_STATIC_INCLUDE_DIRS:INTERNAL=/usr/include/harfbuzz;/usr/include/glib-2.0;/usr/lib/x86_64-linux-gnu/glib-2.0/include
+PC_HARFBUZZ_STATIC_LDFLAGS:INTERNAL=-lharfbuzz;-lm;-lglib-2.0;-pthread;-lpcre;-pthread;-lgraphite2
+PC_HARFBUZZ_STATIC_LDFLAGS_OTHER:INTERNAL=-pthread
+PC_HARFBUZZ_STATIC_LIBDIR:INTERNAL=
+PC_HARFBUZZ_STATIC_LIBRARIES:INTERNAL=harfbuzz;m;glib-2.0;pcre;graphite2
+PC_HARFBUZZ_STATIC_LIBRARY_DIRS:INTERNAL=
+PC_HARFBUZZ_STATIC_LIBS:INTERNAL=
+PC_HARFBUZZ_STATIC_LIBS_L:INTERNAL=
+PC_HARFBUZZ_STATIC_LIBS_OTHER:INTERNAL=
+PC_HARFBUZZ_STATIC_LIBS_PATHS:INTERNAL=
+PC_HARFBUZZ_VERSION:INTERNAL=1.7.2
+PC_HARFBUZZ_harfbuzz_INCLUDEDIR:INTERNAL=
+PC_HARFBUZZ_harfbuzz_LIBDIR:INTERNAL=
+PC_HARFBUZZ_harfbuzz_PREFIX:INTERNAL=
+PC_HARFBUZZ_harfbuzz_VERSION:INTERNAL=
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
 PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PNG_LIBRARY_DEBUG
+PNG_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PNG_LIBRARY_RELEASE
+PNG_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PNG_PNG_INCLUDE_DIR
+PNG_PNG_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: RT_LIBRARY
 RT_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_ICE_INCLUDE_PATH
@@ -924,6 +1074,12 @@ YamlCpp_yaml-cpp_INCLUDEDIR:INTERNAL=
 YamlCpp_yaml-cpp_LIBDIR:INTERNAL=
 YamlCpp_yaml-cpp_PREFIX:INTERNAL=
 YamlCpp_yaml-cpp_VERSION:INTERNAL=
+//ADVANCED property for variable: ZLIB_INCLUDE_DIR
+ZLIB_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ZLIB_LIBRARY_DEBUG
+ZLIB_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ZLIB_LIBRARY_RELEASE
+ZLIB_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 //Components requested for this build tree.
 _Boost_COMPONENTS_SEARCHED:INTERNAL=program_options
 //Last used Boost_INCLUDE_DIR value.
@@ -938,7 +1094,9 @@ _Boost_NAMESPACE_LAST:INTERNAL=boost
 _Boost_USE_MULTITHREADED_LAST:INTERNAL=TRUE
 //CMAKE_INSTALL_PREFIX during last run
 _GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=/usr/local
+__pkg_config_arguments_PC_HARFBUZZ:INTERNAL=QUIET;harfbuzz
 __pkg_config_arguments_YamlCpp:INTERNAL=yaml-cpp
+__pkg_config_checked_PC_HARFBUZZ:INTERNAL=1
 __pkg_config_checked_YamlCpp:INTERNAL=1
-prefix_result:INTERNAL=
+prefix_result:INTERNAL=/usr/lib/x86_64-linux-gnu
 

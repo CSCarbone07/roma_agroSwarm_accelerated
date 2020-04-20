@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
@@ -94,7 +96,7 @@ private:
   std::vector<Mesh*> meshList;
   std::vector<Shader*> shaderList;
   Shader* shader1;
-  GLuint uniformProjection = 0, uniformView = 0, uniformModel = 0;
+  GLuint uniformProjection = 0, uniformView = 0, uniformModel = 0, uniformInColor = 0;
   
 
   // Vertex Shader
@@ -135,6 +137,9 @@ public:
     return maxSteps;
   }
 
+  inline bool getDisplaySimulation() const {
+    return displaySimulation;
+  }
 
   inline float getCommunicationsRange() const {
     return communicationsRange;
@@ -204,7 +209,8 @@ public:
   void init(YAML::Node config);
 
   void CreateShaders();
-  void CreateObjects();
+  void AddMesh(Mesh* inMesh = nullptr);
+
 
   void run();
 

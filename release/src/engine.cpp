@@ -32,7 +32,7 @@ static float minScale = 0.1f;
 
  void Engine::init(YAML::Node config) {
 
-    displaySimulation = config["Display_Simulation"].as<bool>();
+
    
 
     // Initilize agents and world
@@ -93,7 +93,25 @@ static float minScale = 0.1f;
 
     }
 
-    std::cout << std::endl;    
+    std::cout << std::endl; 
+
+    displaySimulation = config["Display_Simulation"].as<bool>();
+    
+    if(displaySimulation)
+    {
+    mainWindow = Window(1080, 1080);
+	  mainWindow.Initialise();
+    CreateShaders();
+
+	  camera = Camera(glm::vec3(size.at(0)/2, size.at(1)/2, 75.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 20.0f, 0.5f);
+
+	  projection = glm::perspective(glm::radians(FOV), (GLfloat)mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
+    
+    //CreateObjects();
+    //CompileShaders();
+
+
+    }
 
     //print info
     std::cout << "World size: " << size[0] << "x" << size[1] << "x" << size[2] << std::endl;
@@ -155,15 +173,6 @@ static float minScale = 0.1f;
     //knowledgeBasesFile << "Agents Knowledge Base:" << std::endl;
 
 
-
-    mainWindow = Window(1080, 1080);
-	mainWindow.Initialise();
-    CreateShaders();
-
-	camera = Camera(glm::vec3(25.0f, 25.0f, 100.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 20.0f, 0.5f);
-
-	projection = glm::perspective(glm::radians(FOV), (GLfloat)mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
-
   }
 
 
@@ -173,10 +182,7 @@ static float minScale = 0.1f;
 */
 void Engine::run() {
 
-   
-    CreateObjects();
-    
-    //CompileShaders();
+     
        
     #ifdef PERFECT_COMMUNICATION
 
@@ -211,12 +217,14 @@ void Engine::run() {
     while(timeStep < maxSteps || maxSteps == 0) {
     //std::cout << "Time step: " << timeStep << std::endl;
 
+    
+    if(displaySimulation)
+    {
 	GLfloat now = glfwGetTime(); // SDL_GetPerformanceCounter();
 	deltaTime = now - lastTime; // (now - lastTime)*1000/SDL_GetPerformanceFrequency();
 	lastTime = now;
-
     RenderScene();
-
+    }
 
 
      
@@ -268,6 +276,7 @@ void Engine::run() {
       timing << this->world->remainingTasksToVisit.size()<<' '<<this->world->remainingTasksToMap.size()<<' '<<this->world->remainingTasksIntoClusters.size()<<"\n";
       
       ++timeStep;
+       
     }
     
     std::cout<<"celle visitate  =  "<<this->world->getCells().size()-this->world->remainingTasksToVisit.size()<<std::endl;
@@ -339,7 +348,7 @@ void Engine::RenderScene()
     }
 */
     // clear window
-    glClearColor(0.0f, 0.0f, 0.75f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     //glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -348,6 +357,7 @@ void Engine::RenderScene()
 	uniformModel = shaderList[0]->GetModelLocation();
 	uniformProjection = shaderList[0]->GetProjectionLocation();
 	uniformView = shaderList[0]->GetViewLocation();
+    uniformInColor = shaderList[0]->GetInColor();
 
     glUniform1f(shaderList[0]->GetXmoveLocation(), triOffset);
     //glUseProgram(shader1->GetShaderID());
@@ -384,18 +394,36 @@ void Engine::RenderScene()
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	meshList[1]->RenderMesh();
 */
-
+/*
     for(Agent* ag : agents)
     {
-  	model = glm::mat4(1.0f);
+    //glm::vec4 agentColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+    model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(ag->getX(), ag->getY(), -2.0f));
 	model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+	glUniform4fv(uniformInColor, 1, glm::value_ptr(ag->getCurrentColor())); 
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
-	ag->getMesh()->RenderMesh();
+	if(ag->getMesh() != nullptr)
+    {ag->getMesh()->RenderMesh();}
+    
     }
 
+ */   
+    for(Mesh* m : meshList)
+    {
+    glm::vec4 agentColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+    model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(m->GetWorldLocation()[0], m->GetWorldLocation()[1], m->GetWorldLocation()[2]));
+	model = glm::scale(model, glm::vec3(m->GetWorldScale()[0], m->GetWorldScale()[1], m->GetWorldScale()[2]));
+    glUniform4fv(uniformInColor, 1, glm::value_ptr(m->getCurrentColor())); 
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+	if(m != nullptr)
+    {m->RenderMesh();}
+    }
 
 
 /*
@@ -426,9 +454,10 @@ void Engine::CreateShaders()
 
 
 
-void Engine::CreateObjects()
+void Engine::AddMesh(Mesh* inMesh)
 {
-    
+ 
+/*   
     unsigned int indices[] = {
         0, 3, 1,
         1, 3, 2,
@@ -437,13 +466,12 @@ void Engine::CreateObjects()
     };
 
     GLfloat vertices[] = {
-        -1.0f, -1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,
         0.0f, 0.0f, -1.0f,
-        1.0f, -1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f
+        1.0f, 1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f
     };
 
-/*
 	Mesh *obj1 = new Mesh();
 	obj1->CreateMesh(vertices, indices, 12, 12);
 	meshList.push_back(obj1);
@@ -451,7 +479,7 @@ void Engine::CreateObjects()
 	Mesh *obj2 = new Mesh();
 	obj2->CreateMesh(vertices, indices, 12, 12);
 	meshList.push_back(obj2);
-*/
+
     for(Agent* ag: agents)
     {
 	Mesh* obj = new Mesh();
@@ -460,12 +488,15 @@ void Engine::CreateObjects()
     if(ag->getMesh() != nullptr)
     {meshList.push_back(ag->getMesh());}
     }
+*/
 
 
-
-
-
-
+    meshList.push_back(inMesh);
 }
+
+
+
+
+
 
 
