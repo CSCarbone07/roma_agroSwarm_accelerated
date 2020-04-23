@@ -71,7 +71,17 @@ inline  Cell* getCell(unsigned x, unsigned y, unsigned z) const {
     }
     return nullptr;
 }
+/*
+inline  Cell* getCell(float x, float y, float z) const {
 
+    for (Cell* c : cells) {
+      if (c->getX() == x && c->getY()==y && c->getZ()==z){
+        return c;
+      }
+    }
+    return nullptr;
+}
+*/
 inline  Cell* getCell(std::array<unsigned,3> agentDiscretePos) const {
     for (Cell* c : cells) {
       if (c->getX() == agentDiscretePos.at(0) && c->getY()==agentDiscretePos.at(1) && c->getZ()==agentDiscretePos.at(2)){

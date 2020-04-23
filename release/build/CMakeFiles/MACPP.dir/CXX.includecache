@@ -81,8 +81,12 @@ glm/gtc/matrix_transform.hpp
 -
 glm/gtc/type_ptr.hpp
 -
+ft2build.h
+-
 sim/WObject.h
 ../include/graphics/sim/WObject.h
+map
+-
 
 ../include/graphics/Shader.h
 stdio.h
@@ -158,6 +162,8 @@ glm/gtc/matrix_transform.hpp
 glm/gtc/type_ptr.hpp
 -
 cmath
+-
+ft2build.h
 -
 graphics/Window.h
 ../include/sim/graphics/Window.h
@@ -1775,6 +1781,8 @@ movementstrategies/informationGain.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/cell.cpp
 sim/cell.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/cell.hpp
+sim/world.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/world.hpp
 sim/engine.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
 
@@ -1820,8 +1828,6 @@ iostream
 boost/program_options.hpp
 -
 yaml-cpp/yaml.h
--
-ft2build.h
 -
 
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/orca.cpp

@@ -45,6 +45,13 @@ World::World(std::array<unsigned,3> size) {
       }
     }
   }
+  //std::cout << "init cell neighbors" << std::endl;
+  for(Cell* c : cells)
+  { 
+    c->SetNeighbors(cells);
+  }
+  
+
   communication_range = Engine::getInstance().getCommunicationsRange();
   std::cout<<"numero celle   "<<id<<std::endl;
 };
@@ -234,8 +241,9 @@ bool World::addAgent(Agent* agent, unsigned x, unsigned y, unsigned z) {
   bool World::getPopulationInfo(std::stringstream& ss){
     std::vector<Cell*>::iterator it;
     for (it = this->cells.begin(); it != this->cells.end(); it++){
-        ss << ' ' <<(*it)->getId() << ':'<< ' ' << (*it)->getX() << ' ' << (*it)->getY() << ' ' << (*it)->getUtility() << '\n';
 
+        ss << ' ' <<(*it)->getId() << ':'<< ' ' << (*it)->getX() << ' ' << (*it)->getY() << ' ' << (*it)->getUtility() << '\n';
     }
+    //std::cout<< "test" << std::endl;
     return true;
   }

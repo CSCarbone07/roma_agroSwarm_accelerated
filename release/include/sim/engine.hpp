@@ -10,6 +10,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <cmath>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "graphics/Window.h"
 #include "graphics/Camera.h"
 #include "graphics/Shader.h"
@@ -42,6 +45,14 @@
 
 #define PERFECT_COMMUNICATION      //according to the same define in informationGain.cpp or randomwalk.cpp
 
+struct Character {
+    GLuint TextureID;   // ID handle of the glyph texture
+    glm::ivec2 Size;    // Size of glyph
+    glm::ivec2 Bearing;  // Offset from baseline to left/top of glyph
+    GLuint Advance;    // Horizontal offset to advance to next glyph
+};
+
+
 
 class Engine {
 
@@ -58,6 +69,8 @@ public:
 private:
   void RenderScene();
 
+  FT_Library ft;
+  FT_Face face;
 
   /* Simulation Settings */
   YAML::Node config; /** < configuration file as a map */
@@ -96,14 +109,22 @@ private:
   std::vector<Mesh*> meshList;
   std::vector<Shader*> shaderList;
   Shader* shader1;
+  Shader* shader2;
   GLuint uniformProjection = 0, uniformView = 0, uniformModel = 0, uniformInColor = 0;
   
+
+  std::map<GLchar, Character> Characters;
+  //GLuint VAO, VBO;
 
   // Vertex Shader
   const char* vShader = "../include/graphics/Shaders/shader.vert";
   //static const char* vShader = "version 330";
   // Fragment Shader
   const char* fShader = "../include/graphics/Shaders/shader.frag";
+
+  const char* vTextShader = "../include/graphics/Shaders/text.vert";
+  const char* fTextShader = "../include/graphics/Shaders/text.frag";
+
 
   /* output file */
   std::ofstream knowledgeBasesFile;
@@ -210,6 +231,7 @@ public:
 
   void CreateShaders();
   void AddMesh(Mesh* inMesh = nullptr);
+  void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
 
 
   void run();

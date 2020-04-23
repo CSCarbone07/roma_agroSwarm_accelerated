@@ -41,7 +41,7 @@ static float minScale = 0.1f;
     communicationsRange = config["communications_range"].as<float>();
     size = {config["world"]["x"].as<unsigned>(), config["world"]["y"].as<unsigned>(), config["world"]["z"].as<unsigned>()};
     //knowledgeBasesFile.open(config["knowledgeBasesFile"].as<std::string>());
-    movesFile.open(config["movesFile"].as<std::string>());
+    movesFile.open(config["movesFile"].as<std::string>(), std::ios_base::app);
     statusFile.open(config["statusFile"].as<std::string>(), std::ios_base::app);
     randomChoice.open(config["randomChoice"].as<std::string>(), std::ios_base::app);
     timing.open(config["timing"].as<std::string>(), std::ios_base::app);
@@ -111,7 +111,79 @@ static float minScale = 0.1f;
     //CompileShaders();
 
 
+    
+    if (FT_Init_FreeType(&ft))
+    std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+
+    if (FT_New_Face(ft, "../fonts/Arial/Arial.ttf", 0, &face))
+      std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;  
+    
+    FT_Set_Pixel_Sizes(face, 0, 48); 
+
+    if (FT_Load_Char(face, 'X', FT_LOAD_RENDER))
+      std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;  
+        
+    // Disable byte-alignment restriction
+      glPixelStorei(GL_UNPACK_ALIGNMENT, 1); 
+
+    for (GLubyte c = 0; c < 128; c++)
+    {
+      // Load character glyph 
+      if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+      {
+        std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+        continue;
+      }
+      // Generate texture
+      GLuint texture;
+      glGenTextures(1, &texture);
+      glBindTexture(GL_TEXTURE_2D, texture);
+      glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RED,
+        face->glyph->bitmap.width,
+        face->glyph->bitmap.rows,
+        0,
+        GL_RED,
+        GL_UNSIGNED_BYTE,
+        face->glyph->bitmap.buffer
+      );
+      // Set texture options
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      // Now store character for later use
+      Character character = {
+        texture, 
+        glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+        glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+        face->glyph->advance.x
+      };
+      Characters.insert(std::pair<GLchar, Character>(c, character));
     }
+    
+    glBindTexture(GL_TEXTURE_2D, 0);
+    // Destroy FreeType once we're finished
+    FT_Done_Face(face);
+    FT_Done_FreeType(ft);
+
+
+        // Configure VAO/VBO for texture quads
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+      
+    }
+
+
 
     //print info
     std::cout << "World size: " << size[0] << "x" << size[1] << "x" << size[2] << std::endl;
@@ -181,18 +253,16 @@ static float minScale = 0.1f;
 * Run the simulation.
 */
 void Engine::run() {
-
-     
-       
+          
     #ifdef PERFECT_COMMUNICATION
-
 
     #endif    
 
- 
     std::stringstream ss;
+    std::cout << "running sim" << std::endl;
     this->world->getPopulationInfo(ss);
-    movesFile << "population:\n"<< ss.rdbuf();
+    //std::cout << "test" << std::endl;
+    movesFile << "population:\n" << ss.rdbuf();
     unsigned timeStep = 0;
 
     // support vector for shuffled agents
@@ -214,20 +284,18 @@ void Engine::run() {
     bool isMapped = false;
     bool isMappedOnlyClusters = false;
 
+
     while(timeStep < maxSteps || maxSteps == 0) {
     //std::cout << "Time step: " << timeStep << std::endl;
 
-    
-    if(displaySimulation)
-    {
-	GLfloat now = glfwGetTime(); // SDL_GetPerformanceCounter();
-	deltaTime = now - lastTime; // (now - lastTime)*1000/SDL_GetPerformanceFrequency();
-	lastTime = now;
-    RenderScene();
-    }
+      if(displaySimulation)
+      {
+      GLfloat now = glfwGetTime(); // SDL_GetPerformanceCounter();
+      deltaTime = now - lastTime; // (now - lastTime)*1000/SDL_GetPerformanceFrequency();
+      lastTime = now;
+      RenderScene();
+      }
 
-
-     
       if(!isCovered && this->world->isCovered()){
         timeToCoverage = timeStep;
         isCovered = true;
@@ -245,16 +313,18 @@ void Engine::run() {
         std::cout << "\n\n### world mapped ---- at Step:" << timeStep<<std::endl;
         break;
       }
+
       // limit the cout
       if(timeStep % 1000 == 0)
         std::cout << "#### time_step: " << timeStep << std::endl;
-      
+
       // shuffle the agents at every iteration
       std::shuffle(shuffled.begin(), shuffled.end(), RandomGenerator::getInstance().getGenerator());
       movesFile << ' ' << timeStep << ':' << '\n';
       // do step for each agent
       for(auto a : shuffled) {
         a->doStep(timeStep);
+        
         std::stringstream ss;
         if (a->getInfo(ss))
           movesFile << ' ' << ' ' << ss.rdbuf();
@@ -275,6 +345,7 @@ void Engine::run() {
       randomChoice << rand<<' '<<rand2<<"\n";
       timing << this->world->remainingTasksToVisit.size()<<' '<<this->world->remainingTasksToMap.size()<<' '<<this->world->remainingTasksIntoClusters.size()<<"\n";
       
+
       ++timeStep;
        
     }
@@ -308,45 +379,6 @@ void Engine::RenderScene()
 	camera.keyControl(mainWindow.getKeys(), deltaTime);
 	camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
-/*
-    if(direction)
-    {
-        triOffset += triIncrement;
-    }
-    else
-    {
-        triOffset -= triIncrement;
-    }
-
-    if(abs(triOffset) >= triMaxoffset )
-    {
-    direction = !direction;
-    }
-    
-    currentAngle += 1.0f;
-    if(currentAngle >= 360)
-    {
-        currentAngle -= 360;
-    }
-    
-    if(scaleDirection)
-    {
-    currentScale += 0.01f;
-    }
-    else
-    {
-    currentScale -= 0.01f;
-    }
-    
-    if(currentScale >= maxScale )
-    {
-    scaleDirection = false;
-    }
-    if(currentScale <= minScale)
-    {
-    scaleDirection = true;
-    }
-*/
     // clear window
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     //glClear(GL_COLOR_BUFFER_BIT);
@@ -357,7 +389,7 @@ void Engine::RenderScene()
 	uniformModel = shaderList[0]->GetModelLocation();
 	uniformProjection = shaderList[0]->GetProjectionLocation();
 	uniformView = shaderList[0]->GetViewLocation();
-    uniformInColor = shaderList[0]->GetInColor();
+  uniformInColor = shaderList[0]->GetInColor();
 
     glUniform1f(shaderList[0]->GetXmoveLocation(), triOffset);
     //glUseProgram(shader1->GetShaderID());
@@ -366,74 +398,23 @@ void Engine::RenderScene()
     
       
     glm::mat4 model = glm::mat4(1.0f); 
-    //glm::mat model = glm::mat(1.0f); 
-    /*
-    //model = glm::translate(model, glm::vec3(triOffset, 0.0f, -2.5f));
-    model = glm::translate(model, glm::vec3(triOffset, 0.0f, -2.5f));
-    //model = glm::rotate(model, currentAngle * tR, glm::vec3(0.0f, 1.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));        
-
-    //glUniform1f(shaderList[0].GetXmoveLocation(), triOffset);
-    glUniformMatrix4fv(shaderList[0].GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
-
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));    
-    */
-
-
-
-/*
-	model = glm::translate(model, glm::vec3(0.0f, -1.0f, -2.5f));
-	model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	meshList[0]->RenderMesh();
-
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, 1.0f, -2.5f));
-	model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	meshList[1]->RenderMesh();
-*/
-/*
-    for(Agent* ag : agents)
-    {
-    //glm::vec4 agentColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-    model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(ag->getX(), ag->getY(), -2.0f));
-	model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-	glUniform4fv(uniformInColor, 1, glm::value_ptr(ag->getCurrentColor())); 
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
-	if(ag->getMesh() != nullptr)
-    {ag->getMesh()->RenderMesh();}
-    
-    }
-
- */   
-    for(Mesh* m : meshList)
-    {
-    glm::vec4 agentColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-    model = glm::mat4(1.0f);
+  
+  for(Mesh* m : meshList)
+  {
+  glm::vec4 agentColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+  model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(m->GetWorldLocation()[0], m->GetWorldLocation()[1], m->GetWorldLocation()[2]));
 	model = glm::scale(model, glm::vec3(m->GetWorldScale()[0], m->GetWorldScale()[1], m->GetWorldScale()[2]));
-    glUniform4fv(uniformInColor, 1, glm::value_ptr(m->getCurrentColor())); 
+  glUniform4fv(uniformInColor, 1, glm::value_ptr(m->getCurrentColor())); 
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 	if(m != nullptr)
-    {m->RenderMesh();}
-    }
+  {m->RenderMesh();}
+  }
 
-
-/*
-    glBindVertexArray(VAO);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);    
-    glBindVertexArray(0);
-*/
+  //RenderText("This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+  //RenderText("(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
 
     glUseProgram(0);
 
@@ -446,57 +427,76 @@ void Engine::RenderScene()
 
 void Engine::CreateShaders()
 {
-	shader1 = new Shader();
+	shader1 = new Shader(0);
 	shader1->CreateFromFiles(vShader, fShader);
 	shaderList.push_back(shader1);
+
+	shader2 = new Shader(1);
+	shader2->CreateFromFiles(vTextShader, fTextShader);
+	shaderList.push_back(shader1);
+
     printf("Shaders created \n");
 }
 
 
-
 void Engine::AddMesh(Mesh* inMesh)
 {
- 
-/*   
-    unsigned int indices[] = {
-        0, 3, 1,
-        1, 3, 2,
-        2, 3, 0,
-        0, 1, 2          
-    };
-
-    GLfloat vertices[] = {
-        -1.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, -1.0f,
-        1.0f, 1.0f, 0.0f,
-        0.0f, -1.0f, 0.0f
-    };
-
-	Mesh *obj1 = new Mesh();
-	obj1->CreateMesh(vertices, indices, 12, 12);
-	meshList.push_back(obj1);
-
-	Mesh *obj2 = new Mesh();
-	obj2->CreateMesh(vertices, indices, 12, 12);
-	meshList.push_back(obj2);
-
-    for(Agent* ag: agents)
-    {
-	Mesh* obj = new Mesh();
-    obj->CreateMesh(vertices, indices, 12, 12);
-    ag->setMesh(obj);
-    if(ag->getMesh() != nullptr)
-    {meshList.push_back(ag->getMesh());}
-    }
-*/
-
-
     meshList.push_back(inMesh);
 }
 
 
+void Engine::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
+{
+    glm::vec4 textColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
+    // Activate corresponding render state	
+    shader2->UseShader();
+    uniformModel = shader2->GetModelLocation();
+    uniformProjection = shader2->GetProjectionLocation();
+    uniformView = shader2->GetViewLocation();
+    uniformInColor = shader2->GetInColor();
 
+    glUniform4fv(uniformInColor, 1, glm::value_ptr(textColor)); 
+    //glUniform3f(glGetUniformLocation(shader.get, "textColor"), color.x, color.y, color.z);
+    glActiveTexture(GL_TEXTURE0);
+    glBindVertexArray(VAO);
+
+    // Iterate through all characters
+    std::string::const_iterator c;
+    for (c = text.begin(); c != text.end(); c++) 
+    {
+        Character ch = Characters[*c];
+
+        GLfloat xpos = x + ch.Bearing.x * scale;
+        GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+
+        GLfloat w = ch.Size.x * scale;
+        GLfloat h = ch.Size.y * scale;
+        // Update VBO for each character
+        GLfloat vertices[6][4] = {
+            { xpos,     ypos + h,   0.0, 0.0 },            
+            { xpos,     ypos,       0.0, 1.0 },
+            { xpos + w, ypos,       1.0, 1.0 },
+
+            { xpos,     ypos + h,   0.0, 0.0 },
+            { xpos + w, ypos,       1.0, 1.0 },
+            { xpos + w, ypos + h,   1.0, 0.0 }           
+        };
+        // Render glyph texture over quad
+        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        // Update content of VBO memory
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        // Render quad
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+        x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+    }
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
 
 
 

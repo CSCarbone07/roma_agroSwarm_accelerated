@@ -22,6 +22,11 @@ private:
   unsigned size; /** < size of the cell */
   float utility; /** < utility associated to this cell */
 
+  std::vector<Cell*> cells;                   //all cells in world
+  std::array<unsigned, 3> worldCellSize;      //world size in amount of cells
+  std::vector<Cell*> cells_3x3;
+  std::vector<Cell*> cells_5x5;
+
   unsigned numAgents; /** < number of agents committed to this cell */
   bool mapped = false;
   float beacon = 0;  
@@ -67,10 +72,15 @@ public:
   inline float getBeacon() const { return beacon; }
   inline void setBeacon(float beacon) { this->beacon = beacon; }
 
+  inline std::vector<Cell*> get3x3() { return cells_3x3; }
+  inline std::vector<Cell*> get5x5() { return cells_5x5; }
+
   inline void setUtility(float utility){this->utility = utility;}
   inline void setResidual(float residual_uncertainty){this->residual_uncertainty = residual_uncertainty;}
 
   inline void addWeed(Weed* weed){this->weed = weed;}
+
+  void SetNeighbors(std::vector<Cell*> inCells);
 
   void setMapped();
 

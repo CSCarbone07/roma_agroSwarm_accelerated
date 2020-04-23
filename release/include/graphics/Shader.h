@@ -13,7 +13,7 @@
 class Shader
 {
 public:
-	Shader();
+	Shader(GLuint inShaderID);
 	~Shader();
     void ClearShader();
 

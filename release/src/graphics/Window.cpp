@@ -63,7 +63,7 @@ int Window::Initialise()
 
     // Hnalde Key + Mouse Input
     createCallbacks();
-    //glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //Use to lock mouse invisibly in the created window
+    glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //Use to lock mouse invisibly in the created window
 
 	// Allow modern extension access
 	glewExperimental = GL_TRUE;
@@ -96,7 +96,7 @@ Window::~Window()
 void Window::createCallbacks()
 {
     glfwSetKeyCallback(mainWindow, handleKeys);
-    glfwSetCursorPosCallback(mainWindow, handleMouse);
+    //glfwSetCursorPosCallback(mainWindow, handleMouse);
 
 
 }
@@ -146,7 +146,7 @@ void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int m
 
 void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)    
 {
-    /*
+    
     Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
     
     if(theWindow->mouseFirstMoved)
@@ -164,7 +164,7 @@ void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)
   
     //printf("x:%.6f, y:%.6f\n", theWindow->xChange, theWindow->yChange);
 
-    */
+    
 }
 
 

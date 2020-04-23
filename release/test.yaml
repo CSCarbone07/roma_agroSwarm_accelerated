@@ -4,7 +4,7 @@ seed: 1	          	# seed for the random number generator
 
 Display_Simulation: true 
 
-communications_range: 25     #-1 if communication range is unlimited
+communications_range: -1    #-1 if communication range is unlimited
 
 world:
   x: 50                # world x size
@@ -29,17 +29,15 @@ orcaRadius: 0.3
 tau: 0.2
 collisionAvoidance: true
 
-KnowledgeClusterRadius: 1   #radius around main scanning cell to included in knowledge update
+KnowledgeClusterRadius: 0   #radius around main scanning cell to included in knowledge update
 
-InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain 
+InspectionStrategy: "rw" #rw = randomwalk (default), ig = information gain 
 
 #if ig is the strategy:
 TargetSelectionStrategy: "random"   #greedy, softmax, random (default) with weights. 
 Softmax_Lambda: 1       #lambda for softmax equation 
 UseSocialInfo: false    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights
-
-
 
 #visit
 repulsion: 64

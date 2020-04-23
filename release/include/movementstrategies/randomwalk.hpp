@@ -17,7 +17,8 @@ class RandomWalkStrategy {
         std::array<float,3> pickNextTarget(Agent* ag);
         
         RandomWalkStrategy(Agent* ag);
-
+        float cellSize = 1;
+        std::array<unsigned, 3> worldCellSize;      //world size in amount of cells
 
     private:
 

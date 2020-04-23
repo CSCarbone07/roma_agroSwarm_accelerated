@@ -11,7 +11,7 @@ Weed::Weed(float x, float y, float density){
         mesh->SetPlane();
         mesh->SetCurrentColor(currentColor);
     }
-    
+
     this->x = x;
     this->y = y;
     this->density = density;

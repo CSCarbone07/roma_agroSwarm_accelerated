@@ -2,7 +2,7 @@
 #include "graphics/Shader.h"
 
 // Shader
-Shader::Shader()
+Shader::Shader(GLuint inShaderID = 0)
 {
 	shaderID = 0;
 	uniformModel = 0;
@@ -130,7 +130,7 @@ void Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 	uniformModel = glGetUniformLocation(shaderID, "model");
 	uniformXmove = glGetUniformLocation(shaderID, "xMove");
 	uniformInColor = glGetUniformLocation(shaderID, "inColor");
-    
+    //uniformIn
 
     printf("Shader succesfully compiled \n");
 

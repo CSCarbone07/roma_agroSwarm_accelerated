@@ -35,7 +35,8 @@ void WObject::SetWorldScale(std::vector<float> inScale)
         std::vector<float> newScale {0,0,0};
         for(int i = 0; i < 3; i++)
         {newScale[i] = c->GetWorldScale()[i] * (inScale[i]);}
-        c->SetWorldScale(newScale);
+        if(c != nullptr)
+        {c->SetWorldScale(newScale);}
     }
 wTransform.Scale = inScale;
 }

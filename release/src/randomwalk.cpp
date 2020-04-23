@@ -9,9 +9,9 @@
 
 RandomWalkStrategy::RandomWalkStrategy(Agent* ag)
 {
- 
    ownerAgent = ag;
-   
+   worldCellSize.at(0) = Engine::getInstance().getWorld()->getSize().at(0);
+   worldCellSize.at(1) = Engine::getInstance().getWorld()->getSize().at(1);
 }
 
 std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
@@ -23,7 +23,7 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
   std::array<unsigned,3> agentDiscretePos = {unsigned(fmax(0,fmin(agentPos.at(0),sizex))),unsigned(fmax(0,fmin(agentPos.at(1),sizey))),0};//Engine::getInstance().getCommittedLevel()}; // Discretization of agent position  
 
   elegibles = getElegibles(ag, agentDiscretePos, id);
-
+  //std::cout << elegibles.size() << std::endl;
 /*
   for(auto &ele : elegibles)
   {
@@ -82,7 +82,7 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
         cumulative += 1/elegibles.size();
       if(random <= cumulative){
         Cell* c = elegibles.at(i).first;
-        //c->isTargetOf.push_back(id);
+        c->isTargetOf.push_back(id);
         std::array<unsigned,3> cellPos = c->getPosition();
         //std::cout << "returning chosen position" << std::endl;
         return {cellPos.at(0)+0.5f,cellPos.at(1)+0.5f,float(cellPos.at(2))};
@@ -121,7 +121,7 @@ bool inRadius(unsigned x, unsigned y, Cell* c, unsigned radius){
 bool isInBounds(unsigned x, unsigned y){     
 	return x >= 0 && y >= 0 && x < Engine::getInstance().getWorld()->getSize().at(0) && y < Engine::getInstance().getWorld()->getSize().at(1);;
 }
-
+/*
 void updateKBrw(Cell* cell, Agent* a){
   unsigned targetId = cell->getId();
   int agentId = -1;
@@ -150,7 +150,7 @@ void updateKBrw(Cell* cell, Agent* a){
     }  
   
 }
-
+*/
 std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag, std::array<unsigned,3> agentDiscretePos, unsigned id){
   Cell* c;
   std::vector<std::pair<Cell*, float>> ret;
@@ -205,7 +205,7 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
   std::vector<std::pair<Cell*, float>> ret2;
   std::vector<std::pair<Cell*, float>> ret3;
   std::vector<std::pair<Cell*, float>> ret4;
-  std::vector<std::pair<Cell*, float>> ret5;
+  //std::vector<std::pair<Cell*, float>> ret5;
 
 #ifndef FIXEDSIZE3x3
     max_range = 3*sqrt(2);
@@ -221,9 +221,43 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
     float max_range_3x3 = 2*sqrt(2);
     float min_range_3x3 = sqrt(2);
   
-  Cell* cella; 
+  // min range = 1
+  // max range = root square 2
+
+  // do check with ids using the rows and columns
+  // 
 
 
+  Cell* cella = currentOccupiedCell; 
+
+
+  std::vector<Cell*> cells_3x3 = cella->get3x3();
+  std::vector<Cell*> cells_5x5 = cella->get5x5();
+
+  float distanceToCell = 0;
+  for(Cell* c : cells_3x3)
+  {
+    distanceToCell = sqrt(pow((float) c->getX() - ownerAgent->getX(), 2) + pow((float) c->getY() - ownerAgent->getY(), 2));
+    if(isElegible(c, ownerAgent))
+      {ret2.push_back(std::make_pair<>(c, distanceToCell));}
+    if(c->isTargetOf.empty())
+      {ret4.push_back(std::make_pair<>(c, distanceToCell));}
+  }
+  for(Cell* c : cells_5x5)
+  {
+    distanceToCell = sqrt(pow((float) c->getX() - ownerAgent->getX(), 2) + pow((float) c->getY() - ownerAgent->getY(), 2));
+    //std::cout << distanceToCell << std::endl;
+    if(isElegible(c, ownerAgent))
+      {ret3.push_back(std::make_pair<>(c, distanceToCell));}
+    if(c->isTargetOf.empty())
+      {ret4.push_back(std::make_pair<>(c, distanceToCell));}
+  }
+  distanceToCell = sqrt(pow((float) currentOccupiedCell->getX() - ownerAgent->getX(), 2) + pow((float) currentOccupiedCell->getY() - ownerAgent->getY(), 2));
+  ret.push_back(std::make_pair<>(currentOccupiedCell, distanceToCell));
+
+
+
+/*
   for (std::map<float, std::vector<std::pair<int, int>>>::iterator it=Engine::getInstance().getWorld()->distanceVectors.begin(); it!=Engine::getInstance().getWorld()->distanceVectors.end(); ++it){
     for(std::vector<std::pair<int,int>>::iterator it2=it->second.begin(); it2!=it->second.end(); ++it2){
       int newX = it2->first + int (agentDiscretePos.at(0));
@@ -231,49 +265,52 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
       if(it->first > max_range_5x5){
         break;
       }
-      if(isInBounds(newX, newY)){
 
+      if(isInBounds(newX, newY))
+      {
         Cell* worldCell_REF = Engine::getInstance().getWorld()->getCell(it2->first + agentDiscretePos.at(0), it2->second + agentDiscretePos.at(1), 0);
         if(ownerAgent->GetCommunicationsRange() == -1)
         {cella = worldCell_REF;}
         if(ownerAgent->GetCommunicationsRange() > 0)
         {cella = ownerAgent->cells.at(worldCell_REF->getId());}  
 
-      if(it->first > min_range_3x3 && it->first < max_range_3x3){
-          if(isElegible(cella, ownerAgent)){
-            ret2.push_back(std::make_pair<>(cella, it->first));
-          }
+        if(it->first > min_range_3x3 && it->first < max_range_3x3)
+        {
+            if(isElegible(cella, ownerAgent))
+            {
+              ret2.push_back(std::make_pair<>(cella, it->first));
+            }
         }
         if(it->first > min_range_5x5 && it->first < max_range_5x5 && cella->isTargetOf.empty())
         {
-            if(isElegible(cella, ownerAgent))
-            ret3.push_back(std::make_pair<>(cella, it->first));
+          if(isElegible(cella, ownerAgent))
+          ret3.push_back(std::make_pair<>(cella, it->first));
         }
         if(it->first > min_range_3x3 && it->first < max_range_5x5 && cella->isTargetOf.empty()) 
-            ret4.push_back(std::make_pair<>(cella, it->first));    
-        if(it->first <= min_range_3x3 && isElegible(cella, ownerAgent)){
+          ret4.push_back(std::make_pair<>(cella, it->first));    
+        if(it->first <= min_range_3x3 && isElegible(cella, ownerAgent))
+        {
             ret.push_back(std::make_pair<>(cella, it->first));
         }
       }
     }
   }
-
-  if(ret.size()== 0){
+*/
     if(ret2.size()!=0){
       //std::cout << "returning ret2" << std::endl;
       return ret2;   
     }
     else if(ret3.size()!=0){
       //std::cout << "returning ret3" << std::endl;
-      Engine::getInstance().getWorld()->getAgent(id)->sceltaRandom = true;
+      //Engine::getInstance().getWorld()->getAgent(id)->sceltaRandom = true;
       return ret3;
     }
     else{
       //std::cout << "returning ret4" << std::endl;
-      Engine::getInstance().getWorld()->getAgent(id)->sceltaRandom = true;
+      //Engine::getInstance().getWorld()->getAgent(id)->sceltaRandom = true;
       return ret4;
     }
-  }
+  
 #endif
   return ret;
 }
