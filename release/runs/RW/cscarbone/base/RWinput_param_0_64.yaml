@@ -12,7 +12,7 @@ world:
   z: 1                 # world z size  
 
 
-
+knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
 movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
 statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
 randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
@@ -31,6 +31,12 @@ tau: 0.2
 collisionAvoidance: true
 
 InspectionStrategy: "rw" #rw = randomwalk (default), ig = information gain 
+
+#if ig is the strategy:
+TargetSelectionStrategy: "random"   #greedy, softmax, random (default) with weights. 
+Softmax_Lambda: 1       #lambda for softmax equation 
+UseSocialInfo: false    #include information from other agents
+UseDistanceForIG: false #include distance in ig weights
 
 #visit
 repulsion: _REPULSION_

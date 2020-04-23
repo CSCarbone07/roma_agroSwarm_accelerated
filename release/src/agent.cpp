@@ -558,8 +558,6 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
       }
     }
  
-
-    
     }
     */
     
@@ -596,6 +594,24 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
     currentCell->residual_uncertainty = -entr;
 
     //std::cout << "scan of agent " << this->getId() << " result " << currentObservation << std::endl;
+    std::stringstream scanReport;
+    //scanReport << "Agent " << this->getId() << " at timestep " << timeStep << " scanned cell " << currentCell->getId() 
+    //<< "" << std::endl; 
+    scanReport << currentCell->getId() << " " << this->getId() << " " << timeStep << " " << currentObservation << " ";
+    for(float f : currentCell->knowledgeVector)
+    {
+      scanReport << f << " ";
+    }
+    for(float f : currentCell->observationVector)
+    {
+      scanReport << f << " ";
+    }
+    //scanReport = "Agent " + toString(this->getId());
+    //std::cout << scanReport << std::endl;
+    std::string outString;
+    outString = scanReport.str();
+    Engine::getInstance().WriteKnowledgeBasesFile(outString);
+
     return currentObservation;
   
 };

@@ -40,7 +40,7 @@ static float minScale = 0.1f;
     numOfAgents = config["num_of_agents"].as<unsigned>();
     communicationsRange = config["communications_range"].as<float>();
     size = {config["world"]["x"].as<unsigned>(), config["world"]["y"].as<unsigned>(), config["world"]["z"].as<unsigned>()};
-    //knowledgeBasesFile.open(config["knowledgeBasesFile"].as<std::string>());
+    knowledgeBasesFile.open(config["knowledgeBasesFile"].as<std::string>(), std::ios_base::app);
     movesFile.open(config["movesFile"].as<std::string>(), std::ios_base::app);
     statusFile.open(config["statusFile"].as<std::string>(), std::ios_base::app);
     randomChoice.open(config["randomChoice"].as<std::string>(), std::ios_base::app);
@@ -242,8 +242,8 @@ static float minScale = 0.1f;
       }
     }
    
-    //knowledgeBasesFile << "Agents Knowledge Base:" << std::endl;
-
+    knowledgeBasesFile << "Knowledge Base (registration of each scan)" << std::endl;
+    knowledgeBasesFile << "cell_ID / agent_ID / timestep / current observation / knowledge vector (13) / observation vector (13)" << std::endl << std::endl;
 
   }
 
@@ -499,4 +499,11 @@ void Engine::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, g
 }
 
 
+
+void Engine::WriteKnowledgeBasesFile(std::string inString)
+{
+//std::cout << inString << std::endl;
+knowledgeBasesFile << inString << std::endl;
+//knowledgeBasesFile << inString.rdbuf();
+}
 

@@ -226,6 +226,7 @@ public:
    */
 
 
+  void WriteKnowledgeBasesFile(std::string inString);
 
   void init(YAML::Node config);
 
