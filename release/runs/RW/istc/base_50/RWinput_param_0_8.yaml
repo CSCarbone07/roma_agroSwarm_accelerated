@@ -12,12 +12,12 @@ world:
   z: 1                 # world z size  
 
 
-knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
-movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
-statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
-randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
-timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
-visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+knowledgeBasesFile:  	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+movesFile: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+statusFile: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+randomChoice: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+timing: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+visitedCells: 	"/home/laral16/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
 
 weeds:
     clusters: 4

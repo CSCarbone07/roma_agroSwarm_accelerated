@@ -30,6 +30,8 @@ orcaRadius: 0.3
 tau: 0.2
 collisionAvoidance: true
 
+KnowledgeClusterRadius: 0   #radius around main scanning cell to included in knowledge update
+
 InspectionStrategy: "rw" #rw = randomwalk (default), ig = information gain 
 
 #if ig is the strategy:
