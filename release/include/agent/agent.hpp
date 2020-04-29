@@ -111,7 +111,7 @@ protected:
       return false;
   }
 
-  unsigned scanCurrentLocation(Cell* c);
+  float scanCurrentLocation(Cell* c);
   
   /**
    * Get Next Position

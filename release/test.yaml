@@ -1,8 +1,8 @@
 max_steps: 10000	    # termination condition for the simulation, 0 means infinite
-num_of_agents: 50	        # total number of agents in the simulatio0
-seed: 1	          	# seed for the random number generator
+num_of_agents: 1	        # total number of agents in the simulatio0
+seed: 34	          	# seed for the random number generator
 
-Display_Simulation: false 
+Display_Simulation: true 
 
 communications_range: -1    #-1 if communication range is unlimited
 
@@ -17,7 +17,7 @@ statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/rel
 randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice.yaml"
 timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing.yaml"
 visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells.yaml"
-		
+
 weeds:
     clusters: 4
     maxweeds: 49
@@ -40,6 +40,6 @@ UseSocialInfo: false    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights
 
 #visit
-repulsion: 64
-attraction: 4
+repulsion: 0
+attraction: 64
 

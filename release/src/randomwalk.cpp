@@ -85,7 +85,7 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
         c->isTargetOf.push_back(id);
         std::array<unsigned,3> cellPos = c->getPosition();
         //std::cout << "returning chosen position" << std::endl;
-        return {cellPos.at(0)+0.5f,cellPos.at(1)+0.5f,float(cellPos.at(2))};
+        return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
       }
     }
   }

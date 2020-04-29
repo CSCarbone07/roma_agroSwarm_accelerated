@@ -286,7 +286,7 @@ void Engine::run() {
 
 
     while(timeStep < maxSteps || maxSteps == 0) {
-    //std::cout << "Time step: " << timeStep << std::endl;
+    std::cout << "Time step: " << timeStep << std::endl;
 
       if(displaySimulation)
       {

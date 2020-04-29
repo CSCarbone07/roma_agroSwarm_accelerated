@@ -474,7 +474,7 @@ bool Agent::isInBound(unsigned x, unsigned y){
 /**
  * Perform a scan at the current location (that is supposed to be the targetLocation)
  */
-unsigned Agent::scanCurrentLocation(Cell* currentCell){ 
+float Agent::scanCurrentLocation(Cell* currentCell){ 
 	assert(getTargetId() != -1);
 
   // scan at current location and return the perceived cell
@@ -489,7 +489,7 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
         }
     }    
     //get current observation
-    unsigned currentObservation;
+    float currentObservation;    // this should be a float
     float random = RandomGenerator::getInstance().nextFloat(1);
     for (unsigned i = 0; i < 13; i++){  
       random -= Engine::getInstance().getWorld()->getSensorTable()[i][currentCell->getUtility()];
@@ -585,7 +585,9 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
                                 / currentCell->observationVector[currentObservation];
     //if i-th element is != 0  ---> calculate H(c)
       if(currentCell->knowledgeVector[i] != 0)
-      {entr +=  currentCell->knowledgeVector[i]*(std::log(currentCell->knowledgeVector[i]));}
+      {
+        entr +=  currentCell->knowledgeVector[i]*(std::log(currentCell->knowledgeVector[i]));
+      }
     }
     
     
@@ -611,6 +613,10 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
     std::string outString;
     outString = scanReport.str();
     Engine::getInstance().WriteKnowledgeBasesFile(outString);
+
+    //std::cout << currentObservation << std::endl;
+
+
 
     return currentObservation;
   

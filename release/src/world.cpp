@@ -65,7 +65,7 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
         this->sensorTable[o][c] = 0;
       else{
 #ifndef NO_ERROR          
-        this->sensorTable[o][c] = PMFBinomial(0.95, c, o);
+        this->sensorTable[o][c] = PMFBinomial(0.95, c, o); // make 0.95 to parameter
 #else
         this->sensorTable[o][c] = 0;
 #endif
