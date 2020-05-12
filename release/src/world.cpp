@@ -23,6 +23,8 @@ double logChoose(int n, int k) {
 }
 
 double PMFBinomial(double p, int n, int k) {
+  //double lgrTest = factorial(n) * pow(p,k)*pow((1-p), n-k);
+  
   double lgr = logChoose(n, k) + double(k)*std::log(p) + double(n-k)*std::log(1-p);
   return std::exp(lgr);
 }
@@ -32,8 +34,7 @@ World::World(std::array<unsigned,3> size) {
   this->cells = std::vector<Cell*>(size.at(0)*size.at(1)*size.at(2), NULL);
   this->agents = std::vector<Agent*>(Engine::getInstance().getNumOfAgents(), NULL);
   this->size = size;
-  unsigned id = 0;
-  unsigned cellSize = 1;
+  int id = 0;
   for(unsigned z=0; z<size.at(2); z++) {
     for(unsigned y=0; y<size.at(1); y++){
       for(unsigned x=0; x<size.at(0); x++){
@@ -70,10 +71,11 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
         this->sensorTable[o][c] = 0;
 #endif
       }
-      //std::cout<<sensorTable[o][c]<<"  ";
+      std::cout << sensorTable[o][c] << " ";
     }
-    //std::cout<<std::endl;
+    std::cout << std::endl;
   }                
+
 
 
   for(int h = - int(this->size.at(0)); h < int (this->size.at(0)); h++){
@@ -116,7 +118,7 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
         //find a random location for the weed
         clusterCenterX = RandomGenerator::getInstance().nextInt(3, size.at(0)-3);
         clusterCenterY = RandomGenerator::getInstance().nextInt(3, size.at(1)-3);
-        w = new Weed(clusterCenterX,clusterCenterY,1); // Cell size is 1 (Just centered)
+        w = new Weed(clusterCenterX,clusterCenterY, weedCluster_Altitude,1); // Cell size is 1 (Just centered)
         if(clustersCenter.size() == 0){
           if(addWeed(w)){
             tot++;
@@ -152,7 +154,7 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
           }
         }   
       }while(check);
-      unsigned radius = 1;
+      int radius = 1;
       float density;
       //while(radius < size.at(0) && radius < size.at(1)){
       while(radius < 4){
@@ -162,7 +164,8 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
             nextLocationY = clusterCenterY + j;
             if(nextLocationX >= 0 && nextLocationY >= 0 && nextLocationX < size.at(0) && nextLocationY < size.at(1)){
               density = Engine::getInstance().gaussianPDF(sqrt(i*i+j*j),(RandomGenerator::getInstance().nextInt(2)-1)*RandomGenerator::getInstance().nextFloat(1), 8);            
-              Weed* w = new Weed(nextLocationX, nextLocationY, density);
+              //std::cout << "spawning density" << density << std::endl;
+              Weed* w = new Weed(nextLocationX, nextLocationY, weedCluster_Altitude, density);
               if(density < 0.1) {
                 goto finish;
               }
@@ -191,9 +194,16 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
       //find a random location for the weed
       weedX = RandomGenerator::getInstance().nextInt(size.at(0));
       weedY = RandomGenerator::getInstance().nextInt(size.at(1));
-      Weed* w = new Weed(weedX+0.5,weedY+0.5,1); // Cell size is 1 (Just centered)
+      
+      if(getCell(weedX,weedY,0)->getUtility() > 0)
+      {
+        continue;
+      }
+      unsigned population = RandomGenerator::getInstance().nextInt(1,4);
+      Weed* w = new Weed(weedX,weedY, isolatedWeed_Altitude,float(population/13));
+      //w->mesh->SetCurrentColor(glm::vec4(0.4f, 0.7f, 0.0f, 1.0f));
+
       if(addWeed(w)){
-        unsigned population = RandomGenerator::getInstance().nextInt(1,4);
         tot++;
         std::cout<<"   population    "<<population<<std::endl;
         this->cells.at(getCellId(w->x,w->y, 0))->setUtility(population);
@@ -202,7 +212,9 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
       }else{
         continue;
       }
+
     }
+    
     std::cout << "...isolated done   " <<tot<<std::endl;
 }
 

@@ -21,7 +21,7 @@ class RandomWalkStrategy {
         std::array<unsigned, 3> worldCellSize;      //world size in amount of cells
 
     private:
-
+        int testingId = 1;
         Agent* ownerAgent;  //Agent using this strategy class
         float max_range;
         float min_range;

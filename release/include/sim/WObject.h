@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef W_OBJECT_H
 #define W_OBJECT_H
 

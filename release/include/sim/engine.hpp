@@ -52,8 +52,6 @@ struct Character {
     GLuint Advance;    // Horizontal offset to advance to next glyph
 };
 
-
-
 class Engine {
 
 public:
@@ -63,8 +61,6 @@ public:
     return instance;
   }
   unsigned rand = 0;
-
-
 
 private:
   void RenderScene();
@@ -112,7 +108,6 @@ private:
   Shader* shader2;
   GLuint uniformProjection = 0, uniformView = 0, uniformModel = 0, uniformInColor = 0;
   
-
   std::map<GLchar, Character> Characters;
   //GLuint VAO, VBO;
 
@@ -150,7 +145,7 @@ public:
   Engine(Engine const&) = delete;
   void operator=(Engine const&) = delete;
 
-  float gaussianPDF(float x, float mean, float variance){
+  float gaussianPDF(float x, float mean, float variance){ //gaussian probability density function
     return exp(-(9*(x - mean)*(x - mean))/(2*(variance*variance)));
   }
   /* Getters */

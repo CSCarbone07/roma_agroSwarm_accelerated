@@ -110,6 +110,12 @@ GL/glew.h
 GLFW/glfw3.h
 -
 
+../include/libraries/WMath.h
+cmath
+-
+vector
+-
+
 ../include/movementstrategies/informationGain.hpp
 vector
 -
@@ -1758,6 +1764,12 @@ detail/setup.hpp
 detail/func_vector_relational.inl
 ../libraries/glm-0.9.9.7/glm/../glm/detail/func_vector_relational.inl
 
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/WMath.cpp
+libraries/WMath.h
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/libraries/WMath.h
+cmath
+-
+
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/WObject.cpp
 sim/WObject.h
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/WObject.h
@@ -1849,8 +1861,12 @@ sim/world.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/weed.cpp
 sim/weed.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/weed.hpp
+libraries/WMath.h
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/libraries/WMath.h
 sim/engine.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/engine.hpp
+sim/cell.hpp
+/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/cell.hpp
 
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/world.cpp
 sim/world.hpp

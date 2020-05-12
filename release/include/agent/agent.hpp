@@ -43,6 +43,9 @@ protected:
   glm::vec4 receivingMessageColor = glm::vec4(0.0f, 0.0f, 0.5f, 1.0f);
   glm::vec4 scanningColor = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
 
+  int testingId = 1;//27;
+  glm::vec4 testColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
 
 
   float communicationsRange=-1;
@@ -135,10 +138,10 @@ protected:
 public:
   bool sceltaRandom = 0;
 
-
+  std::map<unsigned, Cell*> beacons; /** < in my agent there are beacons */
   std::map<unsigned, Cell*> cells;             /** < in my agent knowledge there are cells */
+  std::vector<Cell*> cellsPointers; 
 
-    
 
   Agent(unsigned id, float x, float y, float z);
   ~Agent();
@@ -154,7 +157,7 @@ public:
     return (sqrt(pow(this->getX()-t.at(0),2)+pow(this->getY()-t.at(1),2)+pow(this->getZ()-t.at(2),2)));
   }
   float calculateLinearDistanceToTarget(std::array<unsigned,3> t){
-    return (sqrt(pow(this->getX()-((float)t.at(0)+0.5),2)+pow(this->getY()-((float)t.at(1)+0.5),2)));
+    return (sqrt(pow(this->getX()-((float)t.at(0)),2)+pow(this->getY()-((float)t.at(1)),2)));
   }
 
   /**
@@ -216,6 +219,9 @@ public:
   inline float getAgentRadius(){return this->agentRadius;}  
   inline float getTheta(){return this->theta;} 
   inline int getTargetId(){return this->targetId;} 
+
+  inline int getTestingId(){return this->testingId;} 
+
   /**
    * Do one simulation step
    */
@@ -226,6 +232,7 @@ public:
    */
   bool getInfo(std::stringstream& ss);
 
+  void ChangeColor(glm::vec4 inColor);
 
   /**
    * Used deleting target from and agent

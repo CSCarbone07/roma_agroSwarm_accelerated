@@ -32,9 +32,6 @@ static float minScale = 0.1f;
 
  void Engine::init(YAML::Node config) {
 
-
-   
-
     // Initilize agents and world
     maxSteps = config["max_steps"].as<unsigned>();
     numOfAgents = config["num_of_agents"].as<unsigned>();
@@ -233,8 +230,8 @@ static float minScale = 0.1f;
         y = RandomGenerator::getInstance().nextInt(size.at(1));
         //z = zPos.at(RandomGenerator::getInstance().nextInt(0,2));
       }
-      Agent* agent = new Agent(id, x+0.5, y+0.5, z); // MARK --> change this according to your needs
-      if(this->world->addAgent(agent, x+0.5, y+0.5, z)){
+      Agent* agent = new Agent(id, x, y, z); // MARK --> change this according to your needs
+      if(this->world->addAgent(agent, x, y, z)){
         printf("Agent %i in position %f %f %f \n", agent->getId(), agent->getX(), agent->getY(), agent->getZ());
         agent->setVelocity(linearVelocity);
         agent->setAgentRadius(((orcaRadius/2)-0.05f));
@@ -286,7 +283,7 @@ void Engine::run() {
 
 
     while(timeStep < maxSteps || maxSteps == 0) {
-    std::cout << "Time step: " << timeStep << std::endl;
+    //std::cout << "Time step: " << timeStep << std::endl;
 
       if(displaySimulation)
       {

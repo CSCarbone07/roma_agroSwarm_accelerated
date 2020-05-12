@@ -5,16 +5,8 @@
 #include "sim/engine.hpp"
 
 
-Cell::Cell(unsigned id, unsigned x, unsigned y, unsigned z, unsigned size, bool mapped, float utility){
-
-    if(Engine::getInstance().getDisplaySimulation())
-    {      
-        mesh = new Mesh();
-        mesh->SetParent(this);
-        mesh->SetPlane();
-        mesh->SetCurrentColor(nonInspectedColor);
-    }
-       
+Cell::Cell(int id, float x, float y, float z, float size, bool mapped, float utility){
+      
     this->id = id;
     this->x = x; 
     this->y = y; 
@@ -25,31 +17,68 @@ Cell::Cell(unsigned id, unsigned x, unsigned y, unsigned z, unsigned size, bool 
     this->observationVector.fill(0.0);
     this->mapped = mapped;
 
+    //std::cout << "receiving ID " << id << std::endl;
+
+    if(testingId == id)
+    {std::cout << "testing cell: " << x << "x +" << y << "y" << std::endl;}
+
+    if(Engine::getInstance().getDisplaySimulation())
+    {      
+        mesh = new Mesh();
+        mesh->SetParent(this);
+        mesh->SetPlane();
+        ChangeColor(nonInspectedColor);
+    }
+
     //worldCellSize.at(0) = Engine::getInstance().getWorld()->getSize().at(0);
     //worldCellSize.at(1) = Engine::getInstance().getWorld()->getSize().at(1);
     
-    //std::cout<< "Cell " << this->getId() << " in position " << x << " x " << y << " y " << z << " z" << std::endl;
+    //std::cout<< "Cell " << this->getId() << " spawned in position " << x << " x " << y << " y " << z << " z" << std::endl;
 
 
     SetWorldLocation(std::vector<float>{x,y,-0.5f});
     SetWorldScale(std::vector<float> {0.9f, 0.9f, 0.9f});
 
-    
 
 }
 
+void Cell::addWeed(Weed* inWeed)
+{
+    this->weed = inWeed;
+    if(weed!=nullptr)
+    {weed->SetCell(this);}
+}
 
+void Cell::setUtility(float inUtility)
+{
+    this->utility = inUtility;
+    //std::cout << "Cell " << getId() << " has now a utility of: " << utility << std::endl;
+    /*
+    if(utility>0)
+    {
+        ChangeColor(testColor);
+    }
+    */
+}
+
+void Cell::setBeacon(float beacon) 
+{
+    this->beacon = beacon; 
     
+    if(mesh!=nullptr && beacon>0)
+    {ChangeColor(beaconColor);}
+
+}
+
 void Cell::setMapped()
 {
     mapped = true; 
-    if(mesh != nullptr)
-    {mesh->SetCurrentColor(inspectedColor);}
+    if(mesh!=nullptr)
+    {ChangeColor(inspectedColor);}
 }
 
 void Cell::SetNeighbors(std::vector<Cell*> inCells)
 {
-    
     cells = inCells;
     float loopCellSize = (float) size;
     for(float i = -1*loopCellSize; (i <= 1*loopCellSize); i=i+loopCellSize)
@@ -92,4 +121,41 @@ void Cell::SetNeighbors(std::vector<Cell*> inCells)
     }
 }
 
+void Cell::ChangeColor(glm::vec4 inColor)
+{   
+    int ownId = (int)(this->getId());
+    if(mesh!=nullptr)
+    {
+      if(ownId != testingId)
+      {
+        mesh->SetCurrentColor(inColor);
+      }
+      else
+      {
+        mesh->SetCurrentColor(testColor);
+      }
+    }
 
+}
+
+void Cell::ResetColor()
+{
+    if(mapped == true)
+    {
+    ChangeColor(inspectedColor);
+    }
+    else
+    {
+        if(beacon>0)
+        {
+            ChangeColor(beaconColor);
+        }
+        else
+        {
+            ChangeColor(nonInspectedColor);
+        }
+        
+        
+    }
+    
+}

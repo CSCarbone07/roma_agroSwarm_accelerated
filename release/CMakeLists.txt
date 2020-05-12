@@ -32,6 +32,7 @@ include_directories(
 # add the executable
 add_executable(
   MACPP
+  src/WMath.cpp
   src/engine.cpp
   src/macpp.cpp
   src/world.cpp

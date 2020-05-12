@@ -282,6 +282,33 @@ freetype/fast:
 	$(MAKE) -f libraries/freetype-2.10.1/CMakeFiles/freetype.dir/build.make libraries/freetype-2.10.1/CMakeFiles/freetype.dir/build
 .PHONY : freetype/fast
 
+src/WMath.o: src/WMath.cpp.o
+
+.PHONY : src/WMath.o
+
+# target to build an object file
+src/WMath.cpp.o:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/WMath.cpp.o
+.PHONY : src/WMath.cpp.o
+
+src/WMath.i: src/WMath.cpp.i
+
+.PHONY : src/WMath.i
+
+# target to preprocess a source file
+src/WMath.cpp.i:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/WMath.cpp.i
+.PHONY : src/WMath.cpp.i
+
+src/WMath.s: src/WMath.cpp.s
+
+.PHONY : src/WMath.s
+
+# target to generate assembly for a file
+src/WMath.cpp.s:
+	$(MAKE) -f CMakeFiles/MACPP.dir/build.make CMakeFiles/MACPP.dir/src/WMath.cpp.s
+.PHONY : src/WMath.cpp.s
+
 src/WObject.o: src/WObject.cpp.o
 
 .PHONY : src/WObject.o
@@ -682,6 +709,9 @@ help:
 	@echo "... uninstall"
 	@echo "... glfw"
 	@echo "... freetype"
+	@echo "... src/WMath.o"
+	@echo "... src/WMath.i"
+	@echo "... src/WMath.s"
 	@echo "... src/WObject.o"
 	@echo "... src/WObject.i"
 	@echo "... src/WObject.s"

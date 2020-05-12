@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/MACPP.dir/src/WMath.cpp.o"
   "CMakeFiles/MACPP.dir/src/engine.cpp.o"
   "CMakeFiles/MACPP.dir/src/macpp.cpp.o"
   "CMakeFiles/MACPP.dir/src/world.cpp.o"

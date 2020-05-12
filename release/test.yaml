@@ -1,10 +1,10 @@
 max_steps: 10000	    # termination condition for the simulation, 0 means infinite
-num_of_agents: 1	        # total number of agents in the simulatio0
-seed: 34	          	# seed for the random number generator
+num_of_agents: 50	        # total number of agents in the simulation
+seed: 1	          	# seed for the random number generator
 
-Display_Simulation: true 
+Display_Simulation: false
 
-communications_range: -1    #-1 if communication range is unlimited
+communications_range: 10    #-1 if communication range is unlimited
 
 world:
   x: 50                # world x size
@@ -40,6 +40,6 @@ UseSocialInfo: false    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights
 
 #visit
-repulsion: 0
-attraction: 64
+repulsion: 16
+attraction: 16
 

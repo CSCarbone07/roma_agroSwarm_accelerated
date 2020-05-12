@@ -10,6 +10,7 @@
 RandomWalkStrategy::RandomWalkStrategy(Agent* ag)
 {
    ownerAgent = ag;
+   testingId = ownerAgent->getTestingId();
    worldCellSize.at(0) = Engine::getInstance().getWorld()->getSize().at(0);
    worldCellSize.at(1) = Engine::getInstance().getWorld()->getSize().at(1);
 }
@@ -20,17 +21,34 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
   unsigned sizey = Engine::getInstance().getWorld()->getSize().at(1)-1;
   std::array<float,3> agentPos = Engine::getInstance().getAgent(id)->getPosition();// Agent position
   std::vector<std::pair<Cell*, float>> elegibles; // where to store elegibles
-  std::array<unsigned,3> agentDiscretePos = {unsigned(fmax(0,fmin(agentPos.at(0),sizex))),unsigned(fmax(0,fmin(agentPos.at(1),sizey))),0};//Engine::getInstance().getCommittedLevel()}; // Discretization of agent position  
+  std::array<unsigned,3> agentDiscretePos = {unsigned(fmax(0,fmin(agentPos.at(0)+0.5,sizex))),unsigned(fmax(0,fmin(agentPos.at(1)+0.5,sizey))),0};//Engine::getInstance().getCommittedLevel()}; // Discretization of agent position  
 
   elegibles = getElegibles(ag, agentDiscretePos, id);
   //std::cout << elegibles.size() << std::endl;
-/*
-  for(auto &ele : elegibles)
+
+  bool DEBUG_THIS = true;
+  if(ownerAgent->getId() == testingId && DEBUG_THIS)
   {
-    if(ele.first->isMapped())
-        std::cout << "ERROR! Cell: " << ele.first->getId() << " was found as elegible although it was mapped" << std::endl;
+  std::cout << "Agent " << ownerAgent->getId() << " Discrete Position: " 
+  << agentDiscretePos.at(0) << "x + " << agentDiscretePos.at(1) << "y" << std::endl;
+    std::cout << "Agent " << ownerAgent->getId() << " non Discrete Position: " 
+  << ownerAgent->getX() << "x + " << ownerAgent->getY() << "y" << std::endl;
+
+  std::cout << "Elegible cells found: " << elegibles.size() << std::endl;
+  for(auto ele : elegibles)
+  {
+    std::cout << "Elegible cell " << ele.first->getId() << " at: " << ele.first->getX() << "x " << ele.first->getY() << "y" 
+    //<< " test id: " << Engine::getInstance().getWorld()->getCell(std::array<unsigned,3>{ele.first->getX(),ele.first->getY(),0})->getId() << std::endl;
+    << " test id: " << Engine::getInstance().getWorld()->getCell(ele.first->getX(),ele.first->getY(),0)->getId() << std::endl;
+    //if(ele.first->isMapped())
+    //{std::cout << "ERROR! Cell: " << ele.first->getId() << " was found as elegible although it was mapped" << std::endl;}
+    
   }
-*/
+
+  }
+  
+  
+
 
   std::vector<float> probabilities; // where to store probabilities
   probabilities.reserve(elegibles.size());
@@ -40,7 +58,7 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
     //c->isTargetOf.push_back(id);
     std::array<unsigned,3> cellPos = c->getPosition();
     //std::cout << "returning position of current picked cell " << c->getId() << ". Mapped:" << Engine::getInstance().getWorld()->getCells().at(c->getId()) << std::endl;
-    return {cellPos.at(0)+0.5f,cellPos.at(1)+0.5f,float(cellPos.at(2))};
+    return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
   }
 
   //compute the probabilities for the elegibles
@@ -168,14 +186,15 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
 
    
   //check first current cell
-  if((Engine::getInstance().getWorld()->unCommittedAgents == Engine::getInstance().getWorld()->getAgents().size()-1 || Engine::getInstance().getWorld()->getAgent(id)->getTargetId() == -2) && isElegible(currentOccupiedCell, ag))
+  if((Engine::getInstance().getWorld()->unCommittedAgents == Engine::getInstance().getWorld()->getAgents().size()-1 
+  || Engine::getInstance().getWorld()->getAgent(id)->getTargetId() == -2) && isElegible(currentOccupiedCell, ag))
   {
     ret.push_back(std::make_pair<>(currentOccupiedCell, 0));  //returning cell, distance
 #ifndef PERFECT_COMMUNICATION        
   //updateKBrw(Engine::getInstance().getWorld()->getCell(agentDiscretePos), ag);
 #endif
 
-    //std::cout << "Agent: " << ownerAgent->getId() << ", found current cell as elegible" ; 
+    //std::cout << "Agent: " << ownerAgent->getId() << " found current cell " << currentOccupiedCell->getId() << " as elegible" << std::endl; 
 
     return ret;
   }
@@ -316,7 +335,7 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
 }
 
 float RandomWalkStrategy::computeDirectionFactor(std::array<float,3> agentPos, Cell* c, Eigen::Vector2f directionVector){
-  Eigen::Vector2f pos((c->getX()+0.5)-agentPos.at(0), (c->getY()+0.5)-agentPos.at(1));
+  Eigen::Vector2f pos((c->getX())-agentPos.at(0), (c->getY())-agentPos.at(1));
 
  if(std::abs(pos[0]) <0.01 )
     pos[0] = 0;
@@ -363,7 +382,8 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
     if(t->getId() != ag->getId()){
 
       float distance_t = t->calculateLinearDistanceToTarget(ag->getPosition());
-      if(( distance_t != 0 && distance_t < Engine::getInstance().getWorld()->communication_range) ||  Engine::getInstance().getWorld()->communication_range == -1){
+      if(( distance_t != 0 && distance_t < Engine::getInstance().getWorld()->communication_range) ||  Engine::getInstance().getWorld()->communication_range == -1)
+      {
         std::array<float,3> otherPos = t->getPosition();
         Eigen::Vector2f tv(agentPos.at(0) - otherPos.at(0), agentPos.at(1) - otherPos.at(1));
 
@@ -384,10 +404,23 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
 Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<float,3> agentPos){
   float newX = 0;
   float newY = 0;
-  std::map<unsigned, Cell*> beaconsCell = Engine::getInstance().getWorld()->beacons;
+  
+  std::map<unsigned, Cell*> beaconsCell;
+  if(Engine::getInstance().getWorld()->communication_range == -1)
+  {
+    beaconsCell = Engine::getInstance().getWorld()->beacons;
+  }
+  if(Engine::getInstance().getWorld()->communication_range > 0)
+  {
+    beaconsCell = ownerAgent->beacons;
+  }
+  
+  
+  //std::cout << "Beacons found" << beaconsCell.size() << std::endl;
+
   for (std::map<unsigned, Cell*>::iterator i = beaconsCell.begin(); i != beaconsCell.end(); ++i) { 
     if(ag->cells.at((*i).second->getId())->getBeacon() != 0 || Engine::getInstance().getWorld()->communication_range == -1){
-      Eigen::Vector2f tv(((*i).second->getX()+0.5) - agentPos.at(0), ((*i).second->getY()+0.5) - agentPos.at(1));
+      Eigen::Vector2f tv(((*i).second->getX()) - agentPos.at(0), ((*i).second->getY()) - agentPos.at(1));
       float weight = (*i).second->getBeacon()* 2*Engine::getInstance().gaussianPDF(tv.norm(), 0, Engine::getInstance().getAttraction());  //(tc.length(), 0, Mav.potentialSpread, 2);
       newX += weight*tv[0];
       newY += weight*tv[1];
