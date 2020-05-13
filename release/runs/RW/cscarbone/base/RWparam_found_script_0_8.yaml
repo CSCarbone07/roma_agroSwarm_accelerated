@@ -1,0 +1,45 @@
+max_steps: 10000    # termination condition for the simulation, 0 means infinite
+num_of_agents: 25        # total number of agents in the simulation
+seed: 100                 # seed for the random number generator
+
+Display_Simulation: false
+
+communications_range: -1      #-1 if communication range is unlimited
+
+world:
+  x: 50                # world x size
+  y: 50               # world y size
+  z: 1                 # world z size  
+
+
+knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_25_-1_64_8.yaml"
+movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_25_-1_64_8.yaml"
+statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_25_-1_64_8.yaml"
+randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice_25_-1_64_8.yaml"
+timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing_25_-1_64_8.yaml"
+visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells_25_-1_64_8.yaml"
+
+weeds:
+    clusters: 4
+    maxweeds: 49
+    isolated: 40
+
+#orca
+linearVelocity : 0.1    # linear velocity of UAV
+orcaRadius: 0.3
+tau: 0.2
+collisionAvoidance: true
+
+KnowledgeClusterRadius: 0   #radius around main scanning cell to included in knowledge update
+
+InspectionStrategy: "rw" #rw = randomwalk (default), ig = information gain 
+
+#if ig is the strategy:
+TargetSelectionStrategy: "random"   #greedy, softmax, random (default) with weights. 
+Softmax_Lambda: 1       #lambda for softmax equation 
+UseSocialInfo: false    #include information from other agents
+UseDistanceForIG: false #include distance in ig weights
+
+#visit
+repulsion: 8
+attraction: 64

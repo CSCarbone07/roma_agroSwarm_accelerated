@@ -1857,6 +1857,10 @@ movementstrategies/randomwalk.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/movementstrategies/randomwalk.hpp
 sim/world.hpp
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/sim/world.hpp
+iterator
+-
+algorithm
+-
 
 /home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/src/weed.cpp
 sim/weed.hpp

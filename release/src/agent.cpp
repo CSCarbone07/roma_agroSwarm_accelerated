@@ -61,9 +61,11 @@ Agent::Agent(unsigned id, float x, float y, float z) {
       cellId++;
     }
   }
-
-  for (Cell* c : this->cellsPointers)
-  {c->SetNeighbors(this->cellsPointers);}
+  if(communicationsRange != -1)
+  {
+    for (Cell* c : this->cellsPointers)
+    {c->SetNeighbors(this->cellsPointers);}
+  }
 
     if(currentInspectionStrategy == "ig")
     {ig = new InformationGainStrategy(this);}

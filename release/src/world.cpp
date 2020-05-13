@@ -242,7 +242,7 @@ bool World::addAgent(Agent* agent, unsigned x, unsigned y, unsigned z) {
       }
     }
     // update the grid with new agent position
-    grid[posToCellId(floor(agent->getX()), floor(agent->getY()), floor(agent->getZ()))]--;
+    grid[posToCellId(floor(agent->getX()), floor(agent->getY()), floor(agent->getZ()))]--;  //TODO not affecting at the moment but it is wrong with cells being centered
     // update agent's position
     agent->setPosition(x,y,z);
     //update the grid with the new agent position

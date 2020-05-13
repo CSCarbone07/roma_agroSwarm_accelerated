@@ -4,7 +4,7 @@ seed: 1	          	# seed for the random number generator
 
 Display_Simulation: false
 
-communications_range: 10    #-1 if communication range is unlimited
+communications_range: -1    #-1 if communication range is unlimited
 
 world:
   x: 50                # world x size
@@ -40,6 +40,6 @@ UseSocialInfo: false    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights
 
 #visit
-repulsion: 16
+repulsion: 4
 attraction: 16
 

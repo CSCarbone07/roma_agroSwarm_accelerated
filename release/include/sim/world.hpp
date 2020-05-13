@@ -40,7 +40,7 @@ public:
   std::map<unsigned, Cell*> remainingTasksToMap; /** < all cells with weeds in the world */
   std::map<unsigned, Cell*> remainingTasksIntoClusters; /** < all cells that belongs to clusters in the world */
 
-  unsigned communication_range = 50;   /** <Communication range limit, in non-ideal case> */
+  float communication_range = 50;   /** <Communication range limit, in non-ideal case> */
 
 
   std::map<unsigned, Cell*> beacons; /** < in my world there are beacons */

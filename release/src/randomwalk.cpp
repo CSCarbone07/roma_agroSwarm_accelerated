@@ -1,6 +1,8 @@
 #include "sim/engine.hpp"
 #include "movementstrategies/randomwalk.hpp"
 #include "sim/world.hpp"
+#include <iterator>
+#include <algorithm>
 
 //#define INCREMENTAL_SET
 #define FIXEDSIZE3x3    //ifndef  --> defalut 5x5
@@ -26,7 +28,7 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
   elegibles = getElegibles(ag, agentDiscretePos, id);
   //std::cout << elegibles.size() << std::endl;
 
-  bool DEBUG_THIS = true;
+  bool DEBUG_THIS = false;
   if(ownerAgent->getId() == testingId && DEBUG_THIS)
   {
   std::cout << "Agent " << ownerAgent->getId() << " Discrete Position: " 
@@ -376,11 +378,11 @@ Eigen::Vector2f RandomWalkStrategy::computeMomentum(float theta)
 }
 
 Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float,3> agentPos){
+  bool DEBUG_FUNCTION = false;
   float newX = 0;
   float newY = 0;
   for(auto t : Engine::getInstance().getWorld()->getAgents()){
     if(t->getId() != ag->getId()){
-
       float distance_t = t->calculateLinearDistanceToTarget(ag->getPosition());
       if(( distance_t != 0 && distance_t < Engine::getInstance().getWorld()->communication_range) ||  Engine::getInstance().getWorld()->communication_range == -1)
       {
@@ -390,9 +392,18 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
         float weight = 2*Engine::getInstance().gaussianPDF(tv.norm(), 0, Engine::getInstance().getRepulsion());  //(tc.length(), 0, Mav.potentialSpread, 2);
         newX += weight*tv[0];
         newY += weight*tv[1];
+
+        if(DEBUG_FUNCTION)
+        {
+          std::cout << "Agent " << ag->getId() << " repulsing agent " << t->getId() 
+          << " with repulsion " << Engine::getInstance().getRepulsion() << std::endl;
+        }
+
       }
     }
   }
+  //if(DEBUG_FUNCTION)
+  //{std::cout << "Weights found: " << newX << "x + " << newY << "y" << std::endl;}
   Eigen::Vector2f repulsion(newX,newY);
   //avoid normalizing a zero vector
   if(!repulsion.isZero())
@@ -402,24 +413,42 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
 }
 
 Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<float,3> agentPos){
+  bool DEBUG_FUNCTION = false;
+  
   float newX = 0;
   float newY = 0;
   
   std::map<unsigned, Cell*> beaconsCell;
+
+  if(DEBUG_FUNCTION)
+  {std::cout << "communication range: " << Engine::getInstance().getWorld()->communication_range << std::endl;}
+
   if(Engine::getInstance().getWorld()->communication_range == -1)
   {
     beaconsCell = Engine::getInstance().getWorld()->beacons;
+    if(DEBUG_FUNCTION)
+    {std::cout << "beacons set for unlimited range, found " << beaconsCell.size() << " beacons" << std::endl;}
   }
   if(Engine::getInstance().getWorld()->communication_range > 0)
   {
     beaconsCell = ownerAgent->beacons;
+      if(DEBUG_FUNCTION)
+      {std::cout << "checking" << beaconsCell.size() << std::endl;}
   }
   
-  
+  //if(DEBUG_FUNCTION)
+  //{std::cout << "checking" << beaconsCell.size() << std::endl;}
   //std::cout << "Beacons found" << beaconsCell.size() << std::endl;
 
-  for (std::map<unsigned, Cell*>::iterator i = beaconsCell.begin(); i != beaconsCell.end(); ++i) { 
-    if(ag->cells.at((*i).second->getId())->getBeacon() != 0 || Engine::getInstance().getWorld()->communication_range == -1){
+  //for (std::map<unsigned, Cell*>::iterator i = beaconsCell.begin(); i != beaconsCell.end(); ++i) 
+  for (std::map<unsigned, Cell*>::iterator i = beaconsCell.begin(); i != beaconsCell.end(); ++i) 
+  { 
+    if(DEBUG_FUNCTION)
+    {std::cout << "Agent " << ag->getId() << " iterating" << std::endl;}
+    if(ag->cells.at((*i).second->getId())->getBeacon() != 0 || Engine::getInstance().getWorld()->communication_range == -1)
+    {
+      if(DEBUG_FUNCTION)
+      {std::cout << "Agent " << ag->getId() << " found beacon with magnitude" << (*i).second->getBeacon() << std::endl;}
       Eigen::Vector2f tv(((*i).second->getX()) - agentPos.at(0), ((*i).second->getY()) - agentPos.at(1));
       float weight = (*i).second->getBeacon()* 2*Engine::getInstance().gaussianPDF(tv.norm(), 0, Engine::getInstance().getAttraction());  //(tc.length(), 0, Mav.potentialSpread, 2);
       newX += weight*tv[0];
