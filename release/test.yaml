@@ -1,8 +1,10 @@
 max_steps: 10000	    # termination condition for the simulation, 0 means infinite
-num_of_agents: 50	        # total number of agents in the simulatio0
+num_of_agents: 50	        # total number of agents in the simulation
 seed: 1	          	# seed for the random number generator
 
-communications_range: -1     #-1 if communication range is unlimited
+Display_Simulation: false
+
+communications_range: -1    #-1 if communication range is unlimited
 
 world:
   x: 50                # world x size
@@ -15,7 +17,7 @@ statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/rel
 randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice.yaml"
 timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing.yaml"
 visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells.yaml"
-		
+
 weeds:
     clusters: 4
     maxweeds: 49
@@ -27,19 +29,36 @@ orcaRadius: 0.3
 tau: 0.2
 collisionAvoidance: true
 
-KnowledgeClusterRadius: 1   #radius around main scanning cell to included in knowledge update
+KnowledgeClusterRadius: 0   #radius around main scanning cell to included in knowledge update
 
 InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain 
 
 #if ig is the strategy:
-TargetSelectionStrategy: "softmax"   #greedy, softmax, random (default) with weights. 
-Softmax_Lambda: 1       #lambda for softmax equation 
+TargetSelectionStrategy: "greedy"   #greedy, softmax, random (default) with weights. 
+Softmax_Lambda: 1       #lambda for softmax equation //default: 1
 UseSocialInfo: false    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights
 
-
-
 #visit
-repulsion: 64
+repulsion: 16
 attraction: 4
+
+MappingThreshold: 0.25
+
+
+######################### Testing Area ###################################
+
+Test_IG: true
+Test_Max_Weeds_Per_Cell: 12 
+
+
+
+
+
+
+
+
+
+
+
 

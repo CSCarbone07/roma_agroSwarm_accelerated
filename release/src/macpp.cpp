@@ -5,6 +5,8 @@
 #include <boost/program_options.hpp>
 #include <yaml-cpp/yaml.h>
 
+
+
 /**
  * Main file
  *
@@ -16,6 +18,8 @@
  * Method used to merge different yaml files from different modules into
  * a single temporary YAML file
  */
+
+
 std::string mergeAdditionalFiles(const std::string& inputFile, const std::string& additionalFiles) {
   // generate temp file with all merged information
   size_t lastindex = inputFile.find_last_of(".");

@@ -1,15 +1,23 @@
+#pragma once
+
 #ifndef AGENT_HPP
 #define AGENT_HPP
 
-
+#include "graphics/Mesh.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "sim/steppable.hpp"
+#include "sim/WObject.h"
 #include "movementstrategies/randomwalk.hpp"
 #include "movementstrategies/informationGain.hpp"
 
 #include "eigen3/Eigen/Dense"
 #include "sim/cell.hpp"
-#include <map>
+#include <map>  
 
 //#include "sim/world.hpp"
 
@@ -20,7 +28,7 @@
  * @author Dario Albani
  */
 
-class Agent : public Steppable {
+class Agent : public Steppable, public WObject {
 
 protected:
   
@@ -28,6 +36,17 @@ protected:
 
   unsigned id; /** < unique id for the agent */
   unsigned timeStep; /** < last execution time */
+  Mesh* mesh = nullptr;
+  glm::vec4 currentColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+  glm::vec4 movingColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+  glm::vec4 sendingMessageColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+  glm::vec4 receivingMessageColor = glm::vec4(0.0f, 0.0f, 0.5f, 1.0f);
+  glm::vec4 scanningColor = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
+
+  int testingId = 27; //33 for top right //27 for top in cluster;
+  glm::vec4 testColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+
 
   float communicationsRange=-1;
   std::string knowledgeBaseLocation = "World";
@@ -95,7 +114,7 @@ protected:
       return false;
   }
 
-  unsigned scanCurrentLocation(Cell* c);
+  float scanCurrentLocation(Cell* c);
   
   /**
    * Get Next Position
@@ -119,10 +138,10 @@ protected:
 public:
   bool sceltaRandom = 0;
 
-
+  std::map<unsigned, Cell*> beacons; /** < in my agent there are beacons */
   std::map<unsigned, Cell*> cells;             /** < in my agent knowledge there are cells */
+  std::vector<Cell*> cellsPointers; 
 
-    
 
   Agent(unsigned id, float x, float y, float z);
   ~Agent();
@@ -138,7 +157,7 @@ public:
     return (sqrt(pow(this->getX()-t.at(0),2)+pow(this->getY()-t.at(1),2)+pow(this->getZ()-t.at(2),2)));
   }
   float calculateLinearDistanceToTarget(std::array<unsigned,3> t){
-    return (sqrt(pow(this->getX()-((float)t.at(0)+0.5),2)+pow(this->getY()-((float)t.at(1)+0.5),2)));
+    return (sqrt(pow(this->getX()-((float)t.at(0)),2)+pow(this->getY()-((float)t.at(1)),2)));
   }
 
   /**
@@ -174,7 +193,9 @@ public:
   inline void setTargetId(int id){this->targetId = id;}
 
   /* Getters */
-
+  inline Mesh* getMesh() { return mesh; }
+  inline void setMesh(Mesh* inMesh) { mesh = inMesh; }
+  inline glm::vec4 getCurrentColor(){return currentColor;}
   inline unsigned getId() { return id; }
   inline unsigned get_time_step() { return timeStep; }
   inline float GetCommunicationsRange() { return communicationsRange; }
@@ -198,6 +219,9 @@ public:
   inline float getAgentRadius(){return this->agentRadius;}  
   inline float getTheta(){return this->theta;} 
   inline int getTargetId(){return this->targetId;} 
+
+  inline int getTestingId(){return this->testingId;} 
+
   /**
    * Do one simulation step
    */
@@ -208,6 +232,7 @@ public:
    */
   bool getInfo(std::stringstream& ss);
 
+  void ChangeColor(glm::vec4 inColor);
 
   /**
    * Used deleting target from and agent

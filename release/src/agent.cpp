@@ -12,12 +12,24 @@
 
 
 Agent::Agent(unsigned id, float x, float y, float z) {
+  if(Engine::getInstance().getDisplaySimulation())
+  { 
+    mesh = new Mesh();
+    mesh->SetParent(this);
+    mesh->SetInvertedPyramid();
+    ChangeColor(glm::vec4(0.0f,1.0f,0.0f,1.0f));
+  }
+
+
   this->id = id;
   this->position = {float(x),float(y),float(z)};
   this->target = {-1,-1,-1};
   this->targetId = -2;
   this->velocity = {0,0,0};
   this->timeStep = 0;
+
+  SetWorldLocation(std::vector<float> {float(x),float(y),float(z)});
+  SetWorldScale(std::vector<float> {1.0f, 1.0f, 1.0f});
 
   this->communicationsRange = Engine::getInstance().getCommunicationsRange();  
   if(communicationsRange > 0)
@@ -35,6 +47,12 @@ Agent::Agent(unsigned id, float x, float y, float z) {
   this->softmaxLambda = Engine::getInstance().getSoftmaxLambda();
   this->useSocialInfo = Engine::getInstance().getUseSocialInfo(); 
   this->useDistanceForIG = Engine::getInstance().getUseDistanceForIG(); 
+  
+  bool DEBUG_THIS = false;
+  if(DEBUG_THIS && id == testingId)
+  {
+    std::cout << "Agent " << id << " considering distance for IG " << useDistanceForIG << std::endl;
+  }
 
   std::array<unsigned,3> size = Engine::getInstance().getWorld()->getSize();
 
@@ -42,34 +60,44 @@ Agent::Agent(unsigned id, float x, float y, float z) {
   unsigned cellSize = 1;
   for(unsigned y=0; y<size.at(1); y++){
     for(unsigned x=0; x<size.at(0); x++){
-      Cell* c = new Cell(cellId,x,y,0,cellSize, 0);
-      c->setUtility(Engine::getInstance().getWorld()->getCells().at(cellId)->getUtility());
-      this->cells.insert(std::make_pair<>(cellId, c));
+      Cell* spawnedCell = new Cell(cellId,x,y,0,cellSize, 0);
+      spawnedCell->setUtility(Engine::getInstance().getWorld()->getCells().at(cellId)->getUtility());
+      this->cells.insert(std::make_pair<>(cellId, spawnedCell));
+      this->cellsPointers.push_back(spawnedCell);
       cellId++;
     }
+  }
+  if(communicationsRange != -1)
+  {
+    for (Cell* c : this->cellsPointers)
+    {c->SetNeighbors(this->cellsPointers);}
   }
 
     if(currentInspectionStrategy == "ig")
     {ig = new InformationGainStrategy(this);}
     else
     {rw = new RandomWalkStrategy(this);}
-  
+
 }
 
 Agent::Action Agent::nextAction(){
+
   if(this->getTargetX() != -1){
     if(checkTargetReached()) {
       if(this->getTargetZ() == 0){
+        //printf("SCAN\n");
         return SCAN;
       }
       else
         return NONE;
     }
     else{
+      //printf("MOVE\n");
       return MOVE;
     }
   }
   else{
+    //printf("PICK\n");
     return PICK;
   }
 }
@@ -189,7 +217,8 @@ else
         //std::cout << "Debug ID cell " << tempTargetID << " has " << cells.at(tempTargetID)->isTargetOf.size() << " agents that had it as target." << std::endl;
         //end of debug lines 
 
-  if(newTarget.at(0) == -1){
+  if(newTarget.at(0) == -1)
+  {
     //the agent has no task! increase in altitude so as not to interfere with ORCA
     newTarget = {this->getX(), this->getY(), 4};
   }
@@ -200,10 +229,13 @@ else
            
 void Agent::BroadcastCell(Agent* agent, Cell* cellToSend)
 {
-   
+
+    bool DEBUG_FUNCTION = false;
+
+    ChangeColor(sendingMessageColor);
      
-    std::cout << "Agent: " << this->getId() << ". Broadcasting through agent " << agent->getId() <<  " cell: " << cellToSend->getId() << " with " 
-    << cellToSend->observationVectors.size()  << " observations. Mapping: " << cellToSend->isMapped() << std::endl;
+    //std::cout << "Agent: " << this->getId() << ". Broadcasting through agent " << agent->getId() <<  " cell: " << cellToSend->getId() << " with " 
+    //<< cellToSend->observationVectors.size()  << " observations. Mapping: " << cellToSend->isMapped() << std::endl;
        
 
     if(communicationsRange == -1)
@@ -212,15 +244,18 @@ void Agent::BroadcastCell(Agent* agent, Cell* cellToSend)
     worldCell_REF->isTargetOf = cellToSend->isTargetOf;
     worldCell_REF->observationVector = cellToSend->observationVector;
     worldCell_REF->knowledgeVector = cellToSend->knowledgeVector;
+    //std::cout << "test" << std::endl;  
+
     //worldCell_REF->observationVectors.insert(cellToSend->observationVectors.begin(), cellToSend->observationVectors.end());
     //worldCell_REF->knowledgeVectors.insert(cellToSend->knowledgeVectors.begin(), cellToSend->knowledgeVectors.end());
 
+  /*
     std::cout << "World knowledge base recieving cell " << worldCell_REF->getId()<< " observations and isTargetOf agent "; 
     if(cellToSend->isTargetOf.size() >= 1)
     {std::cout << cellToSend->isTargetOf.at(0) << std::endl;}
     else
     {std::cout << "NONE" << std::endl;}
-    
+  */ 
 
     }
     if(communicationsRange > 0)
@@ -232,8 +267,12 @@ void Agent::BroadcastCell(Agent* agent, Cell* cellToSend)
           float distance_t = t->calculateLinearDistanceToTarget(agent->getPosition());
           if( distance_t != 0 && distance_t <= agent->communicationsRange)
           {
+            if(DEBUG_FUNCTION)
+            {
             std::cout << "Agent " << agent->getId() << " at " << agent->getX() << "x + " << agent->getY() << "y + " << agent->getZ() << "z"
             <<" sending cell " << cellToSend->getId() << " to agent " << t->getId() << " within " << distance_t << "m of distance" << std::endl;
+            }
+            
             t->ReceiveCell(cellToSend); 
             agentsBroadcasting.push_back(agent);
             BroadcastCell(t, cellToSend);
@@ -247,18 +286,25 @@ void Agent::BroadcastCell(Agent* agent, Cell* cellToSend)
     if(agent == this)
     {agentsBroadcasting.clear();} 
     }
+    //std::cout << "test" << std::endl;  
 
 }
 
 
 void Agent::ReceiveCell(Cell* receivedCell) //recieving broadcasted latest observation of cell by agent to updating knowledge 
 {
+    bool DEBUG_FUNCTION = false;
+
+    if(mesh != nullptr)
+    {ChangeColor(receivingMessageColor);}
 
 //    Engine::getInstance()
 
+    if(DEBUG_FUNCTION)
+    {
     std::cout << "Agent " << this->getId() << " at " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
     << " Recieving cell: " << receivedCell->getId() << ". Its current target cell is: " << targetId << std::endl;
-    
+    }
     Cell* updatingCell = this->cells.at(receivedCell->getId());
     updatingCell->isTargetOf = receivedCell->isTargetOf;
     if(receivedCell->lastTimeVisit > updatingCell->lastTimeVisit)
@@ -302,17 +348,18 @@ void Agent::ReceiveCell(Cell* receivedCell) //recieving broadcasted latest obser
 
 
 bool Agent::doStep(unsigned timeStep){
+
   this->timeStep = timeStep;  
+
+  SetWorldLocation(std::vector<float> {getX(), getY(), getZ()});
+  //mesh->SetWorldLocation(std::vector<float> {getX(), getY(), getZ()});
+
   switch(nextAction()){
     case PICK:
     {
-        std::cout << "Agent " << this->getId() << " currently at: " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
-        << " is picking its target cell using: " << this->currentInspectionStrategy << " strategy" << std::endl;
-
-        //std::cout << Engine::getInstance().getWorld()->getCellId(this->getX(), this->getY(), this->getZ()) << std::endl;   
-        //std::cout << cells.at(Engine::getInstance().getWorld()->getCellId(this->getX(), this->getY(), this->getZ()))->isTargetOf.size() << std::endl;   
-
-
+        bool DEBUG_THIS = false;
+        //std::cout << "Agent " << this->getId() << " currently at: " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
+        //<< " is picking its target cell using: " << this->currentInspectionStrategy << " strategy" << std::endl;
 
         this->velocity = {0.0,0.0,0.0};
         getNextTarget();
@@ -329,24 +376,29 @@ bool Agent::doStep(unsigned timeStep){
         {
             chosenCell = cells.at(this->getTargetId());
         }
-	    
+        if(DEBUG_THIS && id == testingId)
+        {
         std::cout << "Agent " << this->getId() << " has picked "<< this->getTargetX() << "x + " << this->getTargetY() << "y in Cell " 
         << chosenCell->getId() << " from " << knowledgeBaseLocation << " knowledge base as Target, which previously had " << cells.at(this->getTargetId())->isTargetOf.size() << " agents that had it as target." << std::endl;
-       
+        }
+
         chosenCell->isTargetOf.push_back(this->getId()); 
         if(communicationsRange == -1)
         {
-        std::cout << "Agent " << this->getId() << " pushing isTargetOf to cell " << chosenCell->getId() << std::endl;
+        //std::cout << "Agent " << this->getId() << " pushing isTargetOf to cell " << chosenCell->getId() << std::endl;
         BroadcastCell(this, chosenCell);
         }
         if(communicationsRange>0)
         {BroadcastCell(this, chosenCell);} 
         }
-   
+
       break;
     }
     case MOVE:
     {
+      //std::cout << "I am moving" << std::endl;
+      if(mesh != nullptr)
+      {ChangeColor(movingColor);}
       std::array<float,3> nextPose = getNextPosition();
       if(!Engine::getInstance().moveAgentTo(nextPose.at(0),nextPose.at(1),nextPose.at(2),this->id)){
         std::cout << "I'M NOT MOVING" << std::endl;
@@ -357,14 +409,21 @@ bool Agent::doStep(unsigned timeStep){
     }
     case SCAN:
 	  {
+
+      bool DEBUG_SCAN = false;
+
+      if(DEBUG_SCAN && testingId == id)
+      {std::cout << "Getting cell at: " << position.at(0) << "x + " << position.at(1) << "y" << std::endl;}
       Cell* c = Engine::getInstance().getWorld()->getCell(this->position.at(0),this->position.at(1),this->position.at(2));
       c->numOfVisits++;
-      
+      if(DEBUG_SCAN && testingId == id)
+      {std::cout << "Recieved cell: " << c->getId() << " at: " << c->getX() << "x + " << c->getY() << std::endl;}
+
       this->velocity = {0.0,0.0,0.0};
       Engine::getInstance().getWorld()->remainingTasksToVisit.erase(c->getId());
 
       Cell* scanningCell;
-      
+
       if(communicationsRange == -1)
       {scanningCell = c;}
       if(communicationsRange > 0)
@@ -374,63 +433,79 @@ bool Agent::doStep(unsigned timeStep){
       scanningCell->lastTimeVisit = timeStep;    
       }        
         if(!scanningCell->isMapped())
-        {          
-        std::cout << "Agent " << this->getId() << " scanning cell " << scanningCell->getId() << std::endl;    
-          float currentObservation = scanCurrentLocation(scanningCell);       
+        {            
+        //std::cout << std::endl;    
+        if(DEBUG_SCAN && testingId == id)
+        {std::cout << "Agent " << this->getId() << " in location: " << getX() << "x " << getY() << "y" << ". Scanning cell " 
+        << scanningCell->getId() << " in location " << scanningCell->getX() << "x " << scanningCell->getY() << "y" << std::endl;}
+          float weedsSeen = scanCurrentLocation(scanningCell);       
+          //std::cout << "Scan result: " << scanningCell->getResidual() << std::endl;
           if(scanningCell->getResidual() < 0.27 )
           { 
-            std::cout<< "Cell " << scanningCell->getId() << " was mapped by agent " << this->getId()  << std::endl;
+            //if(scanningCell->getUtility()>0)
+            //{std::cout<< "Cell " << scanningCell->getId() << " was mapped by agent " << this->getId()  << std::endl;}
+            
+            
             scanningCell->setMapped();
-            Engine::getInstance().getWorld()->remainingTasksToMap.erase(c->getId());
-            Engine::getInstance().getWorld()->remainingTasksIntoClusters.erase(c->getId());
-
-            scanningCell->isTargetOf.clear();
-            this->cells.at(scanningCell->getId())->isTargetOf.clear();
-            this->targetId = -1;
-            this->target = {-1,-1,-1};
-       
+            Engine::getInstance().getWorld()->remainingTasksToMap.erase(scanningCell->getId());
+            Engine::getInstance().getWorld()->remainingTasksIntoClusters.erase(scanningCell->getId());
+            Engine::getInstance().getWorld()->getCells().at(scanningCell->getId())->setMapped();
+            
             if(scanningCell->getBeacon() != 0 && currentInspectionStrategy == "rw")
             {
-              Engine::getInstance().getWorld()->beacons.erase(scanningCell->getId());
+              if(communicationsRange == -1)
+              {Engine::getInstance().getWorld()->beacons.erase(scanningCell->getId());}
+              if(communicationsRange > 0)
+              {this->beacons.erase(scanningCell->getId());}
+
               scanningCell->setBeacon(0);
             }
-
           }
           else
           {    // the cell is not yet mapped
               if(currentInspectionStrategy == "rw")
                {
-                  float beacon = currentObservation/12;
+                  if(mesh != nullptr)
+                  {ChangeColor(scanningColor);}
+
+                  float beacon = weedsSeen/12;
                   scanningCell->setBeacon(beacon);
-                  Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));
+                  if(communicationsRange == -1)
+                  {Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));}
+                  if(communicationsRange > 0)
+                  {this->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));}
+                  
+                  
+                  if(mesh != nullptr)
+                  {ChangeColor(scanningColor);}
                }
-          }      
-          
-        
+          }                  
         }
         else
         {
         ;
         }
-          std::cout << "Agent " << this->getId() << " starting to broadcast scan results of cell " << scanningCell->getId() << std::endl;
-          if(communicationsRange == -1)
-          {
-            BroadcastCell(this, scanningCell);
-          }
-          if(communicationsRange>0)
-          {BroadcastCell(this, scanningCell);} 
-           
-             //std::cout << "Agent " << this->getId() << " visited cell " << scanningCell->getId() << ". But it was already mapped according to current KB" << std::endl;
-            scanningCell->isTargetOf.clear();
-            this->cells.at(scanningCell->getId())->isTargetOf.clear();
-            this->targetId = -1;
-            this->target = {-1,-1,-1};
-            break;          
-
+        
+        //std::cout << "Agent " << this->getId() << " starting to broadcast scan results of cell " << scanningCell->getId() << std::endl;
+        if(communicationsRange == -1)
+        {
+          BroadcastCell(this, scanningCell);
+        }
+        if(communicationsRange>0)
+        {BroadcastCell(this, scanningCell);} 
+        
+        //std::cout << "Agent " << this->getId() << " visited cell " << scanningCell->getId() << ". But it was already mapped according to current KB" << std::endl;
+        scanningCell->isTargetOf.clear();
+        this->cells.at(scanningCell->getId())->isTargetOf.clear();
+        this->targetId = -1;
+        this->target = {-1,-1,-1};
+        break;          
+          
       }
       default:
       break;
       }
+  
 
   return true;
   
@@ -445,48 +520,65 @@ bool Agent::isInBound(unsigned x, unsigned y){
 /**
  * Perform a scan at the current location (that is supposed to be the targetLocation)
  */
-unsigned Agent::scanCurrentLocation(Cell* currentCell){ 
+float Agent::scanCurrentLocation(Cell* currentCell){ 
 	assert(getTargetId() != -1);
 
+  bool DEBUG_THIS = false;
+
   // scan at current location and return the perceived cell
-    
+    //std::cout << std::endl;    
     //clear observationVector
+
     currentCell->observationVector.fill(0);
     //compute observationVector using the current knowledge and the constant sensorTable
-    for(unsigned k = 0; k < 13; k++ ){
-        for(unsigned l = 0; l < 13; l++ ){
+    if(DEBUG_THIS  && testingId == id)
+    {std::cout << "Observation Vector: " << std::endl;}
+    //std::cout << "Knowledge Vector: " << std::endl;
+    for(unsigned l = 0; l < 13; l++ ){
+        for(unsigned k = 0; k < 13; k++ )
+        {
+            //std::cout << "old observation: " << currentCell->observationVector[k] << std::endl;
+            
             //std::cout<<"  TABLE   =  indice: "<<l<<" - "<<k<<"  "<<Engine::getInstance().getWorld()->getSensorTable()[l][k]<<std::endl;
-            currentCell->observationVector[k] += currentCell->knowledgeVector[l]*Engine::getInstance().getWorld()->getSensorTable()[k][l];
+            currentCell->observationVector[k] += currentCell->knowledgeVector[l]*Engine::getInstance().getWorld()->getSensorTable()[k][l]; //equation 3
+            
+            if(DEBUG_THIS && testingId == id)
+            {std::cout << currentCell->observationVector[k] << " ";}                    
         }
-    }    
-    //get current observation
-    unsigned currentObservation;
+        if(DEBUG_THIS && testingId == id)
+        {std::cout << std::endl;}
+    }
+    //std::cout << std::endl;    
+
+    //get amount of weeds seen by sensor in current observation
+    unsigned weedsSeen;
     float random = RandomGenerator::getInstance().nextFloat(1);
-    for (unsigned i = 0; i < 13; i++){  
+    //std::cout << "random observation: " << random << std::endl;
+    for (unsigned i = 0; i < 13; i++)
+    {  
       random -= Engine::getInstance().getWorld()->getSensorTable()[i][currentCell->getUtility()];
-      if(random <= 0){
-        currentObservation = i;
+      if(random <= 0)
+      {
+        weedsSeen = i;
         break;
       }
     }                        
      
     //currentCell->observationVectors.insert(std::pair<float, std::array<float, 13>>(timeStep, currentCell->observationVector));
-    
-    currentCell->residual_uncertainty = 0.0;
-    float entr = 0;
 
+
+    /*
     //update knowledgeVector given the currentObervation
     for(unsigned i = 0; i < 13; i++){
       std::cout << "Updating own cell, previous knowledge vector: " << currentCell->knowledgeVector[i] << std::endl;
-      currentCell->knowledgeVector[i] = currentCell->knowledgeVector[i] * Engine::getInstance().getWorld()->getSensorTable()[currentObservation][i] 
-                                        / currentCell->observationVector[currentObservation];
+      currentCell->knowledgeVector[i] = currentCell->knowledgeVector[i] * Engine::getInstance().getWorld()->getSensorTable()[weedsSeen][i] 
+                                        / currentCell->observationVector[weedsSeen];
       std::cout << "Updating own cell, new knowledge vector: " << currentCell->knowledgeVector[i] << std::endl;
     }
-
-
+*/
+/*
     if(knowledgeClusterRadius > 0)
     {
-
     unsigned sizex = Engine::getInstance().getWorld()->getSize().at(0)-1;
     unsigned sizey = Engine::getInstance().getWorld()->getSize().at(1)-1;
 
@@ -515,8 +607,8 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
               //ret2.push_back(std::make_pair<>(cella, it->first));
             //}
             for(unsigned i = 0; i < 13; i++){
-            float newKnowledge = cella->knowledgeVector[i] * Engine::getInstance().getWorld()->getSensorTable()[currentObservation][i] 
-                                        / (currentCell->observationVector[currentObservation]);// * it->first)
+            float newKnowledge = cella->knowledgeVector[i] * Engine::getInstance().getWorld()->getSensorTable()[weedsSeen][i] 
+                                        / (currentCell->observationVector[weedsSeen]);// * it->first)
             std::cout << "Updating neighboor cells, previous knowledge vector: " << cella->knowledgeVector[i] << std::endl;
             if(newKnowledge>cella->knowledgeVector[i])
             {
@@ -530,10 +622,8 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
       }
     }
  
-
-    
     }
-    
+    */
     
 
     //currentCell->knowledgeVectors.insert(std::pair<float, std::array<float, 13>>(timeStep, currentCell->knowledgeVector));
@@ -552,20 +642,61 @@ unsigned Agent::scanCurrentLocation(Cell* currentCell){
     }  
     */
 
+
+    currentCell->residual_uncertainty = 0.0;
+    float entr = 0;
+
+    if(DEBUG_THIS  && testingId == id)
+    {std::cout << "Knowledge Vector for cell with " << currentCell->getUtility() << " weeds and " << weedsSeen << " seen weeds:" << std::endl;}
     
     for(unsigned i = 0; i<13; i++)
     {
-    //if i-th element is != 0  ---> calculate H(c)
+      currentCell->knowledgeVector[i] = currentCell->knowledgeVector[i] * Engine::getInstance().getWorld()->getSensorTable()[weedsSeen][i] 
+                                  / currentCell->observationVector[weedsSeen]; //current cell, equation 5
+      
+      if(DEBUG_THIS  && testingId == id)
+      {std::cout << currentCell->knowledgeVector[i] << " ";}   
+      //if i-th element is != 0  ---> calculate H(c)
+     
       if(currentCell->knowledgeVector[i] != 0)
-      {entr +=  currentCell->knowledgeVector[i]*(std::log(currentCell->knowledgeVector[i]));}
+      {
+        entr +=  currentCell->knowledgeVector[i]*(std::log(currentCell->knowledgeVector[i])); //equation 6
+      }
     }
+    
+    if(DEBUG_THIS  && testingId == id)
+    {std::cout << std::endl;}
     
     
     //std::cout << "total residual uncertainty " << -entr << " of cell " << currentCell->getId() << std::endl; 
     //store H(c) for the current cell
     currentCell->residual_uncertainty = -entr;
 
-    return currentObservation;
+    //std::cout << "scan of agent " << this->getId() << " result " << currentCell->residual_uncertainty << std::endl;
+    std::stringstream scanReport;
+    //scanReport << "Agent " << this->getId() << " at timestep " << timeStep << " scanned cell " << currentCell->getId() 
+    //<< "" << std::endl; 
+    if(DEBUG_THIS  && testingId == id)
+    {scanReport << currentCell->getId() << " " << this->getId() << " " << timeStep << " " << weedsSeen << " ";}
+    for(float f : currentCell->knowledgeVector)
+    {
+      scanReport << f << " ";
+    }
+    for(float f : currentCell->observationVector)
+    {
+      scanReport << f << " ";
+    }
+    //scanReport = "Agent " + toString(this->getId());
+    //std::cout << scanReport << std::endl;
+    std::string outString;
+    outString = scanReport.str();
+    Engine::getInstance().WriteKnowledgeBasesFile(outString);
+
+    //std::cout << weedsSeen << std::endl;
+
+
+
+    return weedsSeen;
   
 };
 
@@ -573,3 +704,20 @@ bool Agent::getInfo(std::stringstream& ss){
   ss << this->getId() << ':' << ' ' << this->getX() << ' ' << this->getY() << ' ' << this->getZ()+2 << '\n';
   return true;
 };
+
+
+
+void Agent::ChangeColor(glm::vec4 inColor)
+{
+    if(mesh!=nullptr)
+    {
+      if(this->getId()!=testingId)
+      {
+        mesh->SetCurrentColor(inColor);
+      }
+      else
+      {
+        mesh->SetCurrentColor(testColor);
+      }
+    }
+}

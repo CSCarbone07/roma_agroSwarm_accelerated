@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef WORLD_HPP
 #define WORLD_HPP
 
@@ -26,13 +28,19 @@ private:
 
   std::array<std::array<float,13>,13> sensorTable;   /** < The table represents the probability of
                                                               having the observation o given that the true value is c. */
-  
+  float cellSize = 1;
+
+  float cells_altitude = -0.5;
+  float weedCluster_Altitude = -0.25;
+  float isolatedWeed_Altitude = -0.2;
+
+
 public:
   std::map<unsigned, Cell*> remainingTasksToVisit; /** < all cells in the world */
   std::map<unsigned, Cell*> remainingTasksToMap; /** < all cells with weeds in the world */
   std::map<unsigned, Cell*> remainingTasksIntoClusters; /** < all cells that belongs to clusters in the world */
 
-  unsigned communication_range = 50;   /** <Communication range limit, in non-ideal case> */
+  float communication_range = 50;   /** <Communication range limit, in non-ideal case> */
 
 
   std::map<unsigned, Cell*> beacons; /** < in my world there are beacons */
@@ -64,11 +72,37 @@ inline  bool getCell(Cell& cell, unsigned id) const { /** < Get Cell, return arr
   return false;
 }
 inline  Cell* getCell(unsigned x, unsigned y, unsigned z) const {
+    bool DEBUG_FUNCTION = false;
     for (Cell* c : cells) {
       if (c->getX() == x && c->getY()==y && c->getZ()==z){
+        
+        if(c->getId()==2370 && DEBUG_FUNCTION)
+        {
+          std::cout << "Receiving get cell " << c->getId() << " in location " << c->getX() << "x " << c->getY() << "y" << std::endl;
+          std::cout << "Recieved coordinates " << x << "x " << y << "y" << std::endl;
+        }
+        
         return c;
       }
     }
+    return nullptr;
+}
+
+inline  Cell* getCell(float x, float y, float z) const {
+  bool DEBUG_FUNCTION = false;
+  if(DEBUG_FUNCTION)
+  {std::cout << "Receiving: " << x << "x + " << y << "y + " << z << "z" << std::endl;}
+    for (Cell* c : cells) 
+    {
+      //if(DEBUG_FUNCTION)
+      //{std::cout << "Checking: " << c->getX() << "x + " << c->getY()+c->getSize()/2 << "y" << std::endl;} 
+      if (x <= c->getX()+c->getSize()/2 && x >= c->getX()-c->getSize()/2 &&
+      y <= c->getY()+c->getSize()/2 && y >= c->getY()-c->getSize()/2)
+      {
+        return c;
+      }
+    }
+    std::cout << "ERROR RETURNING NO CELL FROM GET CELL IN WORLD HPP" << std::endl;
     return nullptr;
 }
 
@@ -167,5 +201,9 @@ inline bool isInWorld(unsigned x, unsigned y, unsigned z){
     return true;
   return false;
 }
+
+void Print_SensorTable();
+
+
 };
 #endif /* WORLD_HPP */

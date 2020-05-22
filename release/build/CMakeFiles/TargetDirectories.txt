@@ -1,3 +1,0 @@
-/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles/rebuild_cache.dir
-/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles/MACPP.dir
-/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/CMakeFiles/edit_cache.dir
