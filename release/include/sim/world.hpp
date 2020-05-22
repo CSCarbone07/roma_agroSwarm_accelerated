@@ -94,10 +94,10 @@ inline  Cell* getCell(float x, float y, float z) const {
   {std::cout << "Receiving: " << x << "x + " << y << "y + " << z << "z" << std::endl;}
     for (Cell* c : cells) 
     {
-      if(DEBUG_FUNCTION)
-      {std::cout << "Checking: " << c->getX() << "x + " << c->getY()+c->getSize()/2 << "y" << std::endl;}
-      if (x < c->getX()+c->getSize()/2 && x > c->getX()-c->getSize()/2 &&
-      y < c->getY()+c->getSize()/2 && y > c->getY()-c->getSize()/2)
+      //if(DEBUG_FUNCTION)
+      //{std::cout << "Checking: " << c->getX() << "x + " << c->getY()+c->getSize()/2 << "y" << std::endl;} 
+      if (x <= c->getX()+c->getSize()/2 && x >= c->getX()-c->getSize()/2 &&
+      y <= c->getY()+c->getSize()/2 && y >= c->getY()-c->getSize()/2)
       {
         return c;
       }
@@ -201,5 +201,9 @@ inline bool isInWorld(unsigned x, unsigned y, unsigned z){
     return true;
   return false;
 }
+
+void Print_SensorTable();
+
+
 };
 #endif /* WORLD_HPP */

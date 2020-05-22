@@ -80,7 +80,7 @@ private:
   std::map<unsigned, Weed*> weeds; /*mat that 
 
   /* Simulation Variables */
-  World* world; /** < pointer to the world */
+  World* world = nullptr; /** < pointer to the world */
   std::vector<Agent*> agents; /** < pointers to the agents, this is not accessible from here  */
 
   //Orca Variables
@@ -137,6 +137,20 @@ private:
   bool useSocialInfo = false;
   bool useDistanceForIG = false;
 
+  /* Test variables */
+  bool test_IG = false;
+  float test_IG_value=0;
+  int test_maxWeedsPerCell = 12;
+  unsigned test_weeds_seen=0;
+  //std::vector<std::vector<float>> test_sensorTable; 
+  Cell* test_cell;
+  std::array<std::array<float,13>,13> test_sensorTable; 
+  std::array<float, 13> test_knowledgeVector;
+  std::array<float, 13> test_observationVector;
+  /*
+  std::map<float, std::array<float,13>> test_knowledgeVectors;
+  std::map<float, std::array<float,13>> test_observationVectors;
+  */
 
   Engine() {}
 
@@ -231,6 +245,17 @@ public:
 
 
   void run();
+
+
+
+  void TestFunction_IG();
+  void TestFunction_computeIG(bool printTable);
+  void TestFunction_SetSensorTable(bool printTable);
+
+  double TestFunction_logChoose(int n, int k);
+  double TestFunction_PMFBinomial(double p, int n, int k) ;
+
+  void TestFunction_Scan(bool printThis);
 
 };
 

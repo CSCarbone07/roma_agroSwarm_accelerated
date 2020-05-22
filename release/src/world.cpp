@@ -259,3 +259,19 @@ bool World::addAgent(Agent* agent, unsigned x, unsigned y, unsigned z) {
     //std::cout<< "test" << std::endl;
     return true;
   }
+
+
+void World::Print_SensorTable()
+{
+  
+  for (unsigned c = 0; c <= this->maxWeed4Cell; c++ )
+  {
+    for (unsigned o = 0; o <= this->maxWeed4Cell; o++ )
+    {
+      std::cout << sensorTable[o][c] << " ";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+
+}

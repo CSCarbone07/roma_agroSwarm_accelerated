@@ -19,7 +19,8 @@ class InformationGainStrategy {
         InformationGainStrategy(Agent* ag);
 
     private:
-    
+        int testingId = 1;
+
         Agent* ownerAgent;            
  
         //float max_range;

@@ -47,6 +47,12 @@ Agent::Agent(unsigned id, float x, float y, float z) {
   this->softmaxLambda = Engine::getInstance().getSoftmaxLambda();
   this->useSocialInfo = Engine::getInstance().getUseSocialInfo(); 
   this->useDistanceForIG = Engine::getInstance().getUseDistanceForIG(); 
+  
+  bool DEBUG_THIS = false;
+  if(DEBUG_THIS && id == testingId)
+  {
+    std::cout << "Agent " << id << " considering distance for IG " << useDistanceForIG << std::endl;
+  }
 
   std::array<unsigned,3> size = Engine::getInstance().getWorld()->getSize();
 
@@ -351,6 +357,7 @@ bool Agent::doStep(unsigned timeStep){
   switch(nextAction()){
     case PICK:
     {
+        bool DEBUG_THIS = false;
         //std::cout << "Agent " << this->getId() << " currently at: " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
         //<< " is picking its target cell using: " << this->currentInspectionStrategy << " strategy" << std::endl;
 
@@ -369,10 +376,12 @@ bool Agent::doStep(unsigned timeStep){
         {
             chosenCell = cells.at(this->getTargetId());
         }
-	    
-        //std::cout << "Agent " << this->getId() << " has picked "<< this->getTargetX() << "x + " << this->getTargetY() << "y in Cell " 
-        //<< chosenCell->getId() << " from " << knowledgeBaseLocation << " knowledge base as Target, which previously had " << cells.at(this->getTargetId())->isTargetOf.size() << " agents that had it as target." << std::endl;
-       
+        if(DEBUG_THIS && id == testingId)
+        {
+        std::cout << "Agent " << this->getId() << " has picked "<< this->getTargetX() << "x + " << this->getTargetY() << "y in Cell " 
+        << chosenCell->getId() << " from " << knowledgeBaseLocation << " knowledge base as Target, which previously had " << cells.at(this->getTargetId())->isTargetOf.size() << " agents that had it as target." << std::endl;
+        }
+
         chosenCell->isTargetOf.push_back(this->getId()); 
         if(communicationsRange == -1)
         {
@@ -519,44 +528,45 @@ float Agent::scanCurrentLocation(Cell* currentCell){
   // scan at current location and return the perceived cell
     //std::cout << std::endl;    
     //clear observationVector
+
     currentCell->observationVector.fill(0);
     //compute observationVector using the current knowledge and the constant sensorTable
-    if(DEBUG_THIS)
+    if(DEBUG_THIS  && testingId == id)
     {std::cout << "Observation Vector: " << std::endl;}
     //std::cout << "Knowledge Vector: " << std::endl;
     for(unsigned l = 0; l < 13; l++ ){
-        for(unsigned k = 0; k < 13; k++ ){
+        for(unsigned k = 0; k < 13; k++ )
+        {
             //std::cout << "old observation: " << currentCell->observationVector[k] << std::endl;
             
             //std::cout<<"  TABLE   =  indice: "<<l<<" - "<<k<<"  "<<Engine::getInstance().getWorld()->getSensorTable()[l][k]<<std::endl;
             currentCell->observationVector[k] += currentCell->knowledgeVector[l]*Engine::getInstance().getWorld()->getSensorTable()[k][l]; //equation 3
-            if(DEBUG_THIS)
-            {std::cout << currentCell->observationVector[k] << " ";}
             
-            //std::cout << currentCell->knowledgeVector[l] << " ";
-            
+            if(DEBUG_THIS && testingId == id)
+            {std::cout << currentCell->observationVector[k] << " ";}                    
         }
-        if(DEBUG_THIS)
+        if(DEBUG_THIS && testingId == id)
         {std::cout << std::endl;}
     }
     //std::cout << std::endl;    
 
-    //get amount of weeds in current observation
+    //get amount of weeds seen by sensor in current observation
     unsigned weedsSeen;
     float random = RandomGenerator::getInstance().nextFloat(1);
     //std::cout << "random observation: " << random << std::endl;
-    for (unsigned i = 0; i < 13; i++){  
+    for (unsigned i = 0; i < 13; i++)
+    {  
       random -= Engine::getInstance().getWorld()->getSensorTable()[i][currentCell->getUtility()];
-      if(random <= 0){
+      if(random <= 0)
+      {
         weedsSeen = i;
         break;
       }
     }                        
      
     //currentCell->observationVectors.insert(std::pair<float, std::array<float, 13>>(timeStep, currentCell->observationVector));
-    
-    currentCell->residual_uncertainty = 0.0;
-    float entr = 0;
+
+
     /*
     //update knowledgeVector given the currentObervation
     for(unsigned i = 0; i < 13; i++){
@@ -632,23 +642,29 @@ float Agent::scanCurrentLocation(Cell* currentCell){
     }  
     */
 
-    //float testValue = 1.0f/13.0f;
-    //float testValue = 1/13;
-    if(DEBUG_THIS)
+
+    currentCell->residual_uncertainty = 0.0;
+    float entr = 0;
+
+    if(DEBUG_THIS  && testingId == id)
     {std::cout << "Knowledge Vector for cell with " << currentCell->getUtility() << " weeds and " << weedsSeen << " seen weeds:" << std::endl;}
+    
     for(unsigned i = 0; i<13; i++)
     {
-    currentCell->knowledgeVector[i] = currentCell->knowledgeVector[i] * Engine::getInstance().getWorld()->getSensorTable()[weedsSeen][i] 
-                                / currentCell->observationVector[weedsSeen]; //current cell, equation 5
-    if(DEBUG_THIS)
-    {std::cout << currentCell->knowledgeVector[i] << " ";}   
-    //if i-th element is != 0  ---> calculate H(c)
+      currentCell->knowledgeVector[i] = currentCell->knowledgeVector[i] * Engine::getInstance().getWorld()->getSensorTable()[weedsSeen][i] 
+                                  / currentCell->observationVector[weedsSeen]; //current cell, equation 5
+      
+      if(DEBUG_THIS  && testingId == id)
+      {std::cout << currentCell->knowledgeVector[i] << " ";}   
+      //if i-th element is != 0  ---> calculate H(c)
+     
       if(currentCell->knowledgeVector[i] != 0)
       {
         entr +=  currentCell->knowledgeVector[i]*(std::log(currentCell->knowledgeVector[i])); //equation 6
       }
     }
-    if(DEBUG_THIS)
+    
+    if(DEBUG_THIS  && testingId == id)
     {std::cout << std::endl;}
     
     
@@ -660,7 +676,7 @@ float Agent::scanCurrentLocation(Cell* currentCell){
     std::stringstream scanReport;
     //scanReport << "Agent " << this->getId() << " at timestep " << timeStep << " scanned cell " << currentCell->getId() 
     //<< "" << std::endl; 
-    if(DEBUG_THIS)
+    if(DEBUG_THIS  && testingId == id)
     {scanReport << currentCell->getId() << " " << this->getId() << " " << timeStep << " " << weedsSeen << " ";}
     for(float f : currentCell->knowledgeVector)
     {
