@@ -48,7 +48,7 @@ MappingThreshold: 0.25
 
 ######################### Testing Area ###################################
 
-Test_IG: true
+Test_IG: false
 Test_Max_Weeds_Per_Cell: 12 
 
 

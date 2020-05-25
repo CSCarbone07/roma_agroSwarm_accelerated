@@ -48,8 +48,43 @@ add_executable(
   src/informationGain.cpp
   src/orca.cpp
 )
+
+
+
+
 target_link_libraries(
   MACPP
+  glfw
+  ${GLFW_LIBRARIES}
+  glew
+  glm
+  freetype
+  yaml-cpp
+  ${Boost_LIBRARIES}
+)
+
+add_executable(
+  Test_IG
+  src/tests/test_ig.cpp
+  src/engine.cpp
+  src/WMath.cpp
+  src/world.cpp
+  src/WObject.cpp
+  src/graphics/Window.cpp
+  src/graphics/Camera.cpp
+  src/graphics/Shader.cpp
+  src/graphics/Mesh.cpp
+  src/cell.cpp
+  src/weed.cpp
+  src/agent.cpp
+  src/randomwalk.cpp
+  src/informationGain.cpp
+  src/orca.cpp
+)
+
+
+target_link_libraries(
+  Test_IG
   glfw
   ${GLFW_LIBRARIES}
   glew

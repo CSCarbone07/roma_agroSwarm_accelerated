@@ -183,8 +183,8 @@ static float minScale = 0.1f;
     // end of display init
 
     // testing variables
-    test_IG = config["Test_IG"].as<bool>();
-    test_maxWeedsPerCell = config["Test_Max_Weeds_Per_Cell"].as<unsigned>();
+    //test_IG = config["Test_IG"].as<bool>();
+    //test_maxWeedsPerCell = config["Test_Max_Weeds_Per_Cell"].as<unsigned>();
 
 
     //print info
