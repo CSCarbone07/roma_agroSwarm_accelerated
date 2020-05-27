@@ -6,19 +6,15 @@
 #include <yaml-cpp/yaml.h>
 
   /* Test variables */
-static bool test_IG = false;
-static float test_IG_value=0;
-static int test_maxWeedsPerCell = 12;
-static unsigned test_weeds_seen=0;
-  //std::vector<std::vector<float>> test_sensorTable; 
-static Cell* test_cell;
-static std::array<std::array<float,13>,13> test_sensorTable; 
-static std::array<float, 13> test_knowledgeVector;
-static std::array<float, 13> test_observationVector;
-  /*
-  std::map<float, std::array<float,13>> test_knowledgeVectors;
-  std::map<float, std::array<float,13>> test_observationVectors;
-  */
+static float test_IG_value=0;           // current IG for test cell
+static int test_maxWeedsPerCell = 12;   // current max test
+static unsigned test_weeds_seen=0;      // weeds visible in each scan
+
+static Cell* test_cell;                 // test cell with all the properties of the simulator
+static std::array<std::array<float,13>,13> test_sensorTable;  // Test sensor table 
+
+static int currentMethod = 0;
+
 
 double TestFunction_logChoose(int n, int k) 
 {
@@ -27,37 +23,32 @@ double TestFunction_logChoose(int n, int k)
 
 double TestFunction_PMFBinomial(double p, int n, int k) 
 {
-  //double lgrTest = factorial(n) * pow(p,k)*pow((1-p), n-k);
-  
   double lgr = TestFunction_logChoose(n, k) + double(k)*std::log(p) + double(n-k)*std::log(1-p);
   return std::exp(lgr);
 }
 
+// function to create test sensor table
 void TestFunction_SetSensorTable(bool printTable)
 {
-  bool DEBUG_FUNCTION = true;
-  //std::vector<std::vector<float,test_maxWeedsPerCell+1>,test_maxWeedsPerCell+1> newSensorVector;
-  //test_sensorTable = newSensorVector;
-  //test_sensorTable[0].resize(test_maxWeedsPerCell+1);
-  //test_sensorTable.resize(test_maxWeedsPerCell+1);
-  /*
-  for (auto i : test_sensorTable)
-  {
-    i.resize(test_maxWeedsPerCell+1);
-  }
-  */
-  if(printTable)
+  bool DEBUG_FUNCTION = false; // to print debuging values
+
+  // Show table to review math if needed, the rest of the table is printed as it is built (for this put true in function call in test function)
+  if(printTable)    
   {std::cout << std::endl << "Sensor Table: " << std::endl;}
   
-  for (unsigned c = 0; c <= test_maxWeedsPerCell; c++ )
+  // Loop to build test sensor table. 
+  // The purpose of this table is to precalculate the probabilities of having the right perception of weeds in a cell
+  // The table is a 13x13 table (0 weeds to 12 weeds)
+  for (unsigned c = 0; c <= test_maxWeedsPerCell; c++ )   // dimension for the real amount of weeds
   {
-    for (unsigned o = 0; o <= test_maxWeedsPerCell; o++ )
+    for (unsigned o = 0; o <= test_maxWeedsPerCell; o++ ) // dimension for the current observation the agent perceives from the cells
     {
-      if(o>c)
-        test_sensorTable[o][c] = 0;
+      if(o>c)                             // since there are not false positives yet, 0 is introduced for observations above the actual cells
+        test_sensorTable[o][c] = 0;       
       else
       {
-        test_sensorTable[o][c] = TestFunction_PMFBinomial(0.95, c, o); // make 0.95 to parameter
+        // the values of the sensor table are obtained through probability mass function
+        test_sensorTable[o][c] = TestFunction_PMFBinomial(0.95, c, o); 
       }
       if(printTable)
       {std::cout << test_sensorTable[o][c] << " ";}
@@ -70,22 +61,24 @@ void TestFunction_SetSensorTable(bool printTable)
 
 }
 
+// function for the agent to scan current location (test cell in this case)
 void TestFunction_Scan(bool printThis)
 {
-  bool DEBUG_THIS = false;
+  bool DEBUG_THIS = false; // to print debuging values
 
-  // scan at current location and return the perceived cell
-    //std::cout << std::endl;    
-    //clear observationVector
-
+    // the cell observationVector is filled with ceros to be refiled with the current perception of the agent
     test_cell->observationVector.fill(0);
-    //compute observationVector using the current knowledge and the constant sensorTable
+
     if(DEBUG_THIS)
     {std::cout << "Observation Vector: " << std::endl;}
-    for(unsigned l = 0; l < test_maxWeedsPerCell+1; l++ ){
+
+    // compute the new observationVector using the current knowledge and the constant sensorTable
+    for(unsigned l = 0; l < test_maxWeedsPerCell+1; l++ )
+    {
         for(unsigned k = 0; k < test_maxWeedsPerCell+1; k++ )
         {
-            test_cell->observationVector[k] += test_cell->knowledgeVector[l]*test_sensorTable[k][l]; //equation 3
+            // the observation of each posibility (0-12 weeds) is filled with 
+            test_cell->observationVector[k] += test_cell->knowledgeVector[l]*test_sensorTable[k][l]; 
             
             if(DEBUG_THIS)
             {std::cout << test_cell->observationVector[k] << " ";}                    
@@ -93,110 +86,140 @@ void TestFunction_Scan(bool printThis)
         if(DEBUG_THIS)
         {std::cout << std::endl;}
     }
-    //std::cout << std::endl;    
 
-    //get amount of weeds seen by sensor in current observation
+    // Set amount of weeds "observed" by sensor in current scan
+    // a random value is generated to selected a value in the observation dimensions
     unsigned weedsSeen;
     float random = RandomGenerator::getInstance().nextFloat(1);
-    //std::cout << "random observation: " << random << std::endl;
     for (unsigned i = 0; i < test_maxWeedsPerCell+1; i++)
     {  
-      random -= test_sensorTable[i][test_cell->getUtility()];
+      // sensor table has o x c dimensions
+      // o = observation perceived by the agent
+      // c = actual weed amount in cell (0-12). 
+      // The actual value in the array table is the proability of the sensor seeing the real amount of weeds (c)
+      random -= test_sensorTable[i][test_cell->getUtility()]; // Utility = amount of weeds
       if(random <= 0)
       {
+        /* 
+        when the random generated value has a match with the probabilities in the sensor table along
+        the o dimension in c = real amount of weeds in the current scanning cell
+        */
         weedsSeen = i;
         test_weeds_seen = weedsSeen;
         break;
       }
     } 
 
-    test_cell->residual_uncertainty = 0.0;
-    float entr = 0;
+
 
     if(DEBUG_THIS)
     {std::cout << "Knowledge Vector for cell with " << test_cell->getUtility() << " weeds and " << weedsSeen << " seen weeds:" << std::endl;}
     
+
+    // reseting the residual uncertainty to be reasigned after scan
+    test_cell->residual_uncertainty = 0.0;
+    float entr = 0;
+    // filling entr with uncertainty equation terms
+    // The sum is negated at the end to set the actual current cell uncertainty
     for(unsigned i = 0; i<test_maxWeedsPerCell+1; i++)
     {
       test_cell->knowledgeVector[i] = test_cell->knowledgeVector[i] * test_sensorTable[weedsSeen][i] 
-                                  / test_cell->observationVector[weedsSeen]; //current cell, equation 5
+                                  / test_cell->observationVector[weedsSeen];
       
       if(DEBUG_THIS)
       {std::cout << test_cell->knowledgeVector[i] << " ";}   
-      //if i-th element is != 0  ---> calculate H(c)
      
       if(test_cell->knowledgeVector[i] != 0)
       {
-        entr +=  test_cell->knowledgeVector[i]*(std::log(test_cell->knowledgeVector[i])); //equation 6
+        entr +=  test_cell->knowledgeVector[i]*(std::log(test_cell->knowledgeVector[i]));
       }
     }
     
     if(DEBUG_THIS)
     {std::cout << std::endl;}
     
-    
-    //std::cout << "total residual uncertainty " << -entr << " of cell " << currentCell->getId() << std::endl; 
-    //store H(c) for the current cell
     test_cell->residual_uncertainty = -entr;
-
-    //std::cout << "scan of agent " << this->getId() << " result " << currentCell->residual_uncertainty << std::endl;
-    std::stringstream scanReport;
-    //scanReport << "Agent " << this->getId() << " at timestep " << timeStep << " scanned cell " << currentCell->getId() 
-    //<< "" << std::endl; 
-    if(DEBUG_THIS)
-    {scanReport << test_cell->getId() << " " << weedsSeen << " ";}
-    for(float f : test_cell->knowledgeVector)
-    {
-      scanReport << f << " ";
-    }
-    for(float f : test_cell->observationVector)
-    {
-      scanReport << f << " ";
-    }
-    //scanReport = "Agent " + toString(this->getId());
-    //std::cout << scanReport << std::endl;
-    std::string outString;
-    outString = scanReport.str();
-
-    //std::cout << weedsSeen << std::endl;
-
 }
 
+// calculate IG value for cell before current scan
 void TestFunction_computeIG(bool printTable)
 {
 
-  test_observationVector.fill(0);
+
+  test_cell->observationVector.fill(0);
+
 
   for(unsigned k = 0; k < test_maxWeedsPerCell+1; k++ )
   {
     for(unsigned l = 0; l < test_maxWeedsPerCell+1; l++ )
     {
-      test_observationVector[k] += test_knowledgeVector[l]*test_sensorTable[k][l];
+      test_cell->observationVector[k] += test_cell->knowledgeVector[l]*test_sensorTable[k][l];
     }
   }
-  
-  float informationGain = 0; // part of equation
-  
-  for(unsigned o = 0; o < test_maxWeedsPerCell+1; o++)
+
+ 
+  // current method implemented in the simulator (the result is negated at the end)
+  if(currentMethod == 0)
   {
+    float informationGain = 0;
+    for(unsigned o = 0; o < test_maxWeedsPerCell+1; o++)
+    {
+      for(unsigned c = 0; c < test_maxWeedsPerCell+1; c++)
+      {
+        float logg = 0;
+        if(test_cell->knowledgeVector[c] != 0)
+          logg+=log(test_cell->knowledgeVector[c]);    
+        if(test_sensorTable[o][c] != 0)
+          logg+=log(test_sensorTable[o][c]);  
+        if(test_cell->observationVector[o] != 0)
+          logg-=log(test_cell->observationVector[o]);  
+          informationGain -= test_cell->knowledgeVector[c]*test_sensorTable[o][c]*logg;
+      }
+    }
+    informationGain = test_cell->residual_uncertainty - informationGain; 
+    test_IG_value = -informationGain;
+
+  }
+
+  // my understanding of the equations (the result is negated at the end)
+  if(currentMethod == 1)
+  {
+    float informationGain = 0;
+    float sum = 0;
+    float sum2 = 0;
     for(unsigned c = 0; c < test_maxWeedsPerCell+1; c++)
     {
-      float logg = 0;
-      if(test_knowledgeVector[c] != 0)
-        logg+=log(test_knowledgeVector[c]);    //first term multiplication by table missing
-      if(test_sensorTable[o][c] != 0)
-        logg+=log(test_sensorTable[o][c]);  // second term (only a part is considered)
-        //logg+=targetCell->knowledgeVector[c]*Engine::getInstance().getWorld()->getSensorTable()[o][c]*log(Engine::getInstance().getWorld()->getSensorTable()[o][c]);
-      if(test_cell->observationVector[o] != 0)
-        logg-=log(test_cell->observationVector[o]);    //third term, also it only considers part of the term
-        //logg-=log(targetCell->observationVector[o]);
-        informationGain -= test_cell->knowledgeVector[c]*test_sensorTable[o][c]*logg; //
-        //inclusion of dimitri's last comment
+      for(unsigned o = 0; o < test_maxWeedsPerCell+1; o++)
+      {
+        sum = test_sensorTable[o][c];
+        if(test_sensorTable[o][c] > 0)
+        {sum2 += test_cell->knowledgeVector[c] * test_sensorTable[o][c] * log(test_sensorTable[o][c]); }
+      }
+      informationGain += - test_cell->knowledgeVector[c] * sum - test_cell->knowledgeVector[c] * sum2;
+      sum = 0;
+      sum2 = 0;
     }
-  }
-  informationGain = test_cell->residual_uncertainty - informationGain; // why - residual uncertainty
+    
+    sum = 0;
+    sum2 = 0;
+    for(unsigned o = 0; o < test_maxWeedsPerCell+1; o++)
+    {
+      for(unsigned c = 0; c < test_maxWeedsPerCell+1; c++)
+      {
+        if(test_cell->observationVector[o] != 0)
+        {sum += test_sensorTable[o][c] * test_cell->knowledgeVector[c];}
+        sum2 += test_cell->knowledgeVector[c] + test_sensorTable[o][c];
+      }
+      informationGain += (log(sum))*sum2; 
+      sum = 0;
+      sum2 = 0;
+    }
+    test_IG_value = -informationGain;
 
-  test_IG_value = -informationGain;
+  }
+
+
+
 
 }
 
@@ -204,50 +227,68 @@ void TestFunction_computeIG(bool printTable)
 
 void TestFunction_IG()
 {
-
   std::cout << std::endl;
   std::cout << std::endl;
 
-  unsigned weedNumber = 12;
+  
+  unsigned weedNumber = 12;                           // Variable to be fed the amount of desired weeds in test cell 
   std::cout << "Testing IG" << std::endl;
   std::cout << "Enter number of weeds in cell: ";
-  std::cin >> weedNumber;
-  if(weedNumber > test_maxWeedsPerCell)
+  std::cin >> weedNumber;                             // Enter amount of weeds in test cell 
+  if(weedNumber > test_maxWeedsPerCell)               // Restraining the simulation to have the maximum possible weeds in case the request is higher
   {
     std::cout << "Maximum possible weeds is 12, selecting 12 now" << std::endl;
     weedNumber = test_maxWeedsPerCell;
   }
-  float mapping_threshold;
+  float mapping_threshold;      // uncertainty threshold for the cell to be considered map
   std::cout << "Enter mapping threshold: " ;
   std::cin >> mapping_threshold;
- 
-  TestFunction_SetSensorTable(true);
 
-  test_knowledgeVector.fill(1.0/(test_maxWeedsPerCell+1.0));
-  test_observationVector.fill(0.0);
+  // Select IG computing method we are currently testing
+  std::cout << std::endl;
+  std::cout << "Select computing method to be tested" << std::endl;
+  std::cout << "0 = original method currently in the simulator" << std::endl;
+  std::cout << "1 = Carlos interpretation of equations shared by dimitri" << std::endl;
+  
+  std::cin >> currentMethod;
+  
+  if(currentMethod < 0 || currentMethod > 1)
+  {
+    std::cout << "Number selected not valid, selecting 0 as current method" << std::endl;
+    currentMethod = 0;
+  }
 
-  test_cell = new Cell(1000, 1000, 1000, 1000, 1, false, weedNumber);
+  TestFunction_SetSensorTable(true);      // Setting sensor test table (true for printing table)
+
+
+
+  // create test cell for to do scans
+  // the values inserted represent the location of the cell
+  test_cell = new Cell(1, 1, 1, 1, 1, false, weedNumber); 
   bool isMapped = false;
-  unsigned observations_count = 0;
+  unsigned scans_count = 0;
+
+  // Do first scan
+  TestFunction_computeIG(false);          // Computing IG for each scan attempt (true for printing the process (not implemented yet))
+  std::cout << "Observation: " << scans_count << ", weeds seen: " << test_weeds_seen << " residual entropy: " 
+  << test_cell->getResidual() << ", IG: " << test_IG_value << std::endl;
+
+  // main loop until the cell is "mapped"
   while(!isMapped)
   {    
-    if(observations_count==0)
-    {
-      TestFunction_computeIG(false);
-      std::cout << "Observation: " << observations_count << ", weeds seen: " << test_weeds_seen << " residual entropy: " 
-      << test_cell->getResidual() << ", IG: " << test_IG_value << std::endl;
-    }
 
-    TestFunction_Scan(false);
-    TestFunction_computeIG(false);
+    TestFunction_Scan(false);       // do scan of cell to increase the agent knowledge vector about it
+    TestFunction_computeIG(false);  // Computing IG for each scan attempt (true for printing the process (not implemented yet))
 
-    observations_count++;
-    std::cout << "Observation: " << observations_count << ", weeds seen: " << test_weeds_seen << " residual entropy: " 
+
+    // Printing results after scan
+    scans_count++;    
+    std::cout << "Scan: " << scans_count << ", weeds seen: " << test_weeds_seen << " residual entropy: " 
     << test_cell->getResidual() << ", IG: " << test_IG_value << std::endl;
     
     if(test_cell->getResidual() < mapping_threshold)
     {
-      std::cout << "cell mapped with " << observations_count << " observations" << std::endl;
+      std::cout << "cell mapped with " << scans_count << " scans" << std::endl;
       isMapped = true;
     }
 
@@ -263,11 +304,16 @@ void TestFunction_IG()
 
 int main(int argc, char *argv[]) 
 {
+
+  // Main test function
+  // The objective is to simulate an isolated cell and do scans over it assuming an agent is currently above it until the cell is "mapped"
+  // Current possible variations are:
+    // The number of weeds per cell (fixed maximum value is 12)
+    // The uncertainty threshold for the cell to be mapped
+  // The test objective is to observe the obtained IG values for the cell after each scan
   TestFunction_IG();
 
 
-  //std::cout << "## Saving Results..." << std::endl;
-  //TODO save results
   std::cout << "## ...Exiting" << std::endl;
   return 0;
 }
