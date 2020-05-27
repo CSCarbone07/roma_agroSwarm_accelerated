@@ -94,7 +94,7 @@ void TestFunction_Scan(bool printThis)
     for (unsigned i = 0; i < test_maxWeedsPerCell+1; i++)
     {  
       // sensor table has o x c dimensions
-      // o = observation perceived by the agent
+      // o = current amount of weeds observed by the agent
       // c = actual weed amount in cell (0-12). 
       // The actual value in the array table is the proability of the sensor seeing the real amount of weeds (c)
       random -= test_sensorTable[i][test_cell->getUtility()]; // Utility = amount of weeds
@@ -103,6 +103,7 @@ void TestFunction_Scan(bool printThis)
         /* 
         when the random generated value has a match with the probabilities in the sensor table along
         the o dimension in c = real amount of weeds in the current scanning cell
+        This works since the sum of the values in the table is equal to 1
         */
         weedsSeen = i;
         test_weeds_seen = weedsSeen;
