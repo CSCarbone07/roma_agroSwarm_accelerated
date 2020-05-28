@@ -47,7 +47,8 @@ protected:
   int testingId_2 = -10; //48 spawning next to 37
   glm::vec4 testColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-
+  float targetTravelTime = 0; // time between selecting a target and reaching it
+  float limitForTargetReselection = 50; // if travel to target is higher than this reselect another target
 
   float communicationsRange=-1;
   std::string knowledgeBaseLocation = "World";

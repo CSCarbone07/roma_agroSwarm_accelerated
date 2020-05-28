@@ -83,7 +83,7 @@ private:
   World* world = nullptr; /** < pointer to the world */
   std::vector<Agent*> agents; /** < pointers to the agents, this is not accessible from here  */
 
-  float TimeForCellReselection = 50;
+  float limitForTargetReselection = 50;
 
   //Orca Variables
   float orcaRadius;
@@ -175,6 +175,10 @@ public:
 
   inline float getCommunicationsRange() const {
     return communicationsRange;
+  } 
+
+inline float getlimitForTargetReselection() const {
+    return limitForTargetReselection;
   } 
 
   inline float getKnowledgeClusterRadius() const {

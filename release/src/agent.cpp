@@ -40,7 +40,9 @@ Agent::Agent(unsigned id, float x, float y, float z) {
   {
   knowledgeBaseLocation = "world";
   }
-   
+
+  this->limitForTargetReselection = Engine::getInstance().getlimitForTargetReselection();  
+
   this->knowledgeClusterRadius = Engine::getInstance().getKnowledgeClusterRadius(); 
   this->currentInspectionStrategy = Engine::getInstance().getInspectionStrategy();  
   this->targetSelectionStrategy = Engine::getInstance().getTargetSelectionStrategy();
@@ -102,9 +104,30 @@ Agent::Action Agent::nextAction(){
   }
 }
 
-void Agent::forgetTarget(){
-  this->target = {-1,-1,-1};
-  this->targetId = -1;
+void Agent::forgetTarget()
+{
+  targetTravelTime = 0;
+  Cell* cellToForget;
+  if(this->targetId != -1)
+  {
+
+    if(communicationsRange == -1)
+    {
+        cellToForget = Engine::getInstance().getWorld()->getCells().at(this->getTargetId());
+    }
+    if(communicationsRange>0)
+    {
+        cellToForget = this->cells.at(this->getTargetId());
+    }
+    cellToForget->isTargetOf.clear();
+    BroadcastCell(this, cellToForget);
+
+    this->target = {-1,-1,-1};
+    this->targetId = -1;
+  }
+  
+
+
 }
 
 std::array<float,3> Agent::getNextPosition(){
@@ -358,7 +381,7 @@ bool Agent::doStep(unsigned timeStep){
   switch(nextAction()){
     case PICK:
     {
-        bool DEBUG_THIS = true;
+        bool DEBUG_THIS = false;
         //std::cout << "Agent " << this->getId() << " currently at: " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
         //<< " is picking its target cell using: " << this->currentInspectionStrategy << " strategy" << std::endl;
 
@@ -367,7 +390,8 @@ bool Agent::doStep(unsigned timeStep){
         if(this->getTargetZ() == 0){
         this->setTargetId(Engine::getInstance().getWorld()->getCellId(this->getTargetX(), this->getTargetY(), this->getTargetZ()));   
 
-        Cell* chosenCell;        
+        Cell* chosenCell;  
+        targetTravelTime = 0;      
 
         if(communicationsRange == -1)
         {
@@ -400,6 +424,18 @@ bool Agent::doStep(unsigned timeStep){
       //std::cout << "I am moving" << std::endl;
       if(mesh != nullptr)
       {ChangeColor(movingColor);}
+
+      
+      if(targetTravelTime<limitForTargetReselection)
+      {
+        targetTravelTime++;
+      }
+      else
+      {
+        forgetTarget();
+      }
+      
+
       std::array<float,3> nextPose = getNextPosition();
       if(!Engine::getInstance().moveAgentTo(nextPose.at(0),nextPose.at(1),nextPose.at(2),this->id)){
         std::cout << "I'M NOT MOVING" << std::endl;
@@ -411,7 +447,7 @@ bool Agent::doStep(unsigned timeStep){
     case SCAN:
 	  {
 
-      bool DEBUG_SCAN = true;
+      bool DEBUG_SCAN = false;
 
       if(DEBUG_SCAN && testingId == id && false)
       {std::cout << "Getting cell at: " << position.at(0) << "x + " << position.at(1) << "y" << std::endl;}
@@ -496,10 +532,13 @@ bool Agent::doStep(unsigned timeStep){
         {BroadcastCell(this, scanningCell);} 
         
         //std::cout << "Agent " << this->getId() << " visited cell " << scanningCell->getId() << ". But it was already mapped according to current KB" << std::endl;
+        /*
         scanningCell->isTargetOf.clear();
         this->cells.at(scanningCell->getId())->isTargetOf.clear();
         this->targetId = -1;
         this->target = {-1,-1,-1};
+        */
+        forgetTarget();
         break;          
           
       }

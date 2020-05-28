@@ -4,7 +4,7 @@ seed: 1	          	# seed for the random number generator
 
 Display_Simulation: true
 
-communications_range: -1    #-1 if communication range is unlimited, 5,10,25
+communications_range: 10    #-1 if communication range is unlimited, 5,10,25
 
 world:
   x: 50                # world x size
@@ -45,7 +45,7 @@ attraction: 4
 
 MappingThreshold: 0.25
 
-TimeForCellReselection: 50  #in time steps how many time steps to wait before reselecting a target because the current one is "unreachable"
+limitForTargetReselection: 50  #in time steps how many time steps to wait before reselecting a target because the current one is "unreachable"
 
 
 

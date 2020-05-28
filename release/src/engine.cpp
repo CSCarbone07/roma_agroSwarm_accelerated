@@ -47,7 +47,8 @@ static float minScale = 0.1f;
 
     float linearVelocity =  config["linearVelocity"].as<float>();
     
-    
+    limitForTargetReselection = config["limitForTargetReselection"].as<float>();
+
     // Orca Variables
     tau = config["tau"].as<float>();
 	  collisionAvoidance = config["collisionAvoidance"].as<bool>();
