@@ -43,7 +43,8 @@ protected:
   glm::vec4 receivingMessageColor = glm::vec4(0.0f, 0.0f, 0.5f, 1.0f);
   glm::vec4 scanningColor = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
 
-  int testingId = 27; //33 for top right //27 for top in cluster;
+  int testingId = 37; //33 for top right //27 for top in cluster //37 one close to the other;
+  int testingId_2 = -10; //48 spawning next to 37
   glm::vec4 testColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 

@@ -83,6 +83,8 @@ private:
   World* world = nullptr; /** < pointer to the world */
   std::vector<Agent*> agents; /** < pointers to the agents, this is not accessible from here  */
 
+  float TimeForCellReselection = 50;
+
   //Orca Variables
   float orcaRadius;
   float tau;

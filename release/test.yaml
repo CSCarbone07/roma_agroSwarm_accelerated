@@ -4,7 +4,7 @@ seed: 1	          	# seed for the random number generator
 
 Display_Simulation: true
 
-communications_range: -1    #-1 if communication range is unlimited
+communications_range: -1    #-1 if communication range is unlimited, 5,10,25
 
 world:
   x: 50                # world x size
@@ -31,7 +31,7 @@ collisionAvoidance: true
 
 KnowledgeClusterRadius: 0   #radius around main scanning cell to included in knowledge update
 
-InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain 
+InspectionStrategy: "rw" #rw = randomwalk (default), ig = information gain 
 
 #if ig is the strategy:
 TargetSelectionStrategy: "random"   #greedy, softmax, random (default) with weights. 
@@ -45,11 +45,8 @@ attraction: 4
 
 MappingThreshold: 0.25
 
+TimeForCellReselection: 50  #in time steps how many time steps to wait before reselecting a target because the current one is "unreachable"
 
-######################### Testing Area ###################################
-
-Test_IG: false
-Test_Max_Weeds_Per_Cell: 12 
 
 
 

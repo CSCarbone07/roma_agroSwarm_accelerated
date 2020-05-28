@@ -310,7 +310,7 @@ bool InformationGainStrategy::isElegible(Cell* c, Agent* ag)
    }
    else
    {
-     return ((!ownerAgent->cells.at(c->getId())->isMapped()) && (!(ownerAgent->cells.at(c->getId())->isTargetOf.size())==0));
+     return (!(ownerAgent->cells.at(c->getId())->isMapped()) && ((ownerAgent->cells.at(c->getId())->isTargetOf.size())==0));
      //return ((!ag->cells.at(c->getId())->isMapped()) && (ag->cells.at(c->getId())->isTargetOf.size())<=0);
    }
 }

@@ -261,15 +261,16 @@ void Agent::BroadcastCell(Agent* agent, Cell* cellToSend)
     if(communicationsRange > 0)
     {
       
-      for(auto t : Engine::getInstance().getWorld()->getAgents()){
+      for(auto t : Engine::getInstance().getWorld()->getAgents())
+      {
         if(agent->getId() != t->getId() && std::find(agentsBroadcasting.begin(), agentsBroadcasting.end(), t) == agentsBroadcasting.end())
         { 
           float distance_t = t->calculateLinearDistanceToTarget(agent->getPosition());
           if( distance_t != 0 && distance_t <= agent->communicationsRange)
           {
-            if(DEBUG_FUNCTION)
+            if(DEBUG_FUNCTION && id == testingId || id == testingId_2)
             {
-            std::cout << "Agent " << agent->getId() << " at " << agent->getX() << "x + " << agent->getY() << "y + " << agent->getZ() << "z"
+            std::cout << "Code agent " << id << " in time step " << timeStep << "." << " Agent " << agent->getId() << " at " << agent->getX() << "x + " << agent->getY() << "y + " << agent->getZ() << "z"
             <<" sending cell " << cellToSend->getId() << " to agent " << t->getId() << " within " << distance_t << "m of distance" << std::endl;
             }
             
@@ -300,21 +301,21 @@ void Agent::ReceiveCell(Cell* receivedCell) //recieving broadcasted latest obser
 
 //    Engine::getInstance()
 
-    if(DEBUG_FUNCTION)
+    if(DEBUG_FUNCTION && (id == testingId || id == testingId_2))
     {
-    std::cout << "Agent " << this->getId() << " at " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
+    std::cout << "Code agent " << id << " in time step " << timeStep << "." << " Agent " << this->getId() << " at " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
     << " Recieving cell: " << receivedCell->getId() << ". Its current target cell is: " << targetId << std::endl;
     }
     Cell* updatingCell = this->cells.at(receivedCell->getId());
     updatingCell->isTargetOf = receivedCell->isTargetOf;
     if(receivedCell->lastTimeVisit > updatingCell->lastTimeVisit)
     {
-    updatingCell->observationVector = receivedCell->observationVector;
-    updatingCell->knowledgeVector = receivedCell->knowledgeVector;
-    //updatingCell->observationVectors.insert(receivedCell->observationVectors.begin(), receivedCell->observationVectors.end());
-    //updatingCell->knowledgeVectors.insert(receivedCell->knowledgeVectors.begin(), receivedCell->knowledgeVectors.end());
-    if(receivedCell->isMapped())
-    {updatingCell->setMapped();} 
+      updatingCell->observationVector = receivedCell->observationVector;
+      updatingCell->knowledgeVector = receivedCell->knowledgeVector;
+      //updatingCell->observationVectors.insert(receivedCell->observationVectors.begin(), receivedCell->observationVectors.end());
+      //updatingCell->knowledgeVectors.insert(receivedCell->knowledgeVectors.begin(), receivedCell->knowledgeVectors.end());
+      if(receivedCell->isMapped())
+      {updatingCell->setMapped();}
     }
 /*
 #ifndef PERFECT_COMMUNICATION
@@ -357,7 +358,7 @@ bool Agent::doStep(unsigned timeStep){
   switch(nextAction()){
     case PICK:
     {
-        bool DEBUG_THIS = false;
+        bool DEBUG_THIS = true;
         //std::cout << "Agent " << this->getId() << " currently at: " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
         //<< " is picking its target cell using: " << this->currentInspectionStrategy << " strategy" << std::endl;
 
@@ -376,7 +377,7 @@ bool Agent::doStep(unsigned timeStep){
         {
             chosenCell = cells.at(this->getTargetId());
         }
-        if(DEBUG_THIS && id == testingId)
+        if(DEBUG_THIS  && (id == testingId || id == testingId_2))
         {
         std::cout << "Agent " << this->getId() << " has picked "<< this->getTargetX() << "x + " << this->getTargetY() << "y in Cell " 
         << chosenCell->getId() << " from " << knowledgeBaseLocation << " knowledge base as Target, which previously had " << cells.at(this->getTargetId())->isTargetOf.size() << " agents that had it as target." << std::endl;
@@ -410,13 +411,13 @@ bool Agent::doStep(unsigned timeStep){
     case SCAN:
 	  {
 
-      bool DEBUG_SCAN = false;
+      bool DEBUG_SCAN = true;
 
-      if(DEBUG_SCAN && testingId == id)
+      if(DEBUG_SCAN && testingId == id && false)
       {std::cout << "Getting cell at: " << position.at(0) << "x + " << position.at(1) << "y" << std::endl;}
       Cell* c = Engine::getInstance().getWorld()->getCell(this->position.at(0),this->position.at(1),this->position.at(2));
       c->numOfVisits++;
-      if(DEBUG_SCAN && testingId == id)
+      if(DEBUG_SCAN && testingId == id && false)
       {std::cout << "Recieved cell: " << c->getId() << " at: " << c->getX() << "x + " << c->getY() << std::endl;}
 
       this->velocity = {0.0,0.0,0.0};
@@ -435,8 +436,8 @@ bool Agent::doStep(unsigned timeStep){
         if(!scanningCell->isMapped())
         {            
         //std::cout << std::endl;    
-        if(DEBUG_SCAN && testingId == id)
-        {std::cout << "Agent " << this->getId() << " in location: " << getX() << "x " << getY() << "y" << ". Scanning cell " 
+        if(DEBUG_SCAN && testingId == id && true)
+        {std::cout << "TS: " << timeStep << ". Agent " << this->getId() << " in location: " << getX() << "x " << getY() << "y" << ". Scanning cell " 
         << scanningCell->getId() << " in location " << scanningCell->getX() << "x " << scanningCell->getY() << "y" << std::endl;}
           float weedsSeen = scanCurrentLocation(scanningCell);       
           //std::cout << "Scan result: " << scanningCell->getResidual() << std::endl;
