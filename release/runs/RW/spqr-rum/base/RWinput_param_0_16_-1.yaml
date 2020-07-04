@@ -43,3 +43,7 @@ UseDistanceForIG: false #include distance in ig weights
 #visit
 repulsion: _REPULSION_
 attraction: _ATTRACTION_
+
+MappingThreshold: 0.25
+
+limitForTargetReselection: 50  #in time steps how many time steps to wait before reselecting a target because the current one is "unreachable"

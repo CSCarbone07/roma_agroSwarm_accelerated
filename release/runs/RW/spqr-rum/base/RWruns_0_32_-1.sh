@@ -1,10 +1,10 @@
 #!/bin/bash
 
 RUNS=100
-NUM_OF_AGENTS=(25)
+NUM_OF_AGENTS=(50)
 COMMUNICATIONS_RANGE=(-1)
 ATTRACTION=(0 4 8 16 32 64)
-REPULSION=(4)
+REPULSION=(32)
 LOCALPATH=$(pwd)/
 for x in "${NUM_OF_AGENTS[@]}"
 do
@@ -42,14 +42,14 @@ do
             fi
             echo "Run #$c with $i ATTRACTION and $j REPULSION" 
 
-            cp RWinput_param_0_4.yaml RWparam_found_script_0_4.yaml
-            sed -i -e "s/_SEED_/$c/g" RWparam_found_script_0_4.yaml
-            sed -i -e "s/_NUM_OF_AGENTS_/$x/g" RWparam_found_script_0_4.yaml
-            sed -i -e "s/_COMMUNICATIONS_RANGE_/$y/g" RWparam_found_script_0_4.yaml
-            sed -i -e "s/_ATTRACTION_/$i/g" RWparam_found_script_0_4.yaml
-            sed -i -e "s/_REPULSION_/$j/g" RWparam_found_script_0_4.yaml
-            sed -Ei "s|_PATH_|$LOCALPATH|g" RWparam_found_script_0_4.yaml
-            /home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/MACPP -i RWparam_found_script_0_4.yaml
+            cp RWinput_param_0_32.yaml RWparam_found_script_0_32.yaml
+            sed -i -e "s/_SEED_/$c/g" RWparam_found_script_0_32.yaml
+            sed -i -e "s/_NUM_OF_AGENTS_/$x/g" RWparam_found_script_0_32.yaml
+            sed -i -e "s/_COMMUNICATIONS_RANGE_/$y/g" RWparam_found_script_0_32.yaml
+            sed -i -e "s/_ATTRACTION_/$i/g" RWparam_found_script_0_32.yaml
+            sed -i -e "s/_REPULSION_/$j/g" RWparam_found_script_0_32.yaml
+            sed -Ei "s|_PATH_|$LOCALPATH|g" RWparam_found_script_0_32.yaml
+            /home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/MACPP -i RWparam_found_script_0_32.yaml
         done
       done
     done	
