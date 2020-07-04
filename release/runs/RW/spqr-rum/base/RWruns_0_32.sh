@@ -49,7 +49,7 @@ do
             sed -i -e "s/_ATTRACTION_/$i/g" RWparam_found_script_0_32.yaml
             sed -i -e "s/_REPULSION_/$j/g" RWparam_found_script_0_32.yaml
             sed -Ei "s|_PATH_|$LOCALPATH|g" RWparam_found_script_0_32.yaml
-            /home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/MACPP -i RWparam_found_script_0_32.yaml
+            /home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/MACPP -i RWparam_found_script_0_32.yaml
         done
       done
     done	

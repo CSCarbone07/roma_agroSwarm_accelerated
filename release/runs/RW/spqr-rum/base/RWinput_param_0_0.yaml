@@ -12,12 +12,12 @@ world:
   z: 1                 # world z size  
 
 
-knowledgeBasesFile:  	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
-movesFile: 	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
-statusFile: 	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
-randomChoice: 	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
-timing: 	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
-visitedCells: 	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+knowledgeBasesFile:  	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+movesFile: 	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+statusFile: 	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+randomChoice: 	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+timing: 	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+visitedCells: 	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
 
 weeds:
     clusters: 4
