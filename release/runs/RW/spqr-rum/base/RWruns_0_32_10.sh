@@ -16,40 +16,40 @@ do
       do
         for (( c=1; c<=$RUNS; c++ ))
         do  
-            if test -f "${LOCALPATH}results/results_status_${x}_${y}_${i}_${j}.yaml"
+            if test -f "${LOCALPATH}results/results_status_${x}_${y}_${i}_${j}_10.yaml"
             then
-                echo "$c:" >> "${LOCALPATH}results/results_status_${x}_${y}_${i}_${j}.yaml"
+                echo "$c:" >> "${LOCALPATH}results/results_status_${x}_${y}_${i}_${j}_10.yaml"
             else
-                echo "$c:" > "${LOCALPATH}results/results_status_${x}_${y}_${i}_${j}.yaml"
+                echo "$c:" > "${LOCALPATH}results/results_status_${x}_${y}_${i}_${j}_10.yaml"
             fi
-            if test -f "${LOCALPATH}results/results_randomChoice_${x}_${y}_${i}_${j}.yaml"
+            if test -f "${LOCALPATH}results/results_randomChoice_${x}_${y}_${i}_${j}_10.yaml"
             then
-                echo "$c:" >> "${LOCALPATH}results/results_randomChoice_${x}_${y}_${i}_${j}.yaml"
+                echo "$c:" >> "${LOCALPATH}results/results_randomChoice_${x}_${y}_${i}_${j}_10.yaml"
             else
-                echo "$c:" > "${LOCALPATH}results/results_randomChoice_${x}_${y}_${i}_${j}.yaml"
+                echo "$c:" > "${LOCALPATH}results/results_randomChoice_${x}_${y}_${i}_${j}_10.yaml"
             fi
-            if test -f "${LOCALPATH}results/results_timing_${x}_${y}_${i}_${j}.yaml"
+            if test -f "${LOCALPATH}results/results_timing_${x}_${y}_${i}_${j}_10.yaml"
             then
-                echo "$c:" >> "${LOCALPATH}results/results_timing_${x}_${y}_${i}_${j}.yaml"
+                echo "$c:" >> "${LOCALPATH}results/results_timing_${x}_${y}_${i}_${j}_10.yaml"
             else
-                echo "$c:" > "${LOCALPATH}results/results_timing_${x}_${y}_${i}_${j}.yaml"
+                echo "$c:" > "${LOCALPATH}results/results_timing_${x}_${y}_${i}_${j}_10.yaml"
             fi
-            if test -f "${LOCALPATH}results/results_visitedCells_${x}_${y}_${i}_${j}.yaml"
+            if test -f "${LOCALPATH}results/results_visitedCells_${x}_${y}_${i}_${j}_10.yaml"
             then
-                echo "$c:" >> "${LOCALPATH}results/results_visitedCells_${x}_${y}_${i}_${j}.yaml"
+                echo "$c:" >> "${LOCALPATH}results/results_visitedCells_${x}_${y}_${i}_${j}_10.yaml"
             else
-                echo "$c:" > "${LOCALPATH}results/results_visitedCells_${x}_${y}_${i}_${j}.yaml"
+                echo "$c:" > "${LOCALPATH}results/results_visitedCells_${x}_${y}_${i}_${j}_10.yaml"
             fi
             echo "Run #$c with $i ATTRACTION and $j REPULSION" 
 
-            cp RWinput_param_0_32.yaml RWparam_found_script_0_32.yaml
-            sed -i -e "s/_SEED_/$c/g" RWparam_found_script_0_32.yaml
-            sed -i -e "s/_NUM_OF_AGENTS_/$x/g" RWparam_found_script_0_32.yaml
-            sed -i -e "s/_COMMUNICATIONS_RANGE_/$y/g" RWparam_found_script_0_32.yaml
-            sed -i -e "s/_ATTRACTION_/$i/g" RWparam_found_script_0_32.yaml
-            sed -i -e "s/_REPULSION_/$j/g" RWparam_found_script_0_32.yaml
-            sed -Ei "s|_PATH_|$LOCALPATH|g" RWparam_found_script_0_32.yaml
-            /home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/MACPP -i RWparam_found_script_0_32.yaml
+            cp RWinput_param_0_32_10.yaml RWparam_found_script_0_32_10.yaml
+            sed -i -e "s/_SEED_/$c/g" RWparam_found_script_0_32_10.yaml
+            sed -i -e "s/_NUM_OF_AGENTS_/$x/g" RWparam_found_script_0_32_10.yaml
+            sed -i -e "s/_COMMUNICATIONS_RANGE_/$y/g" RWparam_found_script_0_32_10.yaml
+            sed -i -e "s/_ATTRACTION_/$i/g" RWparam_found_script_0_32_10.yaml
+            sed -i -e "s/_REPULSION_/$j/g" RWparam_found_script_0_32_10.yaml
+            sed -Ei "s|_PATH_|$LOCALPATH|g" RWparam_found_script_0_32_10.yaml
+            /home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/MACPP -i RWparam_found_script_0_32_10.yaml
         done
       done
     done	
