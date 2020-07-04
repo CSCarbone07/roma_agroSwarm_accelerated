@@ -103,7 +103,7 @@ void TestFunction_Scan(bool printThis)
         /* 
         when the random generated value has a match with the probabilities in the sensor table along
         the o dimension in c = real amount of weeds in the current scanning cell
-        This works since the sum of the values in the table is equal to 1
+        This works since the term of the values in the table is equal to 1
         */
         weedsSeen = i;
         test_weeds_seen = weedsSeen;
@@ -121,43 +121,116 @@ void TestFunction_Scan(bool printThis)
     test_cell->residual_uncertainty = 0.0;
     float entr = 0;
     // filling entr with uncertainty equation terms
-    // The sum is negated at the end to set the actual current cell uncertainty
+    float temp_z = 0;
+    // The term is negated at the end to set the actual current cell uncertainty
     for(unsigned i = 0; i<test_maxWeedsPerCell+1; i++)
     {
-      test_cell->knowledgeVector[i] = test_cell->knowledgeVector[i] * test_sensorTable[weedsSeen][i] 
-                                  / test_cell->observationVector[weedsSeen];
-      
       if(DEBUG_THIS)
-      {std::cout << test_cell->knowledgeVector[i] << " ";}   
+      {
+        std::cout << test_cell->knowledgeVector[i] << " "; 
+        std::cout << " |" << test_sensorTable[weedsSeen][i] << "| "; 
+
+      }
+
+      test_cell->knowledgeVector[i] = test_cell->knowledgeVector[i] * test_sensorTable[weedsSeen][i]; 
+      //test_cell->knowledgeVector[i] = test_cell->knowledgeVector[i] * test_sensorTable[weedsSeen][i] 
+      //                      / test_cell->observationVector[weedsSeen]; //current cell, equation 5
      
+      temp_z += test_cell->knowledgeVector[i];
+
+      if(DEBUG_THIS)
+      {
+        //std::cout << test_cell->observationVector[i] << " ";
+        //std::cout << '(' << test_cell->observationVector[i]*(std::log(test_cell->observationVector[i])) << ')' << " ";
+        std::cout << " -" << test_cell->knowledgeVector[i] << "- ";
+        //std::cout << '(' << test_cell->knowledgeVector[i]*(std::log(test_cell->knowledgeVector[i])) << ')' << " ";
+      }
+    }
+
+    if(DEBUG_THIS)
+    {
+      std::cout << std::endl;
+      std::cout << "Temp_z: " << temp_z << " ";
+      std::cout << std::endl;
+    }
+
+    for(unsigned i = 0; i<test_maxWeedsPerCell+1; i++)
+    {
+      test_cell->knowledgeVector[i] /= temp_z;
+      if(DEBUG_THIS)
+      {
+        std::cout << '(' << test_cell->knowledgeVector[i] << ')' << " ";
+      }
+
+    }
+
+    for(unsigned i = 0; i<test_maxWeedsPerCell+1; i++)
+    {
       if(test_cell->knowledgeVector[i] != 0)
       {
-        entr +=  test_cell->knowledgeVector[i]*(std::log(test_cell->knowledgeVector[i]));
+        //entr +=  test_cell->observationVector[i]*(std::log(test_cell->observationVector[i]));
+        entr +=  -test_cell->knowledgeVector[i]*(std::log(test_cell->knowledgeVector[i]));
       }
     }
     
     if(DEBUG_THIS)
-    {std::cout << std::endl;}
+    {
+      std::cout << std::endl;
+      std::cout << "Residual entropy: " << entr << " ";
+      std::cout << std::endl;
+    }
     
-    test_cell->residual_uncertainty = -entr;
+    test_cell->residual_uncertainty = entr;
 }
 
 // calculate IG value for cell before current scan
 void TestFunction_computeIG(bool printTable)
 {
-
+  bool DEBUG_THIS = true;
 
   test_cell->observationVector.fill(0);
-
+  std::array<float, 13> entropyVector;
+  entropyVector.fill(0);
 
   for(unsigned k = 0; k < test_maxWeedsPerCell+1; k++ )
   {
     for(unsigned l = 0; l < test_maxWeedsPerCell+1; l++ )
     {
-      test_cell->observationVector[k] += test_cell->knowledgeVector[l]*test_sensorTable[k][l];
+      //test_cell->observationVector[k] += test_cell->knowledgeVector[l]*test_sensorTable[k][l];
+      test_cell->observationVector[k] += -test_sensorTable[k][l]*log(test_sensorTable[k][l]);
     }
   }
 
+  if(DEBUG_THIS)
+  {
+    std::cout << "Entropy vector: " << std::endl;
+  }
+
+  for(unsigned k = 0; k < test_maxWeedsPerCell+1; k++ )
+  {
+    for(unsigned l = 0; l < test_maxWeedsPerCell+1; l++ )
+    {
+      if(test_sensorTable[k][l]!=0)
+      {
+        entropyVector[k] += -test_sensorTable[k][l]*log(test_sensorTable[k][l]);
+        
+        if(DEBUG_THIS)
+        {
+          //std::cout << entropyVector[k] << " ";
+        }
+      }
+    }
+    if(DEBUG_THIS)
+    {
+      std::cout << entropyVector[k] << " ";
+    }
+    //test_cell->observationVector[k] += -test_cell->observationVector[k]*log(test_cell->observationVector[k]);
+  }
+  
+  if(DEBUG_THIS)
+  {
+    std::cout << std::endl;
+  }
  
   // current method implemented in the simulator (the result is negated at the end)
   if(currentMethod == 0)
@@ -186,36 +259,72 @@ void TestFunction_computeIG(bool printTable)
   if(currentMethod == 1)
   {
     float informationGain = 0;
-    float sum = 0;
-    float sum2 = 0;
+    float term = 0;
+    float term2 = 0;
     for(unsigned c = 0; c < test_maxWeedsPerCell+1; c++)
     {
       for(unsigned o = 0; o < test_maxWeedsPerCell+1; o++)
       {
-        sum = test_sensorTable[o][c];
+        term = test_sensorTable[o][c];
         if(test_sensorTable[o][c] > 0)
-        {sum2 += test_cell->knowledgeVector[c] * test_sensorTable[o][c] * log(test_sensorTable[o][c]); }
+        {term2 += test_cell->knowledgeVector[c] * test_sensorTable[o][c] * log(test_sensorTable[o][c]); }
       }
-      informationGain += - test_cell->knowledgeVector[c] * sum - test_cell->knowledgeVector[c] * sum2;
-      sum = 0;
-      sum2 = 0;
+      informationGain += - test_cell->knowledgeVector[c] * term - test_cell->knowledgeVector[c] * term2;
+      term = 0;
+      term2 = 0;
     }
     
-    sum = 0;
-    sum2 = 0;
+    term = 0;
+    term2 = 0;
     for(unsigned o = 0; o < test_maxWeedsPerCell+1; o++)
     {
       for(unsigned c = 0; c < test_maxWeedsPerCell+1; c++)
       {
         if(test_cell->observationVector[o] != 0)
-        {sum += test_sensorTable[o][c] * test_cell->knowledgeVector[c];}
-        sum2 += test_cell->knowledgeVector[c] + test_sensorTable[o][c];
+        {term += test_sensorTable[o][c] * test_cell->knowledgeVector[c];}
+        term2 += test_cell->knowledgeVector[c] * test_sensorTable[o][c];
       }
-      informationGain += (log(sum))*sum2; 
-      sum = 0;
-      sum2 = 0;
+      informationGain += (log(term))*term2; 
+      term = 0;
+      term2 = 0;
     }
-    test_IG_value = -informationGain;
+
+    test_IG_value = informationGain;
+
+  }
+
+  // Dimitri's code
+  if(currentMethod == 2)
+  {
+    //std::cout << "Using dimitri's pseudocode" << std::endl;
+    float informationGain = 0;
+    float term1 = 0;
+    float term2 = 0;
+    float term3 = 0;
+    for(unsigned c = 0; c < test_maxWeedsPerCell+1; c++)
+    {
+      if(test_cell->knowledgeVector[c]>0)
+      {term1 += -test_cell->knowledgeVector[c] * log(test_cell->knowledgeVector[c]);}
+    }
+    
+    for(unsigned c = 0; c < test_maxWeedsPerCell+1; c++)
+    {
+      term2 += test_cell->knowledgeVector[c] * entropyVector[c];
+    }
+
+    float term3_int = 0;
+    for(unsigned o = 0; o < test_maxWeedsPerCell+1; o++)
+    {
+      term3_int = 0;
+      for(unsigned c = 0; c < test_maxWeedsPerCell+1; c++)
+      {
+        term3_int += test_cell->knowledgeVector[c] * test_sensorTable[o][c];
+      }
+      if(term3_int>0)
+      {term3 += term3_int * log(term3_int);}
+    }
+
+    test_IG_value = term1 + term2 + term3;
 
   }
 
@@ -250,10 +359,11 @@ void TestFunction_IG()
   std::cout << "Select computing method to be tested" << std::endl;
   std::cout << "0 = original method currently in the simulator" << std::endl;
   std::cout << "1 = Carlos interpretation of equations shared by dimitri" << std::endl;
-  
+  std::cout << "2 = Method with Dimitri's pseudocode" << std::endl;
+
   std::cin >> currentMethod;
   
-  if(currentMethod < 0 || currentMethod > 1)
+  if(currentMethod < 0 || currentMethod > 2)
   {
     std::cout << "Number selected not valid, selecting 0 as current method" << std::endl;
     currentMethod = 0;
@@ -269,7 +379,7 @@ void TestFunction_IG()
   bool isMapped = false;
   unsigned scans_count = 0;
 
-  // Do first scan
+  // Do first IG
   TestFunction_computeIG(false);          // Computing IG for each scan attempt (true for printing the process (not implemented yet))
   std::cout << "Observation: " << scans_count << ", weeds seen: " << test_weeds_seen << " residual entropy: " 
   << test_cell->getResidual() << ", IG: " << test_IG_value << std::endl;
@@ -307,7 +417,7 @@ int main(int argc, char *argv[])
 {
 
   // Main test function
-  // The objective is to simulate an isolated cell and do scans over it assuming an agent is currently above it until the cell is "mapped"
+  // The objective is to simulate an isolated cell and do scans over it asterming an agent is currently above it until the cell is "mapped"
   // Current possible variations are:
     // The number of weeds per cell (fixed maximum value is 12)
     // The uncertainty threshold for the cell to be mapped

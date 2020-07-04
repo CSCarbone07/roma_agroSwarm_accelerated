@@ -378,25 +378,35 @@ Eigen::Vector2f RandomWalkStrategy::computeMomentum(float theta)
 }
 
 Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float,3> agentPos){
-  bool DEBUG_FUNCTION = false;
+  bool DEBUG_FUNCTION = true;
   float newX = 0;
   float newY = 0;
-  for(auto t : Engine::getInstance().getWorld()->getAgents()){
-    if(t->getId() != ag->getId()){
+  for(auto t : Engine::getInstance().getWorld()->getAgents())
+  {
+    if(t->getId() != ag->getId())
+    {
       float distance_t = t->calculateLinearDistanceToTarget(ag->getPosition());
       if(( distance_t != 0 && distance_t < Engine::getInstance().getWorld()->communication_range) ||  Engine::getInstance().getWorld()->communication_range == -1)
       {
-        std::array<float,3> otherPos = t->getPosition();
-        Eigen::Vector2f tv(agentPos.at(0) - otherPos.at(0), agentPos.at(1) - otherPos.at(1));
 
+        std::array<float,3> otherPos = t->getPosition();
+        Eigen::Vector2f tv(otherPos.at(0) - agentPos.at(0), otherPos.at(1) - agentPos.at(1));
+        if(DEBUG_FUNCTION)
+        {
+          std::cout << "Agent " << ag->getId() 
+          << " at " << ownerAgent->getX() << " x, " << ownerAgent->getY() << " y"
+          << " repulsing agent " << t->getId() 
+          << " at distance: " << tv[0] << " x, " << tv[1] << " y ";
+        }
         float weight = 2*Engine::getInstance().gaussianPDF(tv.norm(), 0, Engine::getInstance().getRepulsion());  //(tc.length(), 0, Mav.potentialSpread, 2);
-        newX += weight*tv[0];
-        newY += weight*tv[1];
+        tv.normalize();
+        newX += -weight*tv[0];
+        newY += -weight*tv[1];
 
         if(DEBUG_FUNCTION)
         {
-          std::cout << "Agent " << ag->getId() << " repulsing agent " << t->getId() 
-          << " with repulsion " << Engine::getInstance().getRepulsion() << std::endl;
+          std::cout << " weight: " << weight
+          << " with repulsion: " << -weight*tv[0] << " x, " << -weight*tv[1] << " y" << std::endl;
         }
 
       }
@@ -406,14 +416,25 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
   //{std::cout << "Weights found: " << newX << "x + " << newY << "y" << std::endl;}
   Eigen::Vector2f repulsion(newX,newY);
   //avoid normalizing a zero vector
+
   if(!repulsion.isZero())
+  {
+    if(DEBUG_FUNCTION)
+    {
+      std::cout << "Repulsion found: " << newX << " x, " << newY << " y" << std::endl;
+    }
     return repulsion.normalized();
 
+  } 
+  if(DEBUG_FUNCTION)
+  {
+     std::cout << "Zero found" << std::endl;
+  }
   return Eigen::Vector2f(0,0);
 }
 
 Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<float,3> agentPos){
-  bool DEBUG_FUNCTION = false;
+  bool DEBUG_FUNCTION = true;
   
   float newX = 0;
   float newY = 0;
@@ -435,6 +456,8 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
       if(DEBUG_FUNCTION)
       {std::cout << "checking" << beaconsCell.size() << std::endl;}
   }
+
+  
   
   //if(DEBUG_FUNCTION)
   //{std::cout << "checking" << beaconsCell.size() << std::endl;}
@@ -451,6 +474,7 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
       {std::cout << "Agent " << ag->getId() << " found beacon with magnitude" << (*i).second->getBeacon() << std::endl;}
       Eigen::Vector2f tv(((*i).second->getX()) - agentPos.at(0), ((*i).second->getY()) - agentPos.at(1));
       float weight = (*i).second->getBeacon()* 2*Engine::getInstance().gaussianPDF(tv.norm(), 0, Engine::getInstance().getAttraction());  //(tc.length(), 0, Mav.potentialSpread, 2);
+      tv.normalize();
       newX += weight*tv[0];
       newY += weight*tv[1];
     }

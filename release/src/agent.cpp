@@ -552,7 +552,8 @@ bool Agent::doStep(unsigned timeStep){
   
 };
 
-bool Agent::isInBound(unsigned x, unsigned y){     
+bool Agent::isInBound(unsigned x, unsigned y)
+{     
      return x >= 0 && y >= 0 && x < Engine::getInstance().getWorld()->getSize().at(0) && y < Engine::getInstance().getWorld()->getSize().at(1);;
 }
 
@@ -560,7 +561,8 @@ bool Agent::isInBound(unsigned x, unsigned y){
 /**
  * Perform a scan at the current location (that is supposed to be the targetLocation)
  */
-float Agent::scanCurrentLocation(Cell* currentCell){ 
+float Agent::scanCurrentLocation(Cell* currentCell)
+{ 
 	assert(getTargetId() != -1);
 
   bool DEBUG_THIS = false;
@@ -574,7 +576,8 @@ float Agent::scanCurrentLocation(Cell* currentCell){
     if(DEBUG_THIS  && testingId == id)
     {std::cout << "Observation Vector: " << std::endl;}
     //std::cout << "Knowledge Vector: " << std::endl;
-    for(unsigned l = 0; l < 13; l++ ){
+    for(unsigned l = 0; l < 13; l++ )
+    {
         for(unsigned k = 0; k < 13; k++ )
         {
             //std::cout << "old observation: " << currentCell->observationVector[k] << std::endl;

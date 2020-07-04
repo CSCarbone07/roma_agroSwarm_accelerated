@@ -1,0 +1,45 @@
+max_steps: 10000    # termination condition for the simulation, 0 means infinite
+num_of_agents: _NUM_OF_AGENTS_        # total number of agents in the simulation
+seed: _SEED_                 # seed for the random number generator
+
+Display_Simulation: false
+
+communications_range: _COMMUNICATIONS_RANGE_      #-1 if communication range is unlimited
+
+world:
+  x: 50                # world x size
+  y: 50               # world y size
+  z: 1                 # world z size  
+
+
+knowledgeBasesFile:  	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+movesFile: 	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+statusFile: 	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+randomChoice: 	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+timing: 	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+visitedCells: 	"/home/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells__NUM_OF_AGENTS___COMMUNICATIONS_RANGE___ATTRACTION___REPULSION_.yaml"
+
+weeds:
+    clusters: 4
+    maxweeds: 49
+    isolated: 40
+
+#orca
+linearVelocity : 0.1    # linear velocity of UAV
+orcaRadius: 0.3
+tau: 0.2
+collisionAvoidance: true
+
+KnowledgeClusterRadius: 0   #radius around main scanning cell to included in knowledge update
+
+InspectionStrategy: "rw" #rw = randomwalk (default), ig = information gain 
+
+#if ig is the strategy:
+TargetSelectionStrategy: "random"   #greedy, softmax, random (default) with weights. 
+Softmax_Lambda: 1       #lambda for softmax equation 
+UseSocialInfo: false    #include information from other agents
+UseDistanceForIG: false #include distance in ig weights
+
+#visit
+repulsion: _REPULSION_
+attraction: _ATTRACTION_
