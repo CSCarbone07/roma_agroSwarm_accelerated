@@ -12,7 +12,12 @@ static unsigned test_weeds_seen=0;      // weeds visible in each scan
 
 static Cell* test_cell;                 // test cell with all the properties of the simulator
 static std::array<std::array<float,13>,13> test_sensorTable;  // Test sensor table 
+static std::array<std::array<float,13>,13> test_sensorTable_noNoise;  // No noise sensor table 
+static std::array<std::array<float,13>,13> test_sensorTable_noise;  // Noise sensor table 
 
+static unsigned seed = 1;
+
+static int currentTable = 0;
 static int currentMethod = 0;
 
 
@@ -39,25 +44,102 @@ void TestFunction_SetSensorTable(bool printTable)
   // Loop to build test sensor table. 
   // The purpose of this table is to precalculate the probabilities of having the right perception of weeds in a cell
   // The table is a 13x13 table (0 weeds to 12 weeds)
-  for (unsigned c = 0; c <= test_maxWeedsPerCell; c++ )   // dimension for the real amount of weeds
+  if(currentTable == 0)
   {
-    for (unsigned o = 0; o <= test_maxWeedsPerCell; o++ ) // dimension for the current observation the agent perceives from the cells
+    for (unsigned c = 0; c <= test_maxWeedsPerCell; c++ )   // dimension for the real amount of weeds
     {
-      if(o>c)                             // since there are not false positives yet, 0 is introduced for observations above the actual cells
-        test_sensorTable[o][c] = 0;       
-      else
+      for (unsigned o = 0; o <= test_maxWeedsPerCell; o++ ) // dimension for the current observation the agent perceives from the cells
       {
-        // the values of the sensor table are obtained through probability mass function
-        test_sensorTable[o][c] = TestFunction_PMFBinomial(0.95, c, o); 
+        if(o>c)                             // since there are not false positives yet, 0 is introduced for observations above the actual cells
+          test_sensorTable[o][c] = 0;       
+        else
+        {
+          // the values of the sensor table are obtained through probability mass function
+          test_sensorTable[o][c] = TestFunction_PMFBinomial(0.95, c, o); 
+        }
       }
-      if(printTable)
-      {std::cout << test_sensorTable[o][c] << " ";}
-    }
-    if(printTable)
-    {std::cout << std::endl;}
+    }  
   }
+
+  
+  if(currentTable == 1 || currentTable == 3) // no noise
+  {
+    for (unsigned c = 0; c <= test_maxWeedsPerCell; c++ )   // dimension for the real amount of weeds
+      {
+        for (unsigned o = 0; o <= test_maxWeedsPerCell; o++ ) // dimension for the current observation the agent perceives from the cells
+        {
+          if(o == c)                             
+            test_sensorTable_noNoise[o][c] = 1;       
+          else
+          {
+            test_sensorTable_noNoise[o][c] = 0; 
+          }
+        }
+      } 
+  }
+
+  if(currentTable == 1) // no noise
+  {
+    test_sensorTable = test_sensorTable_noNoise;
+  }
+
+  if(currentTable == 2 || currentTable == 3) // noise
+  {
+    float sum = 0;
+    for (unsigned c = 0; c <= test_maxWeedsPerCell; c++ )   // dimension for the real amount of weeds
+    {
+      for (unsigned o = 0; o <= test_maxWeedsPerCell; o++ ) // dimension for the current observation the agent perceives from the cells
+      {
+        test_sensorTable_noise[o][c] = RandomGenerator::getInstance().nextFloat(1);
+        sum += test_sensorTable_noise[o][c];     
+      }
+      for (unsigned o = 0; o <= test_maxWeedsPerCell; o++ ) // dimension for the current observation the agent perceives from the cells
+      {
+        test_sensorTable_noise[o][c] /= sum;     
+      }
+      sum = 0;
+    }
+  }
+
+  if(currentTable == 2) // noise
+  {
+    test_sensorTable = test_sensorTable_noise;
+  }
+    
+  if(currentTable == 3) // not so noisy
+  {
+  for (unsigned c = 0; c <= test_maxWeedsPerCell; c++ )   // dimension for the real amount of weeds
+    {
+      for (unsigned o = 0; o <= test_maxWeedsPerCell; o++ ) // dimension for the current observation the agent perceives from the cells
+      {
+        test_sensorTable[o][c] = 0.8*test_sensorTable_noNoise[o][c] + 0.2*test_sensorTable_noise[o][c];       
+      }
+    }
+  }
+
+  if(currentTable == 4) // invisible man
+  {
+  for (unsigned c = 0; c <= test_maxWeedsPerCell; c++ )   // dimension for the real amount of weeds
+    {
+      for (unsigned o = 0; o <= test_maxWeedsPerCell; o++ ) // dimension for the current observation the agent perceives from the cells
+      {
+        test_sensorTable[o][c] = 1.0f/(test_maxWeedsPerCell+1);       
+      }
+    } 
+  }
+  
   if(printTable)
-  {std::cout << std::endl;}               
+  {
+    for (unsigned c = 0; c <= test_maxWeedsPerCell; c++ )   // dimension for the real amount of weeds
+    {
+      for (unsigned o = 0; o <= test_maxWeedsPerCell; o++ ) // dimension for the current observation the agent perceives from the cells
+      {
+        std::cout << test_sensorTable[o][c] << " ";
+      }
+      std::cout << std::endl;
+    }
+    std::cout << std::endl;
+  }
 
 }
 
@@ -87,10 +169,13 @@ void TestFunction_Scan(bool printThis)
         {std::cout << std::endl;}
     }
 
+
+
     // Set amount of weeds "observed" by sensor in current scan
     // a random value is generated to selected a value in the observation dimensions
     unsigned weedsSeen;
     float random = RandomGenerator::getInstance().nextFloat(1);
+    
     for (unsigned i = 0; i < test_maxWeedsPerCell+1; i++)
     {  
       // sensor table has o x c dimensions
@@ -110,7 +195,6 @@ void TestFunction_Scan(bool printThis)
         break;
       }
     } 
-
 
 
     if(DEBUG_THIS)
@@ -201,36 +285,6 @@ void TestFunction_computeIG(bool printTable)
     }
   }
 
-  if(DEBUG_THIS)
-  {
-    std::cout << "Entropy vector: " << std::endl;
-  }
-
-  for(unsigned k = 0; k < test_maxWeedsPerCell+1; k++ )
-  {
-    for(unsigned l = 0; l < test_maxWeedsPerCell+1; l++ )
-    {
-      if(test_sensorTable[k][l]!=0)
-      {
-        entropyVector[k] += -test_sensorTable[k][l]*log(test_sensorTable[k][l]);
-        
-        if(DEBUG_THIS)
-        {
-          //std::cout << entropyVector[k] << " ";
-        }
-      }
-    }
-    if(DEBUG_THIS)
-    {
-      std::cout << entropyVector[k] << " ";
-    }
-    //test_cell->observationVector[k] += -test_cell->observationVector[k]*log(test_cell->observationVector[k]);
-  }
-  
-  if(DEBUG_THIS)
-  {
-    std::cout << std::endl;
-  }
  
   // current method implemented in the simulator (the result is negated at the end)
   if(currentMethod == 0)
@@ -296,6 +350,38 @@ void TestFunction_computeIG(bool printTable)
   // Dimitri's code
   if(currentMethod == 2)
   {
+    
+    if(DEBUG_THIS)
+    {
+      std::cout << "Entropy vector: ";
+    }
+
+    for(unsigned l = 0; l < test_maxWeedsPerCell+1; l++ )
+    {
+      for(unsigned k = 0; k < test_maxWeedsPerCell+1; k++ )
+      {
+        if(test_sensorTable[k][l]!=0)
+        {
+          entropyVector[l] += -test_sensorTable[k][l]*log(test_sensorTable[k][l]);        
+          //if(DEBUG_THIS)
+          //{
+            //std::cout << entropyVector[k] << " ";
+          //}
+        }
+      }
+      if(DEBUG_THIS)
+      {
+        //std::cout << entropyVector[k] << " ";
+      }
+      //test_cell->observationVector[k] += -test_cell->observationVector[k]*log(test_cell->observationVector[k]);
+    }
+    
+    if(DEBUG_THIS)
+    {
+      std::cout << std::endl;
+    }
+    
+
     //std::cout << "Using dimitri's pseudocode" << std::endl;
     float informationGain = 0;
     float term1 = 0;
@@ -304,12 +390,22 @@ void TestFunction_computeIG(bool printTable)
     for(unsigned c = 0; c < test_maxWeedsPerCell+1; c++)
     {
       if(test_cell->knowledgeVector[c]>0)
-      {term1 += -test_cell->knowledgeVector[c] * log(test_cell->knowledgeVector[c]);}
+      {term1 = -test_cell->knowledgeVector[c] * log(test_cell->knowledgeVector[c]);}
     }
     
+    if(DEBUG_THIS)
+    {
+      std::cout << "Term 1 = " << term1 << " ";
+    }
+
     for(unsigned c = 0; c < test_maxWeedsPerCell+1; c++)
     {
       term2 += test_cell->knowledgeVector[c] * entropyVector[c];
+    }
+
+    if(DEBUG_THIS)
+    {
+      std::cout << "Term 2 = " << term2 << " ";
     }
 
     float term3_int = 0;
@@ -324,7 +420,15 @@ void TestFunction_computeIG(bool printTable)
       {term3 += term3_int * log(term3_int);}
     }
 
-    test_IG_value = term1 + term2 + term3;
+
+    if(DEBUG_THIS)
+    {
+      std::cout << "Term 3 = " << term3 << " ";
+    }
+
+    std::cout << std::endl;
+
+    test_IG_value = - term2 - term3;
 
   }
 
@@ -340,6 +444,8 @@ void TestFunction_IG()
   std::cout << std::endl;
   std::cout << std::endl;
 
+  RandomGenerator::getInstance().init(seed);
+
   
   unsigned weedNumber = 12;                           // Variable to be fed the amount of desired weeds in test cell 
   std::cout << "Testing IG" << std::endl;
@@ -353,6 +459,25 @@ void TestFunction_IG()
   float mapping_threshold;      // uncertainty threshold for the cell to be considered map
   std::cout << "Enter mapping threshold: " ;
   std::cin >> mapping_threshold;
+
+
+  // Select sensor table model
+  std::cout << std::endl;
+  std::cout << "Select sensor table for test" << std::endl;
+  std::cout << "0 = original PMF binomial table (no false positives)" << std::endl;
+  std::cout << "1 = no noise" << std::endl;
+  std::cout << "2 = noise" << std::endl;
+  std::cout << "3 = not so noisy" << std::endl;
+  std::cout << "4 = invisible man" << std::endl;
+
+  std::cin >> currentTable;
+  
+  if(currentTable < 0 || currentTable > 4)
+  {
+    std::cout << "Number selected not valid, selecting 0 as current table" << std::endl;
+    currentTable = 0;
+  }
+
 
   // Select IG computing method we are currently testing
   std::cout << std::endl;
@@ -369,8 +494,12 @@ void TestFunction_IG()
     currentMethod = 0;
   }
 
-  TestFunction_SetSensorTable(true);      // Setting sensor test table (true for printing table)
 
+
+
+
+
+  TestFunction_SetSensorTable(true);      // Setting sensor test table (true for printing table)
 
 
   // create test cell for to do scans
@@ -381,7 +510,7 @@ void TestFunction_IG()
 
   // Do first IG
   TestFunction_computeIG(false);          // Computing IG for each scan attempt (true for printing the process (not implemented yet))
-  std::cout << "Observation: " << scans_count << ", weeds seen: " << test_weeds_seen << " residual entropy: " 
+  std::cout << "Scan: " << scans_count << ", weeds seen: " << test_weeds_seen << " residual entropy: " 
   << test_cell->getResidual() << ", IG: " << test_IG_value << std::endl;
 
   // main loop until the cell is "mapped"

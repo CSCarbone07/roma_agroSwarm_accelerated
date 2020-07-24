@@ -299,7 +299,8 @@ void Engine::run() {
     }
 
     while((timeStep < maxSteps || maxSteps == 0) && !weTesting) {
-    //std::cout << "Time step: " << timeStep << std::endl;
+      if(true)
+      {std::cout << "Time step: " << timeStep << std::endl;}
 
       if(displaySimulation)
       {

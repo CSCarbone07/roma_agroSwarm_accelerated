@@ -1,0 +1,49 @@
+max_steps: 10000    # termination condition for the simulation, 0 means infinite
+num_of_agents: _NUM_OF_AGENTS_        # total number of agents in the simulation
+seed: _SEED_                 # seed for the random number generator
+
+Display_Simulation: false
+
+communications_range: _COMMUNICATIONS_RANGE_      #-1 if communication range is unlimited
+
+world:
+  x: 50                # world x size
+  y: 50               # world y size
+  z: 1                 # world z size  
+
+
+knowledgeBasesFile:  	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__greedy_0_0.yaml"
+movesFile: 	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__greedy_0_0.yaml"
+statusFile: 	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__greedy_0_0.yaml"
+randomChoice: 	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__greedy_0_0.yaml"
+timing: 	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__greedy_0_0.yaml"
+visitedCells: 	"/home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__greedy_0_0.yaml"
+
+weeds:
+    clusters: 4
+    maxweeds: 49
+    isolated: 40
+
+#orca
+linearVelocity : 0.1    # linear velocity of UAV
+orcaRadius: 0.3
+tau: 0.2
+collisionAvoidance: true
+
+KnowledgeClusterRadius: 0   #radius around main scanning cell to included in knowledge update
+
+InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain 
+
+#if ig is the strategy:
+TargetSelectionStrategy: "greedy"   #greedy, softmax, random (default) with weights. 
+Softmax_Lambda: 1       #lambda for softmax equation 
+UseSocialInfo: false    #include information from other agents
+UseDistanceForIG: false #include distance in ig weights
+
+#visit
+repulsion: 0
+attraction: 0
+
+MappingThreshold: 0.25
+
+limitForTargetReselection: 50  #in time steps how many time steps to wait before reselecting a target because the current one is "unreachable"
