@@ -299,7 +299,7 @@ void Engine::run() {
     }
 
     while((timeStep < maxSteps || maxSteps == 0) && !weTesting) {
-      if(true)
+      if(false)
       {std::cout << "Time step: " << timeStep << std::endl;}
 
       if(displaySimulation)
@@ -516,9 +516,7 @@ void Engine::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, g
 
 void Engine::WriteKnowledgeBasesFile(std::string inString)
 {
-//std::cout << inString << std::endl;
 knowledgeBasesFile << inString << std::endl;
-//knowledgeBasesFile << inString.rdbuf();
 }
 
 

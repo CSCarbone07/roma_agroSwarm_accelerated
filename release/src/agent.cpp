@@ -715,27 +715,27 @@ float Agent::scanCurrentLocation(Cell* currentCell)
     //store H(c) for the current cell
     currentCell->residual_uncertainty = -entr;
 
-    //std::cout << "scan of agent " << this->getId() << " result " << currentCell->residual_uncertainty << std::endl;
-    std::stringstream scanReport;
-    //scanReport << "Agent " << this->getId() << " at timestep " << timeStep << " scanned cell " << currentCell->getId() 
-    //<< "" << std::endl; 
-    if(DEBUG_THIS  && testingId == id)
-    {scanReport << currentCell->getId() << " " << this->getId() << " " << timeStep << " " << weedsSeen << " ";}
-    for(float f : currentCell->knowledgeVector)
-    {
-      scanReport << f << " ";
-    }
-    for(float f : currentCell->observationVector)
-    {
-      scanReport << f << " ";
-    }
-    //scanReport = "Agent " + toString(this->getId());
-    //std::cout << scanReport << std::endl;
-    std::string outString;
-    outString = scanReport.str();
-    Engine::getInstance().WriteKnowledgeBasesFile(outString);
 
-    //std::cout << weedsSeen << std::endl;
+    if(false)
+    {
+      std::stringstream scanReport;
+
+      if(DEBUG_THIS  && testingId == id)
+      {scanReport << currentCell->getId() << " " << this->getId() << " " << timeStep << " " << weedsSeen << " ";}
+      
+      for(float f : currentCell->knowledgeVector)
+      {
+        scanReport << f << " ";
+      }
+      for(float f : currentCell->observationVector)
+      {
+        scanReport << f << " ";
+      
+      std::string outString;
+      outString = scanReport.str();
+      Engine::getInstance().WriteKnowledgeBasesFile(outString);
+      }
+    }
 
 
 
