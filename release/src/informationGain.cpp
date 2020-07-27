@@ -206,20 +206,13 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
   {
     if(ownerAgent->GetUseSocialInfo())
     {
-      /*
-      std::cout << "Agent: " << ownerAgent->getId() << " CHECK 9" << std::endl;
-      std::cout << "Agent: " << ownerAgent->getId() << " all agents probs size " << allNearAgentsProbabilities.size() << std::endl;
-      std::cout << "Agent: " << ownerAgent->getId() << " my probs size " << myProbabilities.size() << std::endl;
-      std::cout << "Agent: " << ownerAgent->getId() << " sum " << sum << std::endl;
-*/
-
       finalProbabilitiesVector.push_back(myProbabilities.at(i)/sum * allNearAgentsProbabilities.at(i));
     }
     else
     {
       finalProbabilitiesVector.push_back(myProbabilities.at(i)/sum);
     }
-    sum2+=finalProbabilitiesVector.at(i); // not being used at the moment here
+    sum2+=finalProbabilitiesVector.at(i);
 
 
     if((DEBUG_IG || DEBUG_PROBABILITIES) && ownerAgent->getId() == testingId)
@@ -245,42 +238,29 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
   }
 
 
-  //std::cout << "Using social info with " << finalProbabilitiesVector.size() << " as probability vector" << std::endl;
-/*
-  else
-  {
-    for(unsigned i = 0; i<elegibles.size(); i++)
-    { 
-    finalProbabilitiesVector = myProbabilities;
-    }
-    std::cout << "Not using social info with " << finalProbabilitiesVector.size() << " as probability vector" << std::endl;
-  }
-*/
 //#ifndef RELAXED_VERSION     //complete version  
 if(ownerAgent->GetTargetSelectionStrategy() == "random")
 {
   //extract cell
-  if(sum != 0)
+  float random = RandomGenerator::getInstance().nextFloat(1);
+  float cumulative = .0;
+  if(DEBUG_PROBABILITIES && ownerAgent->getId() == testingId)
   {
-    float random = RandomGenerator::getInstance().nextFloat(1);
-    float cumulative = .0;
-    if(DEBUG_PROBABILITIES && ownerAgent->getId() == testingId)
+    std::cout << "Using Random strategy with " << random << " as random generated float" << std::endl;
+  }
+  for(unsigned i=0; i<elegibles.size(); i++)
+  {
+    cumulative += finalProbabilitiesVector.at(i);
+    if(random <= cumulative)
     {
-      std::cout << "Using Random strategy with " << random << " as random generated float" << std::endl;
-    }
-    for(unsigned i=0; i<elegibles.size(); i++)
-    {
-      cumulative += finalProbabilitiesVector.at(i);
-      if(random <= cumulative)
-      {
-                Cell* c = elegibles.at(i).first;
-                //c->isTargetOf.push_back(id);
-                //ag->cells.at(c->getId())->isTargetOf.push_back(id);
-                std::array<unsigned,3> cellPos = c->getPosition();
-                return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
-      }
+              Cell* c = elegibles.at(i).first;
+              //c->isTargetOf.push_back(id);
+              //ag->cells.at(c->getId())->isTargetOf.push_back(id);
+              std::array<unsigned,3> cellPos = c->getPosition();
+              return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
     }
   }
+
 }
 
 if(ownerAgent->GetTargetSelectionStrategy() == "softmax")
@@ -310,29 +290,28 @@ if(ownerAgent->GetTargetSelectionStrategy() == "softmax")
       }
     }
 
-  if(sum != 0)
+
+  float random = RandomGenerator::getInstance().nextFloat(1);
+  float cumulative = .0;
+  for(unsigned i=0; i<elegibles.size(); i++)
   {
-    float random = RandomGenerator::getInstance().nextFloat(1);
-    float cumulative = .0;
-    for(unsigned i=0; i<elegibles.size(); i++)
+    cumulative += finalProbabilitiesVector.at(i);
+    if(random <= cumulative)
     {
-      cumulative += finalProbabilitiesVector.at(i);
-      if(random <= cumulative)
-      {
-                Cell* c = elegibles.at(i).first;
-                //c->isTargetOf.push_back(id);
-                //ag->cells.at(c->getId())->isTargetOf.push_back(id);
-                std::array<unsigned,3> cellPos = c->getPosition();
+              Cell* c = elegibles.at(i).first;
+              //c->isTargetOf.push_back(id);
+              //ag->cells.at(c->getId())->isTargetOf.push_back(id);
+              std::array<unsigned,3> cellPos = c->getPosition();
 
-                if(ownerAgent->getId() == testingId && DEBUG_THIS)
-                {
-                  std::cout << "Index Selected: " << i << std::endl;
-                }
+              if(ownerAgent->getId() == testingId && DEBUG_THIS)
+              {
+                std::cout << "Index Selected: " << i << std::endl;
+              }
 
-                return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
-      }
+              return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
     }
   }
+  
 
 }
 
@@ -341,20 +320,32 @@ if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
   bool DEBUG_THIS = false;
   float max = 0;
   int index = -1;
-//#else  //relaxed version: only the contribution of the individual agent is considered. The cell with the highest probability is chosen.
-/*
-  for(unsigned i = 0; i<elegibles.size(); i++){
-    float ig = computeInformationGain(ag, elegibles.at(i).first);
-    myProbabilities.push_back((1/elegibles.at(i).second)*ig);
-    sum += myProbabilities.at(i);
-  }
-*/
+
+
+  std::vector<int> repeatedMaxIDs;
+  repeatedMaxIDs.reserve(elegibles.size());
+  std::vector<float> repeatedMaxProbs;
+  repeatedMaxProbs.reserve(elegibles.size());
 
   for(unsigned i = 0; i<finalProbabilitiesVector.size(); i++){
-    if(finalProbabilitiesVector.at(i) > max || (finalProbabilitiesVector.at(i) == max && RandomGenerator::getInstance().nextFloat(1)>0.5))
+    if(finalProbabilitiesVector.at(i) == max)
     {
-      max = finalProbabilitiesVector.at(i);
+      repeatedMaxIDs.push_back(i);
+      repeatedMaxProbs.push_back(finalProbabilitiesVector.at(i)); 
+
+
+    }
+    
+    if(finalProbabilitiesVector.at(i) > max )
+    {
+      repeatedMaxIDs.clear();
+      repeatedMaxProbs.clear();
+      
       index = i;
+      max = finalProbabilitiesVector.at(i);
+
+      repeatedMaxIDs.push_back(index);
+      repeatedMaxProbs.push_back(max); 
     }
 
     if(ownerAgent->getId() == testingId && DEBUG_THIS)
@@ -362,6 +353,54 @@ if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
         std::cout << "Probability " << finalProbabilitiesVector.at(i) << " in index " << i << std::endl;
     }
   }
+  
+  if(ownerAgent->getId() == testingId && DEBUG_THIS)
+  {
+    std::cout << "Repeated indexes: " << repeatedMaxIDs.size() << std::endl;
+  }
+
+  if(repeatedMaxIDs.size()>=2)
+  {
+    float maxSum = 0;
+    for(unsigned i=0; i<repeatedMaxProbs.size(); i++)
+    {
+      maxSum += repeatedMaxProbs[i];
+      if(ownerAgent->getId() == testingId && DEBUG_THIS)
+      {
+        std::cout << "Repeated max prob : " << repeatedMaxProbs[i] << std::endl;
+      }
+
+    }
+    for(unsigned i=0; i<repeatedMaxProbs.size(); i++)
+    {
+      repeatedMaxProbs[i] /= maxSum;
+      
+      if(ownerAgent->getId() == testingId && DEBUG_THIS)
+      {
+        std::cout << "Repeated index prob: " << repeatedMaxProbs[i] << " with id " << repeatedMaxIDs[i] << " max sum " << maxSum << std::endl;
+      }
+    }
+
+    float random = RandomGenerator::getInstance().nextFloat(1);
+    float cumulative = .0;
+    if(DEBUG_THIS && ownerAgent->getId() == testingId)
+    {
+      std::cout << "Using Greedy strategy with " << random << " as random generated float for multiple max probs" << std::endl;
+    }
+    for(unsigned i=0; i<repeatedMaxProbs.size(); i++)
+    {
+      cumulative += repeatedMaxProbs.at(i);
+      if(random <= cumulative)
+      {
+                Cell* c = elegibles.at(repeatedMaxIDs[i]).first;
+                //c->isTargetOf.push_back(id);
+                //ag->cells.at(c->getId())->isTargetOf.push_back(id);
+                std::array<unsigned,3> cellPos = c->getPosition();
+                return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
+      }
+    }
+  }
+
   
   if(ownerAgent->getId() == testingId && DEBUG_THIS)
   {
