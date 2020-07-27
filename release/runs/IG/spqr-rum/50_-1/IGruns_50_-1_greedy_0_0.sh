@@ -36,12 +36,12 @@ do
         fi
         echo "Run #$c with $i ATTRACTION and $j REPULSION" 
 
-        cp RWinput_param_0_0_10.yaml IGinput_param_greedy_0_0.yaml
-        sed -i -e "s/_SEED_/$c/g" IGinput_param_greedy_0_0.yaml
-        sed -i -e "s/_NUM_OF_AGENTS_/$x/g" IGinput_param_greedy_0_0.yaml
-        sed -i -e "s/_COMMUNICATIONS_RANGE_/$y/g" IGinput_param_greedy_0_0.yaml
-        sed -Ei "s|_PATH_|$LOCALPATH|g" IGinput_param_greedy_0_0.yaml
-        /home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/MACPP -i IGinput_param_greedy_0_0.yaml
+        cp RWinput_param_50_-1_0_0_10.yaml IGinput_param_50_-1_greedy_0_0.yaml
+        sed -i -e "s/_SEED_/$c/g" IGinput_param_50_-1_greedy_0_0.yaml
+        sed -i -e "s/_NUM_OF_AGENTS_/$x/g" IGinput_param_50_-1_greedy_0_0.yaml
+        sed -i -e "s/_COMMUNICATIONS_RANGE_/$y/g" IGinput_param_50_-1_greedy_0_0.yaml
+        sed -Ei "s|_PATH_|$LOCALPATH|g" IGinput_param_50_-1_greedy_0_0.yaml
+        /home/rococoadmin/CarlosCarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/build/MACPP -i IGinput_param_50_-1_greedy_0_0.yaml
     done	
   done
 done
