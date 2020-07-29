@@ -36,7 +36,7 @@ do
         fi
         echo "Run #$c with $i ATTRACTION and $j REPULSION" 
 
-        cp IGinput_param_50_-1_0_0_10.yaml IGfound_param_50_-1_greedy_0_0.yaml
+        cp IGinput_param_50_-1_greedy_0_0.yaml IGfound_param_50_-1_greedy_0_0.yaml
         sed -i -e "s/_SEED_/$c/g" IGfound_param_50_-1_greedy_0_0.yaml
         sed -i -e "s/_NUM_OF_AGENTS_/$x/g" IGfound_param_50_-1_greedy_0_0.yaml
         sed -i -e "s/_COMMUNICATIONS_RANGE_/$y/g" IGfound_param_50_-1_greedy_0_0.yaml
