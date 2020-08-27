@@ -1,6 +1,10 @@
 #include "sim/world.hpp"
 #include "sim/engine.hpp"
 
+#include <boost/math/distributions/poisson.hpp>
+
+
+
 //#define NO_ERROR
 
 unsigned World::posToCellId(unsigned x, unsigned y, unsigned z) const{
@@ -29,6 +33,23 @@ double PMFBinomial(double p, int n, int k) {
   return std::exp(lgr);
 }
 
+double MyPoissonFunction(double k, double lambda) 
+{
+  float factorial = 1;
+  //factorial of k
+  if(k>1)
+  {
+    for(unsigned c = 1; c <= k; c++)
+    {
+      factorial *=c;
+    }
+  }
+
+
+  double poisson = pow(lambda,k)*pow(2.71828,-lambda)/factorial;
+  return poisson;
+}
+
 
 World::World(std::array<unsigned,3> size) {
   this->cells = std::vector<Cell*>(size.at(0)*size.at(1)*size.at(2), NULL);
@@ -42,6 +63,7 @@ World::World(std::array<unsigned,3> size) {
         this->cells.at(id) = c;
         this->grid[id] = 0;
         this->remainingTasksToVisit.insert(std::make_pair<>(id, this->cells.at(id)));
+        //std::cout<<"Inserting cell "<<this->remainingTasksToVisit.at(id)->getId()<<std::endl;
         id++;
       }
     }
@@ -57,9 +79,16 @@ World::World(std::array<unsigned,3> size) {
   std::cout<<"numero celle   "<<id<<std::endl;
 };
 
+
+
+
 bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, unsigned isolated){
 
-  //sensorTable
+  boost::math::poisson_distribution<> boostPoisson(0.5);
+
+  //Old Table without false positives
+  //sensorTable 
+ /*
   for (unsigned c = 0; c <= this->maxWeed4Cell; c++ ){
     for (unsigned o = 0; o <= this->maxWeed4Cell; o++ ){
       if(o>c)
@@ -75,7 +104,51 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
     }
     std::cout << std::endl;
   }                
+*/
 
+  double tableSum = 0;
+  for (unsigned c = 0; c < this->maxWeed4Cell+1; c++ )   // dimension for the real amount of weeds
+  {
+    for (unsigned o = 0; o < this->maxWeed4Cell+1; o++ ) // dimension for the current observation the agent perceives from the cells
+    {
+      tableSum = 0;
+      if(o<=c) //false negatives part
+      {
+        for (unsigned i = 0; i <= o; i++ )
+        {
+          tableSum += PMFBinomial(0.95, c, o-i) * MyPoissonFunction(i,0.5);   
+        }
+      }
+      else //false positives part
+      {
+        for (unsigned i = 0; i <= c; i++ ) 
+        {
+          tableSum += PMFBinomial(0.95, c, c-i) * MyPoissonFunction(i+(o-c),0.5);
+        }
+      }
+      sensorTable[o][c] = tableSum; 
+
+      sensorTable[o][this->maxWeed4Cell+1] = 0;
+
+
+    }
+
+    sensorTable[this->maxWeed4Cell+1][c] = 0;
+    tableSum = 0;
+    
+    for (unsigned i = 0; i <= c; i++ ) 
+    {
+      tableSum += PMFBinomial(0.95, c, c-i)*(1-cdf(boostPoisson,i+(12-c)));
+    }
+    
+    sensorTable[this->maxWeed4Cell+1][c] = tableSum;
+    //sensorTable[this->maxWeed4Cell+1][c] = 5;
+    //std::cout << "o " << this->maxWeed4Cell+1 << " Table value " << sensorTable[13][c] << std::endl;
+    //std::cout << "Table size " << sizeof(sensorTable) << std::endl;
+  }
+  sensorTable[this->maxWeed4Cell+1][this->maxWeed4Cell+1] = 0;
+
+  Print_SensorTable();
 
 
   for(int h = - int(this->size.at(0)); h < int (this->size.at(0)); h++){
@@ -95,6 +168,7 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
       }
     }
   }
+
   
    // show content:
   // for (std::map<float, std::vector<std::pair<int, int>>>::iterator it=distanceVectors.begin(); it!=distanceVectors.end(); ++it)
@@ -263,15 +337,20 @@ bool World::addAgent(Agent* agent, unsigned x, unsigned y, unsigned z) {
 
 void World::Print_SensorTable()
 {
-  
-  for (unsigned c = 0; c <= this->maxWeed4Cell; c++ )
+  double sum = 0;
+  for (unsigned c = 0; c <= this->maxWeed4Cell+1; c++ )
   {
-    for (unsigned o = 0; o <= this->maxWeed4Cell; o++ )
+    sum = 0;
+    for (unsigned o = 0; o <= this->maxWeed4Cell+1; o++ )
     {
+      sum += sensorTable[o][c];
       std::cout << sensorTable[o][c] << " ";
     }
+    std::cout << " sum: " << sum << " ";
     std::cout << std::endl;
   }
   std::cout << std::endl;
+
+  
 
 }

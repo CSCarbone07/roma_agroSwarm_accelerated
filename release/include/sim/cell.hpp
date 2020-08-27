@@ -50,7 +50,7 @@ public:
 
   std::array<float, 13> knowledgeVector;  /** Knowledge vector for each cell, where each entry corresponds to
                                           the probablty that the cell has the corresponding number of balls**/
-  std::array<float, 13> observationVector;  /** p(o i,j ) Is the marginal probability of having a given 
+  std::array<float, 14> observationVector;  /** p(o i,j ) Is the marginal probability of having a given 
                                             observation given the current knowledge about the state of cell c i,j*/
   
   std::map<float, std::array<float,13>> knowledgeVectors;

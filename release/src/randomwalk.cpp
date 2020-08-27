@@ -378,7 +378,7 @@ Eigen::Vector2f RandomWalkStrategy::computeMomentum(float theta)
 }
 
 Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float,3> agentPos){
-  bool DEBUG_FUNCTION = true;
+  bool DEBUG_FUNCTION = false;
   float newX = 0;
   float newY = 0;
   for(auto t : Engine::getInstance().getWorld()->getAgents())
@@ -434,7 +434,7 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
 }
 
 Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<float,3> agentPos){
-  bool DEBUG_FUNCTION = true;
+  bool DEBUG_FUNCTION = false;
   
   float newX = 0;
   float newY = 0;

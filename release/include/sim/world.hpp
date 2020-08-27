@@ -12,6 +12,9 @@
 #include <assert.h>
 #include "sim/weed.hpp"
 
+
+
+
 class World {
 
 private:
@@ -26,8 +29,11 @@ private:
   std::array<unsigned, 3> idToCellPos(unsigned id) const; /** < Convert Cell id to Position */
   unsigned int maxWeed4Cell = 12; /** <A cell can contain max 12 weeds> */
 
-  std::array<std::array<float,13>,13> sensorTable;   /** < The table represents the probability of
+  std::array<std::array<float,14>,14> sensorTable;   /** < The table represents the probability of
                                                               having the observation o given that the true value is c. */
+  
+
+  
   float cellSize = 1;
 
   float cells_altitude = -0.5;
@@ -56,7 +62,12 @@ World(std::array<unsigned,3> size);
 
 // Getters
 
-inline std::array<std::array<float,13>,13> getSensorTable(){return this->sensorTable;}
+inline void removeTaskToVisit(unsigned in)
+{
+  remainingTasksToVisit.erase(in);
+}
+
+inline std::array<std::array<float,14>,14> getSensorTable(){return sensorTable;}
 
 inline std::array<unsigned,3> getSize() const{ return this->size;} /** < Get the size of the world, return array<unsigned,3> */
 

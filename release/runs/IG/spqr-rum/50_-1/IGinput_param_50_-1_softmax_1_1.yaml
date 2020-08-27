@@ -35,7 +35,7 @@ KnowledgeClusterRadius: 0   #radius around main scanning cell to included in kno
 InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain 
 
 #if ig is the strategy:
-TargetSelectionStrategy: "greedy"   #greedy, softmax, random (default) with weights. 
+TargetSelectionStrategy: "softmax"   #greedy, softmax, random (default) with weights. 
 Softmax_Lambda: 1       #lambda for softmax equation 
 UseSocialInfo: true    #include information from other agents
 UseDistanceForIG: true #include distance in ig weights

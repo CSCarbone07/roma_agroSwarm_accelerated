@@ -548,6 +548,7 @@ void Engine::TestFunction_SetSensorTable(bool printTable)
     i.resize(test_maxWeedsPerCell+1);
   }
   */
+  
   if(printTable)
   {std::cout << std::endl << "Sensor Table: " << std::endl;}
   

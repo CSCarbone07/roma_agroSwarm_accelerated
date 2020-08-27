@@ -144,7 +144,11 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
 
           for(unsigned j = 0; j<elegibles.size(); j++)
           {
+
             ig2 = 0;
+
+            
+
             //compute IG of agent t w.r.t. elegibles j
             if(ownerAgent->GetCommunicationsRange() == -1)
             ig2 = computeInformationGain(t, elegibles.at(j).first);
@@ -170,6 +174,8 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
             {
               std::cout << "Cell " << elegibles.at(j).first->getId() << " for Agent " << t->getId() << " got a base ig of: " << nextNearAgentProbabilities.at(j) << " after distance in social consideration" << std::endl;
             }
+
+
 
           } //end of "other agent" cells
 
@@ -317,7 +323,7 @@ if(ownerAgent->GetTargetSelectionStrategy() == "softmax")
 
 if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
 {
-  bool DEBUG_THIS = false;
+  bool DEBUG_THIS = true;
   float max = 0;
   int index = -1;
 
@@ -332,8 +338,6 @@ if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
     {
       repeatedMaxIDs.push_back(i);
       repeatedMaxProbs.push_back(finalProbabilitiesVector.at(i)); 
-
-
     }
     
     if(finalProbabilitiesVector.at(i) > max )
