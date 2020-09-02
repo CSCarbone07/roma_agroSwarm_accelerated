@@ -42,7 +42,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
   elegibles = getElegibles(ag, agentDiscretePos);
 
   
-  bool DEBUG_THIS = false;
+  bool DEBUG_THIS = true;
   if(ownerAgent->getId() == testingId && DEBUG_THIS)
   {
   /*
@@ -56,10 +56,13 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
     std::cout << "Elegible cells found: " << elegibles.size() << std::endl;
     for(auto ele : elegibles)
     {
-      std::cout << "Elegible cell " << ele.first->getId() << " at: " << ele.first->getX() << "x " << ele.first->getY() << "y" 
+     Cell* worldCell_REF = Engine::getInstance().getWorld()->getCells().at(ele.first->getId());
+
+
+      std::cout << "Elegible cell " << worldCell_REF->getId() << " at: " << worldCell_REF->getX() << "x " << worldCell_REF->getY() << "y" 
       //<< " test id: " << Engine::getInstance().getWorld()->getCell(std::array<unsigned,3>{ele.first->getX(),ele.first->getY(),0})->getId() << std::endl;
       << " cell id: " << Engine::getInstance().getWorld()->getCell(ele.first->getX(),ele.first->getY(),0)->getId() 
-      << " within distance of " << ele.second
+      << " within distance of " << ele.second << " with previously " << worldCell_REF->isTargetOf.size() << " agents that had it as target"
       << std::endl;
       
       //if(ele.first->isMapped())
@@ -86,8 +89,8 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
   if(elegibles.size() == 1)
   {
     Cell* c = elegibles.at(0).first;
-    c->isTargetOf.push_back(id);
-    ag->cells.at(c->getId())->isTargetOf.push_back(id);
+    //c->isTargetOf.push_back(id);
+    //ag->cells.at(c->getId())->isTargetOf.push_back(id);
     std::array<unsigned,3> cellPos = c->getPosition();
     return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
   }
@@ -99,7 +102,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
   float ig=0, sum=0, ig2=0, sum2=0, tot=1;
 
 
-  bool DEBUG_IG = false;
+  bool DEBUG_IG = true;
   //compute the probabilities for the elegibles
   for(unsigned i = 0; i<elegibles.size(); i++)
   {
@@ -139,45 +142,73 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
         if(t->getId()!= id && distance_t != 0 && (distance_t <= ownerAgent->GetCommunicationsRange() 
         || ownerAgent->GetCommunicationsRange() == -1))
         {
+          if(DEBUG_IG && ownerAgent->getId() == testingId)
+          {
+          std::cout << "Starting if for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+          }
+
           nextNearAgentProbabilities.clear();
           sum2 = 0;
 
-          for(unsigned j = 0; j<elegibles.size(); j++)
+          Cell* OtherAgentCell = Engine::getInstance().getWorld()->getCell(t->getX(),t->getY(),t->getZ());
+          std::vector<Cell*> cells_5x5 = OtherAgentCell->get5x5();
+          
+
+          bool isCellInRange = false;
+          for(Cell* c : cells_5x5)
           {
-
-            ig2 = 0;
-
-            
-
-            //compute IG of agent t w.r.t. elegibles j
-            if(ownerAgent->GetCommunicationsRange() == -1)
-            ig2 = computeInformationGain(t, elegibles.at(j).first);
-            if(ownerAgent->GetCommunicationsRange() > 0)
+            if (c->getId() == elegibles.at(i).first->getId())
             {
-              ig2 = computeInformationGain(t, t->cells[elegibles.at(j).first->getId()]);
+              isCellInRange = true;
+              if(DEBUG_IG && ownerAgent->getId() == testingId)
+              {
+              std::cout << "Elegible in range for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+              }
             }
-            float distance_t2 = 1;
-            if(ownerAgent->GetUseDistanceForIG()) 
-            {
-              distance_t2 = t->calculateLinearDistanceToTarget(elegibles.at(j).first->getPosition());
-            }
-            
-            nextNearAgentProbabilities.push_back((1/distance_t2)*ig2); // probability of t to choose j 
-            sum2 += nextNearAgentProbabilities.at(j);
-
+          }
+          if(isCellInRange==false)
+          {
             if(DEBUG_IG && ownerAgent->getId() == testingId)
             {
-              std::cout << "Cell " << elegibles.at(j).first->getId() << " for Agent " << t->getId() << " got a base ig of: " << ig2 << " after social consideration" << std::endl;
+            std::cout << "Elegible not in range for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
             }
+            continue;
+          }
 
-            if(DEBUG_IG && ownerAgent->getId() == testingId)
+          if(isCellInRange==true)
+          {
+            for(unsigned j = 0; j<elegibles.size(); j++)
             {
-              std::cout << "Cell " << elegibles.at(j).first->getId() << " for Agent " << t->getId() << " got a base ig of: " << nextNearAgentProbabilities.at(j) << " after distance in social consideration" << std::endl;
-            }
+              ig2 = 0;
+              
+              //compute IG of agent t w.r.t. elegibles j
+              if(ownerAgent->GetCommunicationsRange() == -1)
+              ig2 = computeInformationGain(t, elegibles.at(j).first);
+              if(ownerAgent->GetCommunicationsRange() > 0)
+              {
+                ig2 = computeInformationGain(t, t->cells[elegibles.at(j).first->getId()]);
+              }
+              float distance_t2 = 1;
+              if(ownerAgent->GetUseDistanceForIG()) 
+              {
+                distance_t2 = t->calculateLinearDistanceToTarget(elegibles.at(j).first->getPosition());
+              }
+              
+              nextNearAgentProbabilities.push_back((1/distance_t2)*ig2); // probability of t to choose j 
+              sum2 += nextNearAgentProbabilities.at(j);
 
+              if(DEBUG_IG && ownerAgent->getId() == testingId)
+              {
+                std::cout << "Cell " << elegibles.at(j).first->getId() << " for Agent " << t->getId() << " got a base ig of: " << ig2 << " after social consideration" << std::endl;
+              }
 
+              if(DEBUG_IG && ownerAgent->getId() == testingId)
+              {
+                std::cout << "Cell " << elegibles.at(j).first->getId() << " for Agent " << t->getId() << " got a base ig of: " << nextNearAgentProbabilities.at(j) << " after distance in social consideration" << std::endl;
+              }
 
-          } //end of "other agent" cells
+            } //end of "other agent" cells
+          }
 
           float socialIG = 1;
           if(sum2 != 0)
@@ -204,7 +235,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
   } //end of elegible cells loop
 
 
-  bool DEBUG_PROBABILITIES = false;
+  bool DEBUG_PROBABILITIES = true;
 
   //merge probabilities of this agent with the sum of each other
   tot = 0; sum2=0;
@@ -257,6 +288,10 @@ if(ownerAgent->GetTargetSelectionStrategy() == "random")
   for(unsigned i=0; i<elegibles.size(); i++)
   {
     cumulative += finalProbabilitiesVector.at(i);
+    if(DEBUG_PROBABILITIES && ownerAgent->getId() == testingId)
+    {
+      std::cout << "Cumulative " << cumulative << " for probability of " << finalProbabilitiesVector.at(i) << std::endl;
+    }
     if(random <= cumulative)
     {
               Cell* c = elegibles.at(i).first;
@@ -271,7 +306,7 @@ if(ownerAgent->GetTargetSelectionStrategy() == "random")
 
 if(ownerAgent->GetTargetSelectionStrategy() == "softmax")
 {
-    bool DEBUG_THIS = true;
+    bool DEBUG_THIS = false;
 
     if(DEBUG_THIS && ownerAgent->getId() == testingId)
     {
@@ -362,6 +397,36 @@ if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
   {
     std::cout << "Repeated indexes: " << repeatedMaxIDs.size() << std::endl;
   }
+  
+  int mappedCells = 0;
+  if(repeatedMaxIDs.size()==1) //in case all cells are already mapped, still make selection at random
+  {
+    for(unsigned i = 0; i<elegibles.size(); i++)
+    {
+      if(elegibles.at(0).first->isMapped())
+      {
+        mappedCells ++;
+      }
+    }
+  }
+
+  if (mappedCells == finalProbabilitiesVector.size())
+  {
+
+    repeatedMaxProbs.clear();
+    repeatedMaxIDs.clear();
+    for(unsigned i = 0; i<finalProbabilitiesVector.size(); i++)
+    {
+      //repeatedMaxProbs.push_back(1.0f/finalProbabilitiesVector.size());
+      repeatedMaxProbs.push_back(finalProbabilitiesVector[i]);
+      repeatedMaxIDs.push_back(i);
+      if(ownerAgent->getId() == testingId && DEBUG_THIS)
+      {
+        std::cout << "All cells were mapped, new probability: " << repeatedMaxProbs[i] << std::endl;
+      }
+    }    
+  }
+  
 
   if(repeatedMaxIDs.size()>=2)
   {
@@ -373,7 +438,6 @@ if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
       {
         std::cout << "Repeated max prob : " << repeatedMaxProbs[i] << std::endl;
       }
-
     }
     for(unsigned i=0; i<repeatedMaxProbs.size(); i++)
     {
@@ -435,17 +499,18 @@ bool InformationGainStrategy::isElegible(Cell* c, Agent* ag)
    if(ownerAgent->GetCommunicationsRange() == -1)
    {
      Cell* worldCell_REF = Engine::getInstance().getWorld()->getCells().at(c->getId());
-     return (!(worldCell_REF->isMapped()) && (worldCell_REF->isTargetOf.size())==0);
+     return (!(worldCell_REF->isMapped()) && (worldCell_REF->isTargetOf.empty()));
    }
    else
    {
-     return (!(ownerAgent->cells.at(c->getId())->isMapped()) && ((ownerAgent->cells.at(c->getId())->isTargetOf.size())==0));
+    return (!(ownerAgent->cells.at(c->getId())->isMapped()) && ((ownerAgent->cells.at(c->getId())->isTargetOf.size())==0));
      //return ((!ag->cells.at(c->getId())->isMapped()) && (ag->cells.at(c->getId())->isTargetOf.size())<=0);
    }
 }
 
 std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent* ag, std::array<unsigned,3> agentDiscretePos){
   std::vector<std::pair<Cell*, float>> ret;
+    
 
   Cell* currentOccupiedCell; // cell where agent is located
   if(ownerAgent->GetCommunicationsRange()==-1)
@@ -456,6 +521,8 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
   {
     currentOccupiedCell = ownerAgent->cells.at(Engine::getInstance().getWorld()->getCell(agentDiscretePos)->getId());
   }
+
+
 
   //check first current cell
   if((Engine::getInstance().getWorld()->unCommittedAgents == Engine::getInstance().getWorld()->getAgents().size()-1 
@@ -513,7 +580,9 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
   {
     distanceToCell = sqrt(pow((float) c->getX() - ownerAgent->getX(), 2) + pow((float) c->getY() - ownerAgent->getY(), 2));
     if(isElegible(c, ownerAgent))
-      {ret2.push_back(std::make_pair<>(c, distanceToCell));}
+      {
+        ret2.push_back(std::make_pair<>(c, distanceToCell));
+      }
     if(c->isTargetOf.empty())
       {ret4.push_back(std::make_pair<>(c, distanceToCell));}
   }
@@ -522,7 +591,9 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
     distanceToCell = sqrt(pow((float) c->getX() - ownerAgent->getX(), 2) + pow((float) c->getY() - ownerAgent->getY(), 2));
     //std::cout << distanceToCell << std::endl;
     if(isElegible(c, ownerAgent))
-      {ret3.push_back(std::make_pair<>(c, distanceToCell));}
+      {
+        ret3.push_back(std::make_pair<>(c, distanceToCell));
+      }
     if(c->isTargetOf.empty())
       {ret4.push_back(std::make_pair<>(c, distanceToCell));}
   }
@@ -533,17 +604,18 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
 
   //if there are no eligible cells
     //check for not mapped cells on the boundary
-  if(ret2.size()!=0){
+  if(ret2.size()!=0)
+  {
     return ret2;   
-  }
-  //else check for mapped but not targeted cells on the boundary
-  else if(ret3.size()!=0){
+  }  //else check for mapped but not targeted cells on the boundary
+  else if(ret3.size()!=0)
+  {
     //Engine::getInstance().getWorld()->getAgent(ag->getId())->sceltaRandom = true;
     ownerAgent->sceltaRandom = true; //this is to collect data in the engine cpp, how many times this was the selection in the simulation
     return ret3;
-  }
-  // if every cells is mapped and already targeted
-  else{
+  }  // if every cells is mapped and already targeted
+  else
+  {
     //Engine::getInstance().getWorld()->getAgent(ag->getId())->sceltaRandom = true;
     ownerAgent->sceltaRandom = true;
     return ret4;

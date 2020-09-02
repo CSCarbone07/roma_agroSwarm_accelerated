@@ -100,9 +100,14 @@ inline  Cell* getCell(unsigned x, unsigned y, unsigned z) const {
 }
 
 inline  Cell* getCell(float x, float y, float z) const {
-  bool DEBUG_FUNCTION = false;
+  bool DEBUG_FUNCTION = true;
   if(DEBUG_FUNCTION)
   {std::cout << "Receiving: " << x << "x + " << y << "y + " << z << "z" << std::endl;}
+  if(x<0) {x = 0;}
+  if(x>size.at(0)) {x = size.at(0);}
+  if(y<0) {y = 0;}
+  if(y>size.at(1)) {y = size.at(1);}
+
     for (Cell* c : cells) 
     {
       //if(DEBUG_FUNCTION)
@@ -118,8 +123,10 @@ inline  Cell* getCell(float x, float y, float z) const {
 }
 
 inline  Cell* getCell(std::array<unsigned,3> agentDiscretePos) const {
-    for (Cell* c : cells) {
-      if (c->getX() == agentDiscretePos.at(0) && c->getY()==agentDiscretePos.at(1) && c->getZ()==agentDiscretePos.at(2)){
+    for (Cell* c : cells) 
+    {
+      if (c->getX() == agentDiscretePos.at(0) && c->getY()==agentDiscretePos.at(1))// && c->getZ()==agentDiscretePos.at(2))
+      {
         return c;
       }
     }

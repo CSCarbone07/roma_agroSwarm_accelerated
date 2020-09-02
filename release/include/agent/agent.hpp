@@ -43,7 +43,7 @@ protected:
   glm::vec4 receivingMessageColor = glm::vec4(0.0f, 0.0f, 0.5f, 1.0f);
   glm::vec4 scanningColor = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
 
-  int testingId = 17; //33 for top right //27 for top in cluster //37 one close to the other;
+  int testingId = 16; //33 for top right //27 for top in cluster //37 one close to the other; 48 was for the last error
   int testingId_2 = -10; //48 spawning next to 37
   glm::vec4 testColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -101,19 +101,20 @@ protected:
   * Check if Agent has reached the target
   * @return True if is reached, otherwise false
   */
-  bool checkTargetReached(){
+  bool checkTargetReached()
+  {
     
-    if(this->getTargetZ() == 0 ){
+    if(this->getTargetZ() == 0 )
+    {
       if(std::abs(this->getX() - this->getTargetX()) < 0.05f && std::abs(this->getY() - this->getTargetY()) < 0.05f ){
         return true;
       }
       else return false;
+    }  
+    if(std::abs(this->getX() - this->getTargetX()) < 0.5f && std::abs(this->getY() - this->getTargetY()) < 0.5f && std::abs(this->getZ() - this->getTargetZ()) < 1.5f){
+      return true;
     }
-    else
-      if(std::abs(this->getX() - this->getTargetX()) < 0.5f && std::abs(this->getY() - this->getTargetY()) < 0.5f && std::abs(this->getZ() - this->getTargetZ()) < 1.5f){
-        return true;
-      }
-      return false;
+    return false;
   }
 
   float scanCurrentLocation(Cell* c);

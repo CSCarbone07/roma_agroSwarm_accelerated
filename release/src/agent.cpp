@@ -85,24 +85,37 @@ Agent::Agent(unsigned id, float x, float y, float z) {
 
 }
 
-Agent::Action Agent::nextAction(){
+Agent::Action Agent::nextAction()
+{
+  bool DEBUG_THIS = false;
 
-  if(this->getTargetX() != -1){
-    if(checkTargetReached()) {
-      if(this->getTargetZ() == 0){
-        //printf("SCAN\n");
+  if(this->getTargetX() != -1)
+  {
+    if(checkTargetReached()) 
+    {
+      if(this->getTargetZ() == 0)
+      {
+        if(DEBUG_THIS  && (id == testingId || id == testingId_2))
+        {printf("SCAN\n");}
         return SCAN;
       }
       else
+        if(DEBUG_THIS  && (id == testingId || id == testingId_2))
+        {printf("NONE\n");}
         return NONE;
+        //return MOVE;
     }
-    else{
-      //printf("MOVE\n");
+    else
+    {
+      if(DEBUG_THIS  && (id == testingId || id == testingId_2))
+      {printf("MOVE\n");}
       return MOVE;
     }
   }
-  else{
-    //printf("PICK\n");
+  else
+  {
+    if(DEBUG_THIS  && (id == testingId || id == testingId_2))
+    {printf("PICK\n");}
     return PICK;
   }
 }
@@ -250,6 +263,9 @@ else
   }
 
   this->target = {float(newTarget.at(0)),float(newTarget.at(1)),float(newTarget.at(2))};
+
+
+
 }
 
            
@@ -384,41 +400,48 @@ bool Agent::doStep(unsigned timeStep){
   switch(nextAction()){
     case PICK:
     {
-        bool DEBUG_THIS = false;
+        bool DEBUG_THIS = true;
         //std::cout << "Agent " << this->getId() << " currently at: " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
         //<< " is picking its target cell using: " << this->currentInspectionStrategy << " strategy" << std::endl;
 
 
         this->velocity = {0.0,0.0,0.0};
         getNextTarget();
-        if(this->getTargetZ() == 0){
-        this->setTargetId(Engine::getInstance().getWorld()->getCellId(this->getTargetX(), this->getTargetY(), this->getTargetZ()));   
 
-        Cell* chosenCell;  
-        targetTravelTime = 0;      
-
-        if(communicationsRange == -1)
-        {
-            chosenCell = Engine::getInstance().getWorld()->getCells().at(this->getTargetId());
-        }
-        if(communicationsRange>0)
-        {
-            chosenCell = cells.at(this->getTargetId());
-        }
         if(DEBUG_THIS  && (id == testingId || id == testingId_2))
         {
-        std::cout << "Agent " << this->getId() << " has picked "<< this->getTargetX() << "x + " << this->getTargetY() << "y in Cell " 
-        << chosenCell->getId() << " from " << knowledgeBaseLocation << " knowledge base as Target, which previously had " << cells.at(this->getTargetId())->isTargetOf.size() << " agents that had it as target." << std::endl;
+          std::cout << "Target picked at " << this->getTargetX() << "x, " << this->getTargetY() << "y, " << this->getTargetZ() << "z" << std::endl;
         }
 
-        chosenCell->isTargetOf.push_back(this->getId()); 
-        if(communicationsRange == -1)
+        if(this->getTargetZ() == 0)
         {
-        //std::cout << "Agent " << this->getId() << " pushing isTargetOf to cell " << chosenCell->getId() << std::endl;
-        BroadcastCell(this, chosenCell);
-        }
-        if(communicationsRange>0)
-        {BroadcastCell(this, chosenCell);} 
+          this->setTargetId(Engine::getInstance().getWorld()->getCellId(this->getTargetX(), this->getTargetY(), this->getTargetZ()));   
+
+          Cell* chosenCell;  
+          targetTravelTime = 0;      
+
+          if(communicationsRange == -1)
+          {
+              chosenCell = Engine::getInstance().getWorld()->getCells().at(this->getTargetId());
+          }
+          if(communicationsRange>0)
+          {
+              chosenCell = cells.at(this->getTargetId());
+          }
+          if(DEBUG_THIS  && (id == testingId || id == testingId_2))
+          {
+          std::cout << "Agent " << this->getId() << " has picked "<< this->getTargetX() << "x + " << this->getTargetY() << "y in Cell " 
+          << chosenCell->getId() << " from " << knowledgeBaseLocation << " knowledge base as Target, which previously had " << cells.at(this->getTargetId())->isTargetOf.size() << " agents that had it as target." << std::endl;
+          }
+
+          chosenCell->isTargetOf.push_back(this->getId()); 
+          if(communicationsRange == -1)
+          {
+          //std::cout << "Agent " << this->getId() << " pushing isTargetOf to cell " << chosenCell->getId() << std::endl;
+          BroadcastCell(this, chosenCell);
+          }
+          if(communicationsRange>0)
+          {BroadcastCell(this, chosenCell);} 
         }
 
       break;
@@ -426,10 +449,20 @@ bool Agent::doStep(unsigned timeStep){
     case MOVE:
     {
 
+      bool DEBUG_THIS = false;
+
       //std::cout << "I am moving" << std::endl;
       if(mesh != nullptr)
       {ChangeColor(movingColor);}
 
+      if(DEBUG_THIS  && (id == testingId || id == testingId_2))
+      {
+        std::cout << "Agent " << this->getId() << " is at location " 
+        << this->position.at(0) << "x, " << this->position.at(1) << "y, " << this->position.at(2) << "z" 
+        << ". With cell " << this->getTargetId() << " and target coordinates " 
+        << this->getTargetX() << "x, " << this->getTargetY() << "y, " << this->getTargetZ() << "z"
+        << std::endl;
+      }
       
       if(targetTravelTime<limitForTargetReselection)
       {
@@ -454,7 +487,7 @@ bool Agent::doStep(unsigned timeStep){
 	  {
       //std::cout << "Agent A: " << this->getId() << std::endl;
 
-      bool DEBUG_SCAN = false;
+      bool DEBUG_SCAN = true;
 
       if(DEBUG_SCAN && testingId == id && false)
       {std::cout << "Getting cell at: " << position.at(0) << "x + " << position.at(1) << "y" << std::endl;}
@@ -785,11 +818,11 @@ void Agent::ChangeColor(glm::vec4 inColor)
 {
     if(mesh!=nullptr)
     {
-      if(this->getId()!=testingId)
-      {
-        mesh->SetCurrentColor(inColor);
-      }
-      else
+      //if(this->getId()!=testingId)this->getId()<40
+
+      mesh->SetCurrentColor(inColor);
+      
+      if(this->getId()==testingId)// || (this->getId()<48 && this->getId()>25))
       {
         mesh->SetCurrentColor(testColor);
       }
