@@ -103,18 +103,35 @@ inline  Cell* getCell(float x, float y, float z) const {
   bool DEBUG_FUNCTION = false;
   if(DEBUG_FUNCTION)
   {std::cout << "Receiving: " << x << "x + " << y << "y + " << z << "z" << std::endl;}
-  if(x<0) {x = 0;}
-  if(x>size.at(0)) {x = size.at(0);}
-  if(y<0) {y = 0;}
-  if(y>size.at(1)) {y = size.at(1);}
+  
+  if(x<(0-cells.at(0)->getSize()/2)) 
+  {x = -cells.at(0)->getSize()/2;}
+  if(x>(size.at(0)*cells.at(0)->getSize()-cells.at(0)->getSize()/2)) 
+  {x = (size.at(0)*cells.at(0)->getSize()-cells.at(0)->getSize()/2);}
+
+  if(y<(0-cells.at(0)->getSize()/2)) 
+  {y = -cells.at(0)->getSize()/2;}
+  if(y>(size.at(1)*cells.at(0)->getSize()-cells.at(0)->getSize()/2)) 
+  {y = (size.at(1)*cells.at(0)->getSize()-cells.at(0)->getSize()/2);}
+
+  if(DEBUG_FUNCTION)
+  {
+    std::cout << "Setting: " << x << "x + " << y << "y + " << z << "z" << std::endl;
+    std::cout << "size: " << size.at(0) << std::endl;
+    //std::cout << "Checking: " << c->getX()+c->getSize()/2 << "x+, " << c->getX()-c->getSize()/2 << "x-" << std::endl;} 
+  }
 
     for (Cell* c : cells) 
     {
-      //if(DEBUG_FUNCTION)
-      //{std::cout << "Checking: " << c->getX() << "x + " << c->getY()+c->getSize()/2 << "y" << std::endl;} 
+      if(false)
+      {std::cout << "Checking: " << c->getX()+c->getSize()/2 << "x+, " << c->getX()-c->getSize()/2 << "x-" << std::endl;} 
+
       if (x <= c->getX()+c->getSize()/2 && x >= c->getX()-c->getSize()/2 &&
       y <= c->getY()+c->getSize()/2 && y >= c->getY()-c->getSize()/2)
       {
+        if(DEBUG_FUNCTION)
+        {std::cout << "Cell found: " << c->getId() << std::endl;}
+
         return c;
       }
     }
