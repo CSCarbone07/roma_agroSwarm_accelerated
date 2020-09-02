@@ -100,7 +100,7 @@ inline  Cell* getCell(unsigned x, unsigned y, unsigned z) const {
 }
 
 inline  Cell* getCell(float x, float y, float z) const {
-  bool DEBUG_FUNCTION = true;
+  bool DEBUG_FUNCTION = false;
   if(DEBUG_FUNCTION)
   {std::cout << "Receiving: " << x << "x + " << y << "y + " << z << "z" << std::endl;}
   if(x<0) {x = 0;}
