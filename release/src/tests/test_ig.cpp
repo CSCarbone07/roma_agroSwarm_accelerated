@@ -21,7 +21,7 @@ static std::array<std::array<float,14>,13> test_sensorTable_noise;  // Noise sen
 static boost::math::poisson_distribution<> testPoisson(0.5);
 
 
-static unsigned seed = 1;
+static unsigned seed = 10;
 
 static int currentTable = 0;
 static int currentMethod = 0;
@@ -128,6 +128,7 @@ void TestFunction_SetSensorTable(bool printTable)
       test_sensorTable[test_maxWeedsPerCell+1][c] = 0;
       for (unsigned i = 0; i <= c; i++ ) 
       {
+        if(DEBUG_FUNCTION)
         {
           std::cout << "Last column before: " << test_sensorTable[test_maxWeedsPerCell+1][c] << std::endl;
         }
@@ -260,7 +261,7 @@ void TestFunction_Scan(bool printThis)
 
 
 
-  bool DEBUG_WEEDSSEEN = true; // to print debuging values
+  bool DEBUG_WEEDSSEEN = false; // to print debuging values
 
   // Set amount of weeds "observed" by sensor in current scan
   // a random value is generated to selected a value in the observation dimensions
@@ -545,10 +546,10 @@ void TestFunction_computeIG(bool printTable)
     }
 
     float term3_int = 0;
-    for(unsigned o = 0; o < test_maxWeedsPerCell+1; o++)
+    for(unsigned o = 0; o <= test_maxWeedsPerCell+1; o++)
     {
       term3_int = 0;
-      for(unsigned c = 0; c < test_maxWeedsPerCell+1; c++)
+      for(unsigned c = 0; c <= test_maxWeedsPerCell; c++)
       {
         term3_int += test_cell->knowledgeVector[c] * test_sensorTable[o][c];
       }

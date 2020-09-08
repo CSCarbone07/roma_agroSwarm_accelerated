@@ -1,10 +1,10 @@
 max_steps: 10000    # termination condition for the simulation, 0 means infinite
 num_of_agents: 50        # total number of agents in the simulation
-seed: 31                 # seed for the random number generator
+seed: 100                 # seed for the random number generator
 
 Display_Simulation: false
 
-communications_range: -1      #-1 if communication range is unlimited
+communications_range: 10      #-1 if communication range is unlimited
 
 world:
   x: 50                # world x size
@@ -12,12 +12,12 @@ world:
   z: 1                 # world z size  
 
 
-knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_50_-1_greedy_0_0.yaml"
-movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_greedy_50_-1_1_1.yaml"
-statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_greedy_50_-1_1_1.yaml"
-randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice_greedy_50_-1_1_1.yaml"
-timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing_greedy_50_-1_1_1.yaml"
-visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells_greedy_50_-1_1_1.yaml"
+knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_50_10_greedy_0_0.yaml"
+movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_greedy_50_10_1_0.yaml"
+statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_greedy_50_10_1_0.yaml"
+randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice_greedy_50_10_1_0.yaml"
+timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing_greedy_50_10_1_0.yaml"
+visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells_greedy_50_10_1_0.yaml"
 
 weeds:
     clusters: 4
@@ -38,7 +38,7 @@ InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain
 TargetSelectionStrategy: "greedy"   #greedy, softmax, random (default) with weights. 
 Softmax_Lambda: 1       #lambda for softmax equation 
 UseSocialInfo: true    #include information from other agents
-UseDistanceForIG: true #include distance in ig weights
+UseDistanceForIG: false #include distance in ig weights
 
 #visit
 repulsion: 0

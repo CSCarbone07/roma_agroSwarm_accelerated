@@ -111,7 +111,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
     
     if(DEBUG_IG && ownerAgent->getId() == testingId)
     {
-      std::cout << "Cell " << elegibles.at(i).first->getId() << " got a base ig of: " << ig << std::endl;
+      std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, got a base ig of: " << ig << std::endl;
     }
 
     if(ownerAgent->GetUseDistanceForIG()) // compute my probability for elegible i considering also the distance
@@ -124,7 +124,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
 
     if(DEBUG_IG && ownerAgent->getId() == testingId)
     {
-      std::cout << "Cell " << elegibles.at(i).first->getId() << " got a base ig of: " << myProbabilities[i] << " after distance consideration" << std::endl;
+      std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, got a base ig of: " << myProbabilities[i] << " after distance consideration" << std::endl;
     }
 
     sum += myProbabilities.at(i);
@@ -144,7 +144,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
         {
           if(DEBUG_IG && ownerAgent->getId() == testingId)
           {
-          std::cout << "Starting if for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+          //std::cout << "Starting if for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
           }
 
           nextNearAgentProbabilities.clear();
@@ -170,7 +170,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
           {
             if(DEBUG_IG && ownerAgent->getId() == testingId)
             {
-            std::cout << "Elegible not in range for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+            //std::cout << "Elegible not in range for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
             }
             continue;
           }
@@ -183,7 +183,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
               
               //compute IG of agent t w.r.t. elegibles j
               if(ownerAgent->GetCommunicationsRange() == -1)
-              ig2 = computeInformationGain(t, elegibles.at(j).first);
+              {ig2 = computeInformationGain(t, elegibles.at(j).first);}
               if(ownerAgent->GetCommunicationsRange() > 0)
               {
                 ig2 = computeInformationGain(t, t->cells[elegibles.at(j).first->getId()]);
@@ -199,12 +199,12 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
 
               if(DEBUG_IG && ownerAgent->getId() == testingId)
               {
-                std::cout << "Cell " << elegibles.at(j).first->getId() << " for Agent " << t->getId() << " got a base ig of: " << ig2 << " after social consideration" << std::endl;
+                std::cout << "Cell " << elegibles.at(j).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, for Agent " << t->getId() << " got a base ig of: " << ig2 << " after social consideration" << std::endl;
               }
 
               if(DEBUG_IG && ownerAgent->getId() == testingId)
               {
-                std::cout << "Cell " << elegibles.at(j).first->getId() << " for Agent " << t->getId() << " got a base ig of: " << nextNearAgentProbabilities.at(j) << " after distance in social consideration" << std::endl;
+                std::cout << "Cell " << elegibles.at(j).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, for Agent " << t->getId() << " got a base ig of: " << nextNearAgentProbabilities.at(j) << " after distance in social consideration" << std::endl;
               }
 
             } //end of "other agent" cells
@@ -217,7 +217,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
 
           if(DEBUG_IG && ownerAgent->getId() == testingId)
           {
-            std::cout << "Cell " << elegibles.at(i).first->getId() << " for Agent " << t->getId() << " got a total ig contribution of: " << socialIG << " after social consideration" << std::endl;
+            std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, for Agent " << t->getId() << " got a total ig contribution of: " << socialIG << " after social consideration" << std::endl;
           }
 
         } // end of if in range
@@ -225,7 +225,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
       
       if(DEBUG_IG && ownerAgent->getId() == testingId)
       {
-        std::cout << "Cell " << elegibles.at(i).first->getId() << " got a total social ig of: " << tot << std::endl;
+        std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, got a total social ig of: " << tot << std::endl;
       }
 
       allNearAgentsProbabilities[i] = tot;
@@ -254,7 +254,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
 
     if((DEBUG_IG || DEBUG_PROBABILITIES) && ownerAgent->getId() == testingId)
     {
-      std::cout << "Cell " << elegibles.at(i).first->getId() << " got an ig of: " << finalProbabilitiesVector[i] << " after merging" << std::endl;
+      std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, got an ig of: " << finalProbabilitiesVector[i] << " after merging" << std::endl;
     }
   }
 
@@ -263,7 +263,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
     finalProbabilitiesVector.at(i) /= sum2;
     if((DEBUG_IG || DEBUG_PROBABILITIES) && ownerAgent->getId() == testingId)
     {
-      std::cout << "Cell " << elegibles.at(i).first->getId() << " got a normalized ig of: " << finalProbabilitiesVector[i] << " after merging" << std::endl;
+      std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, got a normalized ig of: " << finalProbabilitiesVector[i] << " after merging" << std::endl;
     }
   }
   
@@ -695,7 +695,7 @@ float InformationGainStrategy::computeInformationGain(Agent* a, Cell* cell)
   }
 
   float term3_int = 0;
-  for(unsigned o = 0; o < 13; o++)
+  for(unsigned o = 0; o < 13+1; o++)
   {
     term3_int = 0;
     for(unsigned c = 0; c < 13; c++)

@@ -455,7 +455,7 @@ bool Agent::doStep(unsigned timeStep){
       if(mesh != nullptr)
       {ChangeColor(movingColor);}
 
-      if(DEBUG_THIS  && (id == testingId || id == testingId_2))
+      if(DEBUG_THIS)//  && (id == testingId || id == testingId_2))
       {
         std::cout << "Agent " << this->getId() << " is at location " 
         << this->position.at(0) << "x, " << this->position.at(1) << "y, " << this->position.at(2) << "z" 
@@ -629,6 +629,19 @@ float Agent::scanCurrentLocation(Cell* currentCell)
     //std::cout << std::endl;    
     //clear observationVector
 
+
+    if(DEBUG_THIS && testingId == id)
+    {
+      for(unsigned l = 0; l < (13); l++)
+      {
+        for(unsigned k = 0; k < (13+1); k++)
+        {
+        std::cout << Engine::getInstance().getWorld()->getSensorTable()[k][l] << " ";    
+        }
+        std::cout << std::endl;
+      }
+    }
+
     currentCell->observationVector.fill(0);
     //compute observationVector using the current knowledge and the constant sensorTable
     if(DEBUG_THIS  && testingId == id)
@@ -643,13 +656,16 @@ float Agent::scanCurrentLocation(Cell* currentCell)
             //std::cout<<"  TABLE   =  indice: "<<l<<" - "<<k<<"  "<<Engine::getInstance().getWorld()->getSensorTable()[l][k]<<std::endl;
             currentCell->observationVector[k] += currentCell->knowledgeVector[l]*Engine::getInstance().getWorld()->getSensorTable()[k][l]; //equation 3
             
-            if(DEBUG_THIS && testingId == id)
-            {std::cout << currentCell->observationVector[k] << " ";}                    
+            //if(DEBUG_THIS && testingId == id)
+            //{std::cout << currentCell->observationVector[k] << " ";}                    
         }
         if(DEBUG_THIS && testingId == id)
-        {std::cout << std::endl;}
+        {std::cout << currentCell->observationVector[l] << " ";}  
+        //if(DEBUG_THIS && testingId == id)
+        //{std::cout << std::endl;}
     }
-    //std::cout << std::endl;    
+    if(DEBUG_THIS && testingId == id)
+    {std::cout << std::endl; }
 
     //get amount of weeds seen by sensor in current observation
     unsigned weedsSeen;
@@ -669,7 +685,10 @@ float Agent::scanCurrentLocation(Cell* currentCell)
         weedsSeen = i;
         break;
       }
-    }                        
+    }  
+
+
+
      
     //currentCell->observationVectors.insert(std::pair<float, std::array<float, 13>>(timeStep, currentCell->observationVector));
 
@@ -779,7 +798,9 @@ float Agent::scanCurrentLocation(Cell* currentCell)
     //store H(c) for the current cell
     currentCell->residual_uncertainty = -entr;
 
-
+    if(DEBUG_THIS  && testingId == id)
+    {std::cout << "Residual Entropy " << -entr << std::endl << std::endl;}
+    
     if(false)
     {
       std::stringstream scanReport;
