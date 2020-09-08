@@ -12,7 +12,7 @@ world:
   z: 1                 # world z size  
 
 
-knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__greedy_0_0.yaml"
+knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_softmax__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_1.yaml"
 movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_softmax__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_1.yaml"
 statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_softmax__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_1.yaml"
 randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice_softmax__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_1.yaml"
