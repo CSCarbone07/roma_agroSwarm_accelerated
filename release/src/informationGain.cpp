@@ -137,10 +137,10 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
       tot = 1;
       for(auto t : Engine::getInstance().getWorld()->getAgents())
       {
-        //if agent t is near 
+        //if agent t is near to current agent
         float distance_t = t->calculateLinearDistanceToTarget(elegibles.at(i).first->getPosition());
         if(t->getId()!= id && distance_t != 0 && (distance_t <= ownerAgent->GetCommunicationsRange() 
-        || ownerAgent->GetCommunicationsRange() == -1))
+        || ownerAgent->GetCommunicationsRange() == -1)) 
         {
           if(DEBUG_IG && ownerAgent->getId() == testingId)
           {
@@ -152,7 +152,6 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
 
           Cell* OtherAgentCell = Engine::getInstance().getWorld()->getCell(t->getX(),t->getY(),t->getZ());
           std::vector<Cell*> cells_5x5 = OtherAgentCell->get5x5();
-          
 
           bool isCellInRange = false;
           for(Cell* c : cells_5x5)
@@ -162,7 +161,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
               isCellInRange = true;
               if(DEBUG_IG && ownerAgent->getId() == testingId)
               {
-              std::cout << "Elegible in range for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+              std::cout << "Cell " << c->getId() << " elegible in range for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
               }
             }
           }
@@ -174,6 +173,9 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
             }
             continue;
           }
+
+
+
 
           if(isCellInRange==true)
           {
@@ -199,12 +201,15 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
 
               if(DEBUG_IG && ownerAgent->getId() == testingId)
               {
-                std::cout << "Cell " << elegibles.at(j).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, for Agent " << t->getId() << " got a base ig of: " << ig2 << " after social consideration" << std::endl;
+                std::cout << "Cell " << elegibles.at(j).first->getId() << " with " << elegibles.at(i).first->getUtility() 
+                << " weeds, for Agent " << t->getId() << " got a base ig of: " << ig2 << " after social consideration" << std::endl;
               }
 
               if(DEBUG_IG && ownerAgent->getId() == testingId)
               {
-                std::cout << "Cell " << elegibles.at(j).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, for Agent " << t->getId() << " got a base ig of: " << nextNearAgentProbabilities.at(j) << " after distance in social consideration" << std::endl;
+                std::cout << "Cell " << elegibles.at(j).first->getId() << " with " << elegibles.at(i).first->getUtility() 
+                << " weeds, for Agent " << t->getId() << " got a base ig of: " << nextNearAgentProbabilities.at(j) 
+                << " after distance in social consideration" << std::endl;
               }
 
             } //end of "other agent" cells
@@ -217,7 +222,9 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
 
           if(DEBUG_IG && ownerAgent->getId() == testingId)
           {
-            std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, for Agent " << t->getId() << " got a total ig contribution of: " << socialIG << " after social consideration" << std::endl;
+            std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() 
+            << " weeds, for Agent " << t->getId() << " got a total ig contribution of: " << socialIG << " after social consideration" 
+            << std::endl;
           }
 
         } // end of if in range
@@ -225,7 +232,8 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
       
       if(DEBUG_IG && ownerAgent->getId() == testingId)
       {
-        std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, got a total social ig of: " << tot << std::endl;
+        std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() 
+        << " weeds, got a total social ig of: " << tot << std::endl;
       }
 
       allNearAgentsProbabilities[i] = tot;
@@ -254,7 +262,9 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
 
     if((DEBUG_IG || DEBUG_PROBABILITIES) && ownerAgent->getId() == testingId)
     {
-      std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, got an ig of: " << finalProbabilitiesVector[i] << " after merging" << std::endl;
+      std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, got a final base ig of: " << myProbabilities.at(i)/sum << std::endl;
+      std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, got a final social ig of: " << allNearAgentsProbabilities.at(i) << std::endl;
+      std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, got a final ig of: " << finalProbabilitiesVector[i] << " after merging" << std::endl;
     }
   }
 
@@ -263,7 +273,9 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
     finalProbabilitiesVector.at(i) /= sum2;
     if((DEBUG_IG || DEBUG_PROBABILITIES) && ownerAgent->getId() == testingId)
     {
-      std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() << " weeds, got a normalized ig of: " << finalProbabilitiesVector[i] << " after merging" << std::endl;
+      std::cout << "Cell " << elegibles.at(i).first->getId() << " with " << elegibles.at(i).first->getUtility() 
+      << " weeds and " <<elegibles.at(i).first->getVisits()
+      << " visits, got a normalized ig of: " << finalProbabilitiesVector[i] << " after merging" << std::endl;
     }
   }
   
@@ -294,11 +306,15 @@ if(ownerAgent->GetTargetSelectionStrategy() == "random")
     }
     if(random <= cumulative)
     {
-              Cell* c = elegibles.at(i).first;
-              //c->isTargetOf.push_back(id);
-              //ag->cells.at(c->getId())->isTargetOf.push_back(id);
-              std::array<unsigned,3> cellPos = c->getPosition();
-              return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
+      if(DEBUG_PROBABILITIES && ownerAgent->getId() == testingId)
+      {
+        std::cout << "Chossen cell " << elegibles.at(i).first->getId() << std::endl;
+      }
+      Cell* c = elegibles.at(i).first;
+      //c->isTargetOf.push_back(id);
+      //ag->cells.at(c->getId())->isTargetOf.push_back(id);
+      std::array<unsigned,3> cellPos = c->getPosition();
+      return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
     }
   }
 
@@ -409,7 +425,7 @@ if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
       }
     }
   }
-
+/*
   if (mappedCells == finalProbabilitiesVector.size())
   {
 
@@ -426,7 +442,7 @@ if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
       }
     }    
   }
-  
+  */
 
   if(repeatedMaxIDs.size()>=2)
   {
@@ -453,7 +469,7 @@ if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
     float cumulative = .0;
     if(DEBUG_THIS && ownerAgent->getId() == testingId)
     {
-      std::cout << "Using Greedy strategy with " << random << " as random generated float for multiple max probs" << std::endl;
+      std::cout << "Using Greedy strategy with " << random << " as random generated float for multiple max probs" << std::endl << std::endl;
     }
     for(unsigned i=0; i<repeatedMaxProbs.size(); i++)
     {

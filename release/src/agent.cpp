@@ -559,26 +559,29 @@ bool Agent::doStep(unsigned timeStep){
         else
         {    // the cell is not yet mapped
             if(currentInspectionStrategy == "rw")
-              {
-                if(mesh != nullptr)
-                {ChangeColor(scanningColor);}
+            {
+              if(mesh != nullptr)
+              {ChangeColor(scanningColor);}
 
-                float beacon = weedsSeen/12;
-                scanningCell->setBeacon(beacon);
-                if(communicationsRange == -1)
-                {Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));}
-                if(communicationsRange > 0)
-                {this->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));}
-                
-                
-                if(mesh != nullptr)
-                {ChangeColor(scanningColor);}
-              }
+              float beacon = weedsSeen/12;
+              scanningCell->setBeacon(beacon);
+              if(communicationsRange == -1)
+              {Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));}
+              if(communicationsRange > 0)
+              {this->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));}
+              
+              
+              if(mesh != nullptr)
+              {ChangeColor(scanningColor);}
+            }
+            
         }                  
       }
       else
       {
-      ;
+      //; before adding the scancurrentlocation line there was only a ; in this else space
+      float weedsSeen = scanCurrentLocation(scanningCell);
+
       }
       
       //std::cout << "Agent " << this->getId() << " starting to broadcast scan results of cell " << scanningCell->getId() << std::endl;
