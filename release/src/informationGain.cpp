@@ -660,7 +660,7 @@ float InformationGainStrategy::computeInformationGain(Agent* a, Cell* cell)
 
   for(unsigned l = 0; l < 13; l++ )
   {
-    for(unsigned k = 0; k < 13; k++ )
+    for(unsigned k = 0; k < 13+1; k++ )
     {
       if(Engine::getInstance().getWorld()->getSensorTable()[k][l]!=0)
       {
@@ -697,7 +697,8 @@ float InformationGainStrategy::computeInformationGain(Agent* a, Cell* cell)
   
   if(DEBUG_THIS && ownerAgent->getId() == ownerAgent->getTestingId())
   {
-    std::cout << "Agent " << ownerAgent->getId() << " evaluating IG for cell " << cell->getId() << ". Term 1 = " << term1 << " ";
+    std::cout << "Agent " << ownerAgent->getId() << " evaluating IG for cell " << cell->getId() 
+    << " with " << cell->getUtility() << " weeds and " << cell->getVisits() << " visits. Term 1 = " << term1 << " ";
   }
 
   for(unsigned c = 0; c < 13; c++)

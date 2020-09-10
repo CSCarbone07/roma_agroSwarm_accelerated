@@ -495,7 +495,7 @@ void TestFunction_computeIG(bool printTable)
 
     for(unsigned l = 0; l < test_maxWeedsPerCell+1; l++ )
     {
-      for(unsigned k = 0; k < test_maxWeedsPerCell+1; k++ )
+      for(unsigned k = 0; k < test_maxWeedsPerCell+2; k++ )
       {
         if(test_sensorTable[k][l]!=0)
         {

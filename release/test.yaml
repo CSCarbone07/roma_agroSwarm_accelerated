@@ -2,7 +2,7 @@ max_steps: 10000	    # termination condition for the simulation, 0 means infinit
 num_of_agents: 50	        # total number of agents in the simulation
 seed: 1	          	# seed for the random number generator (1 and 3 for tests)
 
-Display_Simulation: true
+Display_Simulation: false
 
 communications_range: -1    #-1 if communication range is unlimited, 5,10,25
 
@@ -27,7 +27,7 @@ weeds:
 linearVelocity : 0.1    # linear velocity of UAV
 orcaRadius: 0.3
 tau: 0.2
-collisionAvoidance: true
+collisionAvoidance: false
 
 KnowledgeClusterRadius: 0   #radius around main scanning cell to included in knowledge update
 
