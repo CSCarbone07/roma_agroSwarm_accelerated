@@ -102,7 +102,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
   float ig=0, sum=0, ig2=0, sum2=0, tot=1;
 
 
-  bool DEBUG_IG = true;
+  bool DEBUG_IG = false;
   //compute the probabilities for the elegibles
   for(unsigned i = 0; i<elegibles.size(); i++)
   {
@@ -255,7 +255,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
   } //end of elegible cells loop
 
 
-  bool DEBUG_PROBABILITIES = true;
+  bool DEBUG_PROBABILITIES = false;
 
   //merge probabilities of this agent with the sum of each other
   tot = 0; sum2=0;
