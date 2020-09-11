@@ -2,9 +2,9 @@ max_steps: 10000	    # termination condition for the simulation, 0 means infinit
 num_of_agents: 50	        # total number of agents in the simulation
 seed: 1	          	# seed for the random number generator (1 and 3 for tests)
 
-Display_Simulation: false
+Display_Simulation: true
 
-communications_range: -1    #-1 if communication range is unlimited, 5,10,25
+communications_range: 10    #-1 if communication range is unlimited, 5,10,25
 
 world:
   x: 50                # world x size
@@ -27,7 +27,7 @@ weeds:
 linearVelocity : 0.1    # linear velocity of UAV
 orcaRadius: 0.3
 tau: 0.2
-collisionAvoidance: false
+collisionAvoidance: true
 
 KnowledgeClusterRadius: 0   #radius around main scanning cell to included in knowledge update
 
@@ -38,7 +38,7 @@ TargetSelectionStrategy: "random"   #greedy, softmax, random (default) with weig
 Softmax_Lambda: 1       #lambda for softmax equation //default: 1
 UseSocialInfo: true    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights
-UseCommRangeForSocial: false #use communication range to consider social info instead of the 5x5 range
+UseCommRangeForSocial: true #use communication range to consider social info instead of the 5x5 range
 
 #visit
 attraction: 8 #4
