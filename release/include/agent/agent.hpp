@@ -72,6 +72,7 @@ protected:
   float softmaxLambda = 1;
   bool useSocialInfo = false;
   bool useDistanceForIG = false;
+  bool useCommsForSocialIG = false;
 
   unsigned targetLifeTime; /** < Time until agent junk target */
 
@@ -206,6 +207,7 @@ public:
   inline float GetSoftmaxLambda() {return softmaxLambda; }
   inline bool GetUseSocialInfo() { return useSocialInfo; }
   inline bool GetUseDistanceForIG() { return useDistanceForIG; }
+  inline bool GetUseCommsForSocialIG() { return useCommsForSocialIG; }
   inline std::array<float,3> getPosition(){return this->position;}
   inline std::array<float,3> getTarget(){return this->target;}
   inline float getX(){return this->position.at(0);}

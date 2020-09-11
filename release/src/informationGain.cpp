@@ -102,7 +102,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
   float ig=0, sum=0, ig2=0, sum2=0, tot=1;
 
 
-  bool DEBUG_IG = false;
+  bool DEBUG_IG = true;
   //compute the probabilities for the elegibles
   for(unsigned i = 0; i<elegibles.size(); i++)
   {
@@ -150,28 +150,40 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
           nextNearAgentProbabilities.clear();
           sum2 = 0;
 
-          Cell* OtherAgentCell = Engine::getInstance().getWorld()->getCell(t->getX(),t->getY(),t->getZ());
-          std::vector<Cell*> cells_5x5 = OtherAgentCell->get5x5();
-
           bool isCellInRange = false;
-          for(Cell* c : cells_5x5)
+
+          if(ownerAgent->GetUseCommsForSocialIG())
           {
-            if (c->getId() == elegibles.at(i).first->getId())
-            {
-              isCellInRange = true;
-              if(DEBUG_IG && ownerAgent->getId() == testingId)
-              {
-              std::cout << "Cell " << c->getId() << " elegible in range for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
-              }
-            }
-          }
-          if(isCellInRange==false)
-          {
+            isCellInRange = true;
             if(DEBUG_IG && ownerAgent->getId() == testingId)
             {
-            //std::cout << "Elegible not in range for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+              std::cout << "Using communication range of " << ownerAgent->GetCommunicationsRange() << " as limit for social IG" << std::endl;
             }
-            continue;
+          }
+          else
+          {
+            Cell* OtherAgentCell = Engine::getInstance().getWorld()->getCell(t->getX(),t->getY(),t->getZ());
+            std::vector<Cell*> cells_5x5 = OtherAgentCell->get5x5();
+                        
+            for(Cell* c : cells_5x5)
+            {
+              if (c->getId() == elegibles.at(i).first->getId())
+              {
+                isCellInRange = true;
+                if(DEBUG_IG && ownerAgent->getId() == testingId)
+                {
+                std::cout << "Cell " << c->getId() << " elegible in range for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+                }
+              }
+            }
+            if(isCellInRange==false)
+            {
+              if(DEBUG_IG && ownerAgent->getId() == testingId)
+              {
+              //std::cout << "Elegible not in range for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+              }
+              continue;
+            }
           }
 
 
@@ -243,7 +255,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
   } //end of elegible cells loop
 
 
-  bool DEBUG_PROBABILITIES = false;
+  bool DEBUG_PROBABILITIES = true;
 
   //merge probabilities of this agent with the sum of each other
   tot = 0; sum2=0;

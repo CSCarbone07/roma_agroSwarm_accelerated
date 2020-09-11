@@ -90,6 +90,9 @@ static float minScale = 0.1f;
         useDistanceForIG = config["UseDistanceForIG"].as<bool>();
         std::cout << "Include distance for IG weights: " << useDistanceForIG << std::endl;        
 
+        useCommsForSocialIG = config["UseCommRangeForSocial"].as<bool>();
+        std::cout << "Use communication range as range limit for social info inclusion: " << useCommsForSocialIG << std::endl;  
+
     }
 
     std::cout << std::endl; 

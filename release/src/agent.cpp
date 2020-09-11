@@ -52,6 +52,7 @@ Agent::Agent(unsigned id, float x, float y, float z) {
   this->softmaxLambda = Engine::getInstance().getSoftmaxLambda();
   this->useSocialInfo = Engine::getInstance().getUseSocialInfo(); 
   this->useDistanceForIG = Engine::getInstance().getUseDistanceForIG(); 
+  this->useCommsForSocialIG = Engine::getInstance().getUseCommsForSocialIG(); 
   
   bool DEBUG_THIS = false;
   if(DEBUG_THIS && id == testingId)

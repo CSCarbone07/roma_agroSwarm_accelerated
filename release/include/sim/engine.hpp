@@ -138,6 +138,7 @@ private:
   float softmaxLambda = 1;
   bool useSocialInfo = false;
   bool useDistanceForIG = false;
+  bool useCommsForSocialIG = false;
 
   /* Test variables */
   bool test_IG = false;
@@ -205,6 +206,10 @@ inline float getlimitForTargetReselection() const {
     return useDistanceForIG;
   }
   
+  inline bool getUseCommsForSocialIG() const {
+    return useCommsForSocialIG;
+  }
+
   inline unsigned getRepulsion() const {
     return repulsion;
   }
