@@ -1,14 +1,14 @@
 #!/bin/bash
 
-RUNS=50
+RUNS=100
 NUM_OF_AGENTS=(50)
-COMMUNICATIONS_RANGE=(10)
+COMMUNICATIONS_RANGE=(-1)
 LOCALPATH=$(pwd)/
 for x in "${NUM_OF_AGENTS[@]}"
 do
   for y in "${COMMUNICATIONS_RANGE[@]}"
   do
-    for (( c=26; c<=$RUNS; c++ ))
+    for (( c=51; c<=$RUNS; c++ ))
     do  
         if test -f "${LOCALPATH}results/results_status_softmax_${x}_${y}_1_0.yaml"
         then
