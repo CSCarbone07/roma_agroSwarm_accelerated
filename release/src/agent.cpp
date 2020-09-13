@@ -559,23 +559,22 @@ bool Agent::doStep(unsigned timeStep){
         }
         else
         {    // the cell is not yet mapped
-            if(currentInspectionStrategy == "rw")
-            {
-              if(mesh != nullptr)
-              {ChangeColor(scanningColor);}
+          if(currentInspectionStrategy == "rw")
+          {
+            if(mesh != nullptr)
+            {ChangeColor(scanningColor);}
 
-              float beacon = weedsSeen/12;
-              scanningCell->setBeacon(beacon);
-              if(communicationsRange == -1)
-              {Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));}
-              if(communicationsRange > 0)
-              {this->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));}
-              
-              
-              if(mesh != nullptr)
-              {ChangeColor(scanningColor);}
-            }
+            float beacon = weedsSeen/12;
+            scanningCell->setBeacon(beacon);
+            if(communicationsRange == -1)
+            {Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));}
+            if(communicationsRange > 0)
+            {this->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));}
             
+            
+            if(mesh != nullptr)
+            {ChangeColor(scanningColor);}
+          }      
         }                  
       }
       else
@@ -805,13 +804,14 @@ float Agent::scanCurrentLocation(Cell* currentCell)
     if(DEBUG_THIS  && testingId == id)
     {std::cout << "Residual Entropy " << -entr << std::endl << std::endl;}
     
-    if(false)
+    if(currentCell->residual_uncertainty<0.27 && !(currentCell->isMapped()))
     {
       std::stringstream scanReport;
 
-      if(DEBUG_THIS  && testingId == id)
-      {scanReport << currentCell->getId() << " " << this->getId() << " " << timeStep << " " << weedsSeen << " ";}
+
       
+      scanReport << currentCell->getId() << " " << currentCell->getUtility() << " " << weedsSeen << " " << this->getId() << " " << timeStep << " " << weedsSeen << " ";
+
       for(float f : currentCell->knowledgeVector)
       {
         scanReport << f << " ";
@@ -819,11 +819,11 @@ float Agent::scanCurrentLocation(Cell* currentCell)
       for(float f : currentCell->observationVector)
       {
         scanReport << f << " ";
-      
+      }
       std::string outString;
       outString = scanReport.str();
       Engine::getInstance().WriteKnowledgeBasesFile(outString);
-      }
+      
     }
 
 

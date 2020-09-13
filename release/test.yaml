@@ -2,9 +2,9 @@ max_steps: 10000	    # termination condition for the simulation, 0 means infinit
 num_of_agents: 50	        # total number of agents in the simulation
 seed: 1	          	# seed for the random number generator (1 and 3 for tests)
 
-Display_Simulation: true
+Display_Simulation: false
 
-communications_range: 10    #-1 if communication range is unlimited, 5,10,25
+communications_range: -1    #-1 if communication range is unlimited, 5,10,25
 
 world:
   x: 50                # world x size
@@ -31,7 +31,7 @@ collisionAvoidance: true
 
 KnowledgeClusterRadius: 0   #radius around main scanning cell to included in knowledge update
 
-InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain 
+InspectionStrategy: "rw" #rw = randomwalk (default), ig = information gain 
 
 #if ig is the strategy:
 TargetSelectionStrategy: "random"   #greedy, softmax, random (default) with weights. 
