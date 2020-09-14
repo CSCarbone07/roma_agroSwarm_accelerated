@@ -124,7 +124,7 @@ void Cell::SetNeighbors(std::vector<Cell*> inCells)
     {
         std::cout << "5x5 has " << cells_5x5.size() << " cells" << std::endl; 
     }
-    /*
+    
     for(float i = -3*loopCellSize; (i <= 3*loopCellSize); i=i+loopCellSize)
     {
         for(float j = -3*loopCellSize; (j <= 3*loopCellSize); j=j+loopCellSize)
@@ -152,6 +152,7 @@ void Cell::SetNeighbors(std::vector<Cell*> inCells)
     {
         std::cout << "7x7 has " << cells_7x7.size() << " cells" << std::endl; 
     }
+    /*
     for(float i = -4*loopCellSize; (i <= 4*loopCellSize); i=i+loopCellSize)
     {
         for(float j = -4*loopCellSize; (j <= 4*loopCellSize); j=j+loopCellSize)
