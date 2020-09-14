@@ -119,6 +119,67 @@ void Cell::SetNeighbors(std::vector<Cell*> inCells)
             }        
         }
     }
+    /*
+    if(false)
+    {
+        std::cout << "5x5 has " << cells_5x5.size() << " cells" << std::endl; 
+    }
+    */
+    for(float i = -3*loopCellSize; (i <= 3*loopCellSize); i=i+loopCellSize)
+    {
+        for(float j = -3*loopCellSize; (j <= 3*loopCellSize); j=j+loopCellSize)
+        {   
+            if(!(i == 0 && j == 0) && (x+i) >= 0 && (y+j) >= 0)
+            {
+                for(Cell* c : cells)
+                {
+                    if (c->getX() == x + i && c->getY()== y + j && c->getZ()== z)
+                    {
+                    if (std::find(cells_3x3.begin(), cells_3x3.end(), c) != cells_3x3.end())
+                        {break;}
+                    if (std::find(cells_5x5.begin(), cells_5x5.end(), c) != cells_5x5.end())
+                        {break;}
+                    cells_7x7.push_back(c);
+                    //std::cout << "Cell " << id << " added cell " << c->getId() << " as 5x5 neighbor" << std::endl; 
+                    break;
+                    }
+                } 
+            }        
+        }
+    }
+    if(false)
+    {
+        std::cout << "7x7 has " << cells_7x7.size() << " cells" << std::endl; 
+    }
+    for(float i = -4*loopCellSize; (i <= 4*loopCellSize); i=i+loopCellSize)
+    {
+        for(float j = -4*loopCellSize; (j <= 4*loopCellSize); j=j+loopCellSize)
+        {   
+            if(!(i == 0 && j == 0) && (x+i) >= 0 && (y+j) >= 0)
+            {
+                for(Cell* c : cells)
+                {
+                    if (c->getX() == x + i && c->getY()== y + j && c->getZ()== z)
+                    {
+                    if (std::find(cells_3x3.begin(), cells_3x3.end(), c) != cells_3x3.end())
+                        {break;}
+                    if (std::find(cells_5x5.begin(), cells_5x5.end(), c) != cells_5x5.end())
+                        {break;}
+                    if (std::find(cells_7x7.begin(), cells_7x7.end(), c) != cells_7x7.end())
+                        {break;}
+                    cells_9x9.push_back(c);
+                    //std::cout << "Cell " << id << " added cell " << c->getId() << " as 5x5 neighbor" << std::endl; 
+                    break;
+                    }
+                } 
+            }        
+        }
+    }
+    if(false)
+    {
+        std::cout << "9x9 has " << cells_9x9.size() << " cells" << std::endl; 
+    }
+
 }
 
 void Cell::ChangeColor(glm::vec4 inColor)

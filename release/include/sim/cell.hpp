@@ -26,6 +26,8 @@ private:
   std::array<unsigned, 3> worldCellSize;      //world size in amount of cells
   std::vector<Cell*> cells_3x3;
   std::vector<Cell*> cells_5x5;
+  std::vector<Cell*> cells_7x7;
+  std::vector<Cell*> cells_9x9;
 
   unsigned numAgents; /** < number of agents committed to this cell */
   bool mapped = false;
@@ -79,6 +81,8 @@ public:
 
   inline std::vector<Cell*> get3x3() { return cells_3x3; }
   inline std::vector<Cell*> get5x5() { return cells_5x5; }
+  inline std::vector<Cell*> get7x7() { return cells_7x7; }
+  inline std::vector<Cell*> get9x9() { return cells_9x9; }
 
   void setUtility(float inUtility);
 

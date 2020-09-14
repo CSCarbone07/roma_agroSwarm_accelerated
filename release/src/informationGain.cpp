@@ -163,16 +163,33 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
           else
           {
             Cell* OtherAgentCell = Engine::getInstance().getWorld()->getCell(t->getX(),t->getY(),t->getZ());
+            std::vector<Cell*> cells_3x3 = OtherAgentCell->get3x3();
             std::vector<Cell*> cells_5x5 = OtherAgentCell->get5x5();
-                        
-            for(Cell* c : cells_5x5)
+            std::vector<Cell*> cells_7x7 = OtherAgentCell->get7x7();
+            std::vector<Cell*> cells_9x9 = OtherAgentCell->get9x9();
+
+            for(Cell* c : cells_3x3)
             {
               if (c->getId() == elegibles.at(i).first->getId())
               {
                 isCellInRange = true;
                 if(DEBUG_IG && ownerAgent->getId() == testingId)
                 {
-                std::cout << "Cell " << c->getId() << " elegible in range for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+                std::cout << "Cell " << c->getId() << " elegible in range 3x3 for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+                }
+              }
+            }   
+            if(isCellInRange==false)
+            {         
+              for(Cell* c : cells_5x5)
+              {
+                if (c->getId() == elegibles.at(i).first->getId())
+                {
+                  isCellInRange = true;
+                  if(DEBUG_IG && ownerAgent->getId() == testingId)
+                  {
+                  std::cout << "Cell " << c->getId() << " elegible in range 5x5 for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+                  }
                 }
               }
             }
@@ -184,6 +201,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
               }
               continue;
             }
+
           }
 
 
