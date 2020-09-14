@@ -4,7 +4,7 @@ seed: 50                 # seed for the random number generator
 
 Display_Simulation: false
 
-communications_range: 10      #-1 if communication range is unlimited
+communications_range: -1      #-1 if communication range is unlimited
 
 world:
   x: 50                # world x size
@@ -12,12 +12,12 @@ world:
   z: 1                 # world z size  
 
 
-knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_random_50_10_1_0.yaml"
-movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_random_50_10_1_0.yaml"
-statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_random_50_10_1_0.yaml"
-randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice_random_50_10_1_0.yaml"
-timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing_random_50_10_1_0.yaml"
-visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells_random_50_10_1_0.yaml"
+knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_softmax_50_-1_1_0.yaml"
+movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_softmax_50_-1_1_0.yaml"
+statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_softmax_50_-1_1_0.yaml"
+randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice_softmax_50_-1_1_0.yaml"
+timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing_softmax_50_-1_1_0.yaml"
+visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells_softmax_50_-1_1_0.yaml"
 
 weeds:
     clusters: 4
@@ -35,7 +35,7 @@ KnowledgeClusterRadius: 0   #radius around main scanning cell to included in kno
 InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain 
 
 #if ig is the strategy:
-TargetSelectionStrategy: "random"   #random, softmax, random (default) with weights. 
+TargetSelectionStrategy: "softmax"   #softmax, softmax, random (default) with weights. 
 Softmax_Lambda: 1       #lambda for softmax equation 
 UseSocialInfo: true    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights

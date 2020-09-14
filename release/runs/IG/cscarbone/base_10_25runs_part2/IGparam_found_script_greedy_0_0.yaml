@@ -12,12 +12,12 @@ world:
   z: 1                 # world z size  
 
 
-knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_random_50_10_1_0.yaml"
-movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_random_50_10_1_0.yaml"
-statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_random_50_10_1_0.yaml"
-randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice_random_50_10_1_0.yaml"
-timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing_random_50_10_1_0.yaml"
-visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells_random_50_10_1_0.yaml"
+knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_greedy_50_10_0_0.yaml"
+movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_greedy_50_10_0_0.yaml"
+statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_greedy_50_10_0_0.yaml"
+randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice_greedy_50_10_0_0.yaml"
+timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing_greedy_50_10_0_0.yaml"
+visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells_greedy_50_10_0_0.yaml"
 
 weeds:
     clusters: 4
@@ -35,10 +35,11 @@ KnowledgeClusterRadius: 0   #radius around main scanning cell to included in kno
 InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain 
 
 #if ig is the strategy:
-TargetSelectionStrategy: "random"   #random, softmax, random (default) with weights. 
+TargetSelectionStrategy: "greedy"   #greedy, softmax, random (default) with weights. 
 Softmax_Lambda: 1       #lambda for softmax equation 
-UseSocialInfo: true    #include information from other agents
+UseSocialInfo: false    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights
+UseCommRangeForSocial: false #use communication range to consider social info instead of the 5x5 range
 
 #visit
 repulsion: 0

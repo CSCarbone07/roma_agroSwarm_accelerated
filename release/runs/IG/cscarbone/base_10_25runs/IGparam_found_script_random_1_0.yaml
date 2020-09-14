@@ -1,6 +1,6 @@
 max_steps: 10000    # termination condition for the simulation, 0 means infinite
 num_of_agents: 50        # total number of agents in the simulation
-seed: 50                 # seed for the random number generator
+seed: 25                 # seed for the random number generator
 
 Display_Simulation: false
 
@@ -39,6 +39,7 @@ TargetSelectionStrategy: "random"   #random, softmax, random (default) with weig
 Softmax_Lambda: 1       #lambda for softmax equation 
 UseSocialInfo: true    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights
+UseCommRangeForSocial: false #use communication range to consider social info instead of the 5x5 range
 
 #visit
 repulsion: 0
