@@ -194,6 +194,20 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
               }
             }
             if(isCellInRange==false)
+            {         
+              for(Cell* c : cells_7x7)
+              {
+                if (c->getId() == elegibles.at(i).first->getId())
+                {
+                  isCellInRange = true;
+                  if(DEBUG_IG && ownerAgent->getId() == testingId)
+                  {
+                  std::cout << "Cell " << c->getId() << " elegible in range 7x7 for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+                  }
+                }
+              }
+            }
+            if(isCellInRange==false)
             {
               if(DEBUG_IG && ownerAgent->getId() == testingId)
               {

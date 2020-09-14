@@ -119,7 +119,7 @@ void Cell::SetNeighbors(std::vector<Cell*> inCells)
             }        
         }
     }
-    /*
+    
     if(false)
     {
         std::cout << "5x5 has " << cells_5x5.size() << " cells" << std::endl; 
@@ -147,7 +147,7 @@ void Cell::SetNeighbors(std::vector<Cell*> inCells)
             }        
         }
     }
-    
+    /*
     if(false)
     {
         std::cout << "7x7 has " << cells_7x7.size() << " cells" << std::endl; 
