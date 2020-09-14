@@ -31,14 +31,14 @@ collisionAvoidance: true
 
 KnowledgeClusterRadius: 0   #radius around main scanning cell to included in knowledge update
 
-InspectionStrategy: "rw" #rw = randomwalk (default), ig = information gain 
+InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain 
 
 #if ig is the strategy:
 TargetSelectionStrategy: "random"   #greedy, softmax, random (default) with weights. 
 Softmax_Lambda: 1       #lambda for softmax equation //default: 1
 UseSocialInfo: true    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights
-UseCommRangeForSocial: true #use communication range to consider social info instead of the 5x5 range
+UseCommRangeForSocial: false #use communication range to consider social info instead of the 5x5 range
 
 #visit
 attraction: 8 #4

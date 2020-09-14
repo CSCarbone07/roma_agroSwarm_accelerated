@@ -39,6 +39,7 @@ TargetSelectionStrategy: "random"   #random, softmax, random (default) with weig
 Softmax_Lambda: 1       #lambda for softmax equation 
 UseSocialInfo: false    #include information from other agents
 UseDistanceForIG: true #include distance in ig weights
+UseCommRangeForSocial: false #use communication range to consider social info instead of the 5x5 range
 
 #visit
 repulsion: 0
