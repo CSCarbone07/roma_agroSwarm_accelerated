@@ -168,17 +168,24 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
             std::vector<Cell*> cells_7x7 = OtherAgentCell->get7x7();
             std::vector<Cell*> cells_9x9 = OtherAgentCell->get9x9();
 
-            for(Cell* c : cells_3x3)
+            if(OtherAgentCell->getId() == elegibles.at(i).first->getId())
             {
-              if (c->getId() == elegibles.at(i).first->getId())
+              isCellInRange = true;
+            }
+            if(isCellInRange==false)
+            {
+              for(Cell* c : cells_3x3)
               {
-                isCellInRange = true;
-                if(DEBUG_IG && ownerAgent->getId() == testingId)
+                if (c->getId() == elegibles.at(i).first->getId())
                 {
-                std::cout << "Cell " << c->getId() << " elegible in range 3x3 for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+                  isCellInRange = true;
+                  if(DEBUG_IG && ownerAgent->getId() == testingId)
+                  {
+                  std::cout << "Cell " << c->getId() << " elegible in range 3x3 for agent " << t->getId() << " from agent " << ownerAgent->getId() << std::endl;
+                  }
                 }
-              }
-            }   
+              }  
+            } 
             if(isCellInRange==false)
             {         
               for(Cell* c : cells_5x5)
@@ -193,6 +200,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
                 }
               }
             }
+            /*
             if(isCellInRange==false)
             {         
               for(Cell* c : cells_7x7)
@@ -207,6 +215,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
                 }
               }
             }
+            */
             if(isCellInRange==false)
             {
               if(DEBUG_IG && ownerAgent->getId() == testingId)
