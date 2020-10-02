@@ -124,7 +124,7 @@ void Cell::SetNeighbors(std::vector<Cell*> inCells)
     {
         std::cout << "5x5 has " << cells_5x5.size() << " cells" << std::endl; 
     }
-    
+    /*
     for(float i = -3*loopCellSize; (i <= 3*loopCellSize); i=i+loopCellSize)
     {
         for(float j = -3*loopCellSize; (j <= 3*loopCellSize); j=j+loopCellSize)
@@ -181,7 +181,7 @@ void Cell::SetNeighbors(std::vector<Cell*> inCells)
     {
         std::cout << "9x9 has " << cells_9x9.size() << " cells" << std::endl; 
     }
-    
+    */
 }
 
 void Cell::ChangeColor(glm::vec4 inColor)

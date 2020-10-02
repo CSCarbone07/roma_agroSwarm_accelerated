@@ -200,7 +200,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
                 }
               }
             }
-            
+            /*
             if(isCellInRange==false)
             {         
               for(Cell* c : cells_7x7)
@@ -230,7 +230,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
                 }
               }
             }
-
+            */
             if(isCellInRange==false)
             {
               if(DEBUG_IG && ownerAgent->getId() == testingId)

@@ -375,15 +375,23 @@ void TestFunction_Scan(bool printThis)
       std::cout << std::endl;
     }
 
+    double test_sum = 0;
     for(unsigned i = 0; i<columns+1; i++)
     {
       test_cell->knowledgeVector[i] /= temp_z;
-      if(DEBUG_THIS)
+      if(true)
       {
+        test_sum += test_cell->knowledgeVector[i];
         std::cout << '(' << test_cell->knowledgeVector[i] << ')' << " ";
       }
 
     }
+
+    if(true)
+    {
+      std::cout << std::endl << " sum = " << test_sum << " " << std::endl;
+    }
+
 
     for(unsigned i = 0; i<columns+1; i++)
     {
