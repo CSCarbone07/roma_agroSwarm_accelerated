@@ -43,7 +43,7 @@ protected:
   glm::vec4 receivingMessageColor = glm::vec4(0.0f, 0.0f, 0.5f, 1.0f);
   glm::vec4 scanningColor = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
 
-  int testingId = 27; //10, 27, 20 //33 for top right //27 for top in cluster //37 one close to the other; 48 was for the last error
+  int testingId = 10; //10, 27, 20 //33 for top right //27 for top in cluster //37 one close to the other; 48 was for the last error
   int testingId_2 = -10; //48 spawning next to 37
   glm::vec4 testColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -80,7 +80,7 @@ protected:
   unsigned collisions = 0; /** < Total collisions */
  
   void BroadcastCell(Agent* agent, Cell* cellToSend); //sending cell with local data
-  void ReceiveCell(Cell* recievedCell); //recieving cell with new data
+  void ReceiveCell(Agent* sendingAgent, Cell* recievedCell); //recieving cell with new data
 
   float max_range_5x5 = 3*sqrt(2);
   float min_range_5x5 = 2*sqrt(2);

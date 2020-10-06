@@ -381,6 +381,7 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
   bool DEBUG_FUNCTION = false;
   float newX = 0;
   float newY = 0;
+  int agentsInRange = 0;
   for(auto t : Engine::getInstance().getWorld()->getAgents())
   {
     if(t->getId() != ag->getId())
@@ -402,6 +403,7 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
         tv.normalize();
         newX += -weight*tv[0];
         newY += -weight*tv[1];
+        agentsInRange ++;
 
         if(DEBUG_FUNCTION)
         {
@@ -412,6 +414,7 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
       }
     }
   }
+  
   //if(DEBUG_FUNCTION)
   //{std::cout << "Weights found: " << newX << "x + " << newY << "y" << std::endl;}
   Eigen::Vector2f repulsion(newX,newY);
@@ -423,7 +426,10 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
     {
       std::cout << "Repulsion found: " << newX << " x, " << newY << " y" << std::endl;
     }
-    return repulsion.normalized();
+    repulsion[0]/=agentsInRange;
+    repulsion[1]/=agentsInRange;
+
+    return repulsion;//.normalized();
 
   } 
   if(DEBUG_FUNCTION)
@@ -438,37 +444,39 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
   
   float newX = 0;
   float newY = 0;
-  
-  std::map<unsigned, Cell*> beaconsCell;
+  int beaconsCount = 0;
+  std::map<unsigned, Cell*> beaconsCells;
 
   if(DEBUG_FUNCTION)
   {std::cout << "communication range: " << Engine::getInstance().getWorld()->communication_range << std::endl;}
 
   if(Engine::getInstance().getWorld()->communication_range == -1)
   {
-    beaconsCell = Engine::getInstance().getWorld()->beacons;
+    beaconsCells = Engine::getInstance().getWorld()->beacons;
     if(DEBUG_FUNCTION)
-    {std::cout << "beacons set for unlimited range, found " << beaconsCell.size() << " beacons" << std::endl;}
+    {std::cout << "beacons set for unlimited range, found " << beaconsCells.size() << " beacons" << std::endl;}
   }
   if(Engine::getInstance().getWorld()->communication_range > 0)
   {
-    beaconsCell = ownerAgent->beacons;
+    beaconsCells = ownerAgent->beacons;
       if(DEBUG_FUNCTION)
-      {std::cout << "checking" << beaconsCell.size() << std::endl;}
+      {std::cout << "checking" << beaconsCells.size() << std::endl;}
   }
 
   
   
   //if(DEBUG_FUNCTION)
-  //{std::cout << "checking" << beaconsCell.size() << std::endl;}
-  //std::cout << "Beacons found" << beaconsCell.size() << std::endl;
+  //{std::cout << "checking" << beaconsCells.size() << std::endl;}
+  //std::cout << "Beacons found" << beaconsCells.size() << std::endl;
 
-  //for (std::map<unsigned, Cell*>::iterator i = beaconsCell.begin(); i != beaconsCell.end(); ++i) 
-  for (std::map<unsigned, Cell*>::iterator i = beaconsCell.begin(); i != beaconsCell.end(); ++i) 
+  //for (std::map<unsigned, Cell*>::iterator i = beaconsCells.begin(); i != beaconsCells.end(); ++i) 
+  for (std::map<unsigned, Cell*>::iterator i = beaconsCells.begin(); i != beaconsCells.end(); ++i) 
   { 
     if(DEBUG_FUNCTION)
     {std::cout << "Agent " << ag->getId() << " iterating" << std::endl;}
-    if(ag->cells.at((*i).second->getId())->getBeacon() != 0 || Engine::getInstance().getWorld()->communication_range == -1)
+
+    if(ag->cells.at((*i).second->getId())->getBeacon() != 0 || 
+    Engine::getInstance().getWorld()->communication_range == -1 && (*i).second->getBeacon() != 0)
     {
       if(DEBUG_FUNCTION)
       {std::cout << "Agent " << ag->getId() << " found beacon with magnitude" << (*i).second->getBeacon() << std::endl;}
@@ -477,12 +485,17 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
       tv.normalize();
       newX += weight*tv[0];
       newY += weight*tv[1];
+      beaconsCount++;
     }
   }
   Eigen::Vector2f attraction(newX,newY);
   //avoid normalizing a zero vector
   if(!attraction.isZero())
-    return attraction.normalized();
-
-  return Eigen::Vector2f(0,0);  
+  {
+    attraction[0]/=beaconsCount;
+    attraction[1]/=beaconsCount;
+    return attraction;
+  }//.normalized();
+  
+  return Eigen::Vector2f(0,0);
 }
