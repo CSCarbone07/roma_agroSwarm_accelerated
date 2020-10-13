@@ -28,7 +28,7 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
   elegibles = getElegibles(ag, agentDiscretePos, id);
   //std::cout << elegibles.size() << std::endl;
 
-  bool DEBUG_THIS = true;
+  bool DEBUG_THIS = false;
   if(ownerAgent->getId() == testingId && DEBUG_THIS)
   {
     std::cout << "Agent " << ownerAgent->getId() << " Discrete Position: " 
@@ -380,7 +380,7 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
 
 float RandomWalkStrategy::computeDirectionFactor(std::array<float,3> agentPos, Cell* c, Eigen::Vector2f directionVector){
   
-  bool DEBUG_FUNCTION = true;
+  bool DEBUG_FUNCTION = false;
 
   
   Eigen::Vector2f pos((c->getX())-agentPos.at(0), (c->getY())-agentPos.at(1));

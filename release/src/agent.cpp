@@ -457,7 +457,7 @@ bool Agent::doStep(unsigned timeStep){
   switch(nextAction()){
     case PICK:
     {
-        bool DEBUG_THIS = true;
+        bool DEBUG_THIS = false;
         //std::cout << "Agent " << this->getId() << " currently at: " << this->getX() << "x + " << this->getY() << "y + " << this->getZ() << "z"
         //<< " is picking its target cell using: " << this->currentInspectionStrategy << " strategy" << std::endl;
 
