@@ -4,7 +4,7 @@ seed: 1	          	# seed for the random number generator (1 and 3 for tests)
 
 Display_Simulation: true
 
-communications_range: 10    #-1 if communication range is unlimited, 5,10,25
+communications_range: -1    #-1 if communication range is unlimited, 5,10,25
 
 world:
   x: 50                # world x size
@@ -41,10 +41,10 @@ UseDistanceForIG: false #include distance in ig weights
 UseCommRangeForSocial: false #use communication range to consider social info instead of the 5x5 range
 
 #visit
-attraction: 8 #4
-repulsion: 64 #16
+attraction: 0 #4
+repulsion: 32 #16
 
-MappingThreshold: 0.25
+MappingThreshold: 0.27
 
 limitForTargetReselection: 50  #in time steps how many time steps to wait before reselecting a target because the current one is "unreachable"
 

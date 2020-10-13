@@ -337,6 +337,10 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
 }
 
 float RandomWalkStrategy::computeDirectionFactor(std::array<float,3> agentPos, Cell* c, Eigen::Vector2f directionVector){
+  
+  bool DEBUG_FUNCTION = false;
+
+  
   Eigen::Vector2f pos((c->getX())-agentPos.at(0), (c->getY())-agentPos.at(1));
 
  if(std::abs(pos[0]) <0.01 )
@@ -357,9 +361,17 @@ float RandomWalkStrategy::computeDirectionFactor(std::array<float,3> agentPos, C
     }
   }
   float cauchyParameter = 1-exp(-(directionVector.norm()/2));
+  float beta = 15;
+  float sigmoid = (1-exp(-beta * directionVector.norm()))/(1+exp(-beta * directionVector.norm()));
   // Cauchy PDF
   // c++ 1 only offers the random number generator
-  return cauchyPDF(std::abs(arc_cosine),cauchyParameter);
+
+   if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
+   {
+      std::cout << "Sigmoid: " << sigmoid << std::endl;
+      std::cout << "Cauchy: " << cauchyPDF(std::abs(arc_cosine),sigmoid) << std::endl;
+   }
+  return cauchyPDF(std::abs(arc_cosine),sigmoid); //cauchy parameter replaced by sigmoid
 }
 
 Eigen::Vector2f RandomWalkStrategy::computeMomentum(float theta)
@@ -392,7 +404,7 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
 
         std::array<float,3> otherPos = t->getPosition();
         Eigen::Vector2f tv(otherPos.at(0) - agentPos.at(0), otherPos.at(1) - agentPos.at(1));
-        if(DEBUG_FUNCTION)
+        if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
         {
           std::cout << "Agent " << ag->getId() 
           << " at " << ownerAgent->getX() << " x, " << ownerAgent->getY() << " y"
@@ -405,7 +417,7 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
         newY += -weight*tv[1];
         agentsInRange ++;
 
-        if(DEBUG_FUNCTION)
+        if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
         {
           std::cout << " weight: " << weight
           << " with repulsion: " << -weight*tv[0] << " x, " << -weight*tv[1] << " y" << std::endl;
@@ -422,17 +434,22 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
 
   if(!repulsion.isZero())
   {
-    if(DEBUG_FUNCTION)
+    if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
     {
-      std::cout << "Repulsion found: " << newX << " x, " << newY << " y" << std::endl;
+      std::cout << "Repulsion found: " << newX << " x, " << newY << " y. With: " << agentsInRange << " agents" << std::endl;
     }
     repulsion[0]/=agentsInRange;
     repulsion[1]/=agentsInRange;
 
+    if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
+    {
+      std::cout << "Repulsion set: " << repulsion[0] << " x, " << repulsion[1] << " y. With: " << agentsInRange << " agents" << std::endl;
+    }
+
     return repulsion;//.normalized();
 
   } 
-  if(DEBUG_FUNCTION)
+  if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
   {
      std::cout << "Zero found" << std::endl;
   }
@@ -447,19 +464,19 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
   int beaconsCount = 0;
   std::map<unsigned, Cell*> beaconsCells;
 
-  if(DEBUG_FUNCTION)
+  if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
   {std::cout << "communication range: " << Engine::getInstance().getWorld()->communication_range << std::endl;}
 
   if(Engine::getInstance().getWorld()->communication_range == -1)
   {
     beaconsCells = Engine::getInstance().getWorld()->beacons;
-    if(DEBUG_FUNCTION)
+    if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
     {std::cout << "beacons set for unlimited range, found " << beaconsCells.size() << " beacons" << std::endl;}
   }
   if(Engine::getInstance().getWorld()->communication_range > 0)
   {
     beaconsCells = ownerAgent->beacons;
-      if(DEBUG_FUNCTION)
+      if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
       {std::cout << "checking" << beaconsCells.size() << std::endl;}
   }
 
@@ -472,14 +489,14 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
   //for (std::map<unsigned, Cell*>::iterator i = beaconsCells.begin(); i != beaconsCells.end(); ++i) 
   for (std::map<unsigned, Cell*>::iterator i = beaconsCells.begin(); i != beaconsCells.end(); ++i) 
   { 
-    if(DEBUG_FUNCTION)
-    {std::cout << "Agent " << ag->getId() << " iterating" << std::endl;}
+    //if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
+    //{std::cout << "Agent " << ag->getId() << " iterating" << std::endl;}
 
     if(ag->cells.at((*i).second->getId())->getBeacon() != 0 || 
     Engine::getInstance().getWorld()->communication_range == -1 && (*i).second->getBeacon() != 0)
     {
-      if(DEBUG_FUNCTION)
-      {std::cout << "Agent " << ag->getId() << " found beacon with magnitude" << (*i).second->getBeacon() << std::endl;}
+      if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
+      {std::cout << "Agent " << ag->getId() << " found beacon with magnitude " << (*i).second->getBeacon() << std::endl;}
       Eigen::Vector2f tv(((*i).second->getX()) - agentPos.at(0), ((*i).second->getY()) - agentPos.at(1));
       float weight = (*i).second->getBeacon()* 2*Engine::getInstance().gaussianPDF(tv.norm(), 0, Engine::getInstance().getAttraction());  //(tc.length(), 0, Mav.potentialSpread, 2);
       tv.normalize();
@@ -492,8 +509,19 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
   //avoid normalizing a zero vector
   if(!attraction.isZero())
   {
+    if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
+    {
+      std::cout << "Attraction found: " << newX << " x, " << newY << " y. With: " << beaconsCount << " beacons" << std::endl;
+    }
+
     attraction[0]/=beaconsCount;
     attraction[1]/=beaconsCount;
+
+    if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
+    {
+      std::cout << "Attraction set: " << attraction[0] << " x, " << attraction[1] << " y. With: " << beaconsCount << " beacons" << std::endl;
+    }
+
     return attraction;
   }//.normalized();
   

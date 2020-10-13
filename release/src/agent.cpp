@@ -407,6 +407,7 @@ void Agent::ReceiveCell(Agent* sendingAgent, Cell* receivedCell) //recieving bro
       {
         std::cout << "cell was already mapped" << std::endl;
       }
+
     }
     
 }
@@ -585,7 +586,7 @@ bool Agent::doStep(unsigned timeStep){
             if(mesh != nullptr)
             {ChangeColor(scanningColor);}
 
-            float beacon = weedsSeen/13;
+            float beacon = weedsSeen/14;
             scanningCell->setBeacon(beacon);
             if(communicationsRange == -1)
             {
@@ -700,7 +701,6 @@ float Agent::scanCurrentLocation(Cell* currentCell)
     //get amount of weeds seen by sensor in current observation
     unsigned weedsSeen;
     double random = RandomGenerator::getInstance().nextFloat(1);
-    //std::cout << "random observation: " << random << std::endl;
     for (unsigned i = 0; i < (13+1); i++)
     {  
       if(DEBUG_THIS && testingId == id)
