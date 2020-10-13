@@ -43,7 +43,7 @@ protected:
   glm::vec4 receivingMessageColor = glm::vec4(0.0f, 0.0f, 0.5f, 1.0f);
   glm::vec4 scanningColor = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
 
-  int testingId = 10; //10, 27, 20 //33 for top right //27 for top in cluster //37 one close to the other; 48 was for the last error
+  int testingId = 23; //10, 27, 20 //33 for top right //27 for top in cluster //37 one close to the other; 48 was for the last error
   int testingId_2 = -10; //48 spawning next to 37
   glm::vec4 testColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -51,9 +51,14 @@ protected:
   float limitForTargetReselection = 50; // if travel to target is higher than this reselect another target
 
   float communicationsRange=-1;
+  bool rebroadcast = false;
+  
+  int weedsReceived = -1;
+  
   std::string knowledgeBaseLocation = "World";
   std::vector<Agent*> agentsBroadcasting;
 
+  
 
   std::array<float,3> position; /** < position 3d of agent */
   std::array<float,3> target; /** < target 3d of agent */
@@ -118,7 +123,7 @@ protected:
     return false;
   }
 
-  float scanCurrentLocation(Cell* c);
+  float scanCurrentLocation(Cell* c, int weedsReceived);
   
   /**
    * Get Next Position

@@ -70,6 +70,11 @@ void Cell::setBeacon(float beacon)
 
 }
 
+void Cell::setLastWeeedsSeen(int weeds)
+{
+    lastWeedsSeen = weeds;
+}
+
 void Cell::setMapped()
 {
     mapped = true; 

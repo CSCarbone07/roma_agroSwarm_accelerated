@@ -28,25 +28,23 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
   elegibles = getElegibles(ag, agentDiscretePos, id);
   //std::cout << elegibles.size() << std::endl;
 
-  bool DEBUG_THIS = false;
+  bool DEBUG_THIS = true;
   if(ownerAgent->getId() == testingId && DEBUG_THIS)
   {
-  std::cout << "Agent " << ownerAgent->getId() << " Discrete Position: " 
-  << agentDiscretePos.at(0) << "x + " << agentDiscretePos.at(1) << "y" << std::endl;
-    std::cout << "Agent " << ownerAgent->getId() << " non Discrete Position: " 
-  << ownerAgent->getX() << "x + " << ownerAgent->getY() << "y" << std::endl;
+    std::cout << "Agent " << ownerAgent->getId() << " Discrete Position: " 
+    << agentDiscretePos.at(0) << "x + " << agentDiscretePos.at(1) << "y" << std::endl;
+      std::cout << "Agent " << ownerAgent->getId() << " non Discrete Position: " 
+    << ownerAgent->getX() << "x + " << ownerAgent->getY() << "y" << std::endl;
 
-  std::cout << "Elegible cells found: " << elegibles.size() << std::endl;
-  for(auto ele : elegibles)
-  {
-    std::cout << "Elegible cell " << ele.first->getId() << " at: " << ele.first->getX() << "x " << ele.first->getY() << "y" 
-    //<< " test id: " << Engine::getInstance().getWorld()->getCell(std::array<unsigned,3>{ele.first->getX(),ele.first->getY(),0})->getId() << std::endl;
-    << " test id: " << Engine::getInstance().getWorld()->getCell(ele.first->getX(),ele.first->getY(),0)->getId() << std::endl;
-    //if(ele.first->isMapped())
-    //{std::cout << "ERROR! Cell: " << ele.first->getId() << " was found as elegible although it was mapped" << std::endl;}
-    
-  }
-
+    std::cout << "Elegible cells found: " << elegibles.size() << std::endl;
+    for(auto ele : elegibles)
+    {
+      std::cout << "Elegible cell " << ele.first->getId() << " at: " << ele.first->getX() << "x " << ele.first->getY() << "y" 
+      //<< " test id: " << Engine::getInstance().getWorld()->getCell(std::array<unsigned,3>{ele.first->getX(),ele.first->getY(),0})->getId() << std::endl;
+      << " test id: " << Engine::getInstance().getWorld()->getCell(ele.first->getX(),ele.first->getY(),0)->getId() << std::endl;
+      //if(ele.first->isMapped())
+      //{std::cout << "ERROR! Cell: " << ele.first->getId() << " was found as elegible although it was mapped" << std::endl;} 
+    }
   }
   
   
@@ -80,7 +78,8 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
   
   directionVector = momentumVector + repulsionVector + attractionVector;
   
-  for(unsigned i = 0; i<elegibles.size(); i++){  
+  for(unsigned i = 0; i<elegibles.size(); i++)
+  {  
     Cell* cell = elegibles.at(i).first;
 #ifndef INCREMENTAL_SET
       df = computeDirectionFactor(agentPos, cell, directionVector)/elegibles.at(i).second;
@@ -89,22 +88,41 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
 #endif
       probabilities.push_back(df);
       sum += df;
+
+      if(ownerAgent->getId() == testingId && DEBUG_THIS)
+      {
+        std::cout << "df: " << df << " with sum: " << sum << " and elegibles: " << elegibles.at(i).second << std::endl;
+      }
+
   }
   
   //extract cell
-  if(elegibles.size() != 0){
+  if(elegibles.size() != 0)
+  {
     float random = RandomGenerator::getInstance().nextFloat(1);
     float cumulative = .0;
-    for(unsigned i=0; i<elegibles.size(); i++){
+    for(unsigned i=0; i<elegibles.size(); i++)
+    {
       if(sum != 0)
-        cumulative += probabilities.at(i)/sum;
+        {cumulative += probabilities.at(i)/sum;}
       else
-        cumulative += 1/elegibles.size();
-      if(random <= cumulative){
+        {cumulative += 1.0/elegibles.size();}
+      if(ownerAgent->getId() == testingId && DEBUG_THIS)
+      {
+        std::cout << "Cumulative " << cumulative << " with sum: " << sum << std::endl;
+      }
+      if(random <= cumulative)
+      {
         Cell* c = elegibles.at(i).first;
         c->isTargetOf.push_back(id);
         std::array<unsigned,3> cellPos = c->getPosition();
-        //std::cout << "returning chosen position" << std::endl;
+
+        if(ownerAgent->getId() == testingId && DEBUG_THIS)
+        {
+          std::cout << "Agent " << ownerAgent->getId() << " choose cell: " << c->getId() << " at: " 
+          << cellPos.at(0) << "x + " << cellPos.at(1) << "y + " << cellPos.at(2) << "z" << std::endl;
+        }
+
         return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
       }
     }
@@ -127,8 +145,32 @@ bool RandomWalkStrategy::isElegible(Cell* c, Agent* ag)
   }
   else
   {
-    return (!(ownerAgent->cells.at(c->getId())->isMapped()) && ((ownerAgent->cells.at(c->getId())->isTargetOf.size())==0));
-    //return ((!ag->cells.at(c->getId())->isMapped()) && (ag->cells.at(c->getId())->isTargetOf.size())<=0);
+    bool isElegible = false;
+    float distanceToTargetingAgent = 0;
+    Agent* targetingAgent = nullptr;
+    if((ownerAgent->cells.at(c->getId())->isTargetOf.size())>0)
+    {
+      int targetingAgentID = ownerAgent->cells.at(c->getId())->isTargetOf.at(0);
+      targetingAgent = Engine::getInstance().getWorld()->getAgents().at(targetingAgentID);
+      distanceToTargetingAgent = ownerAgent->calculateLinearDistanceToTarget(targetingAgent->getPosition());
+    }
+
+    if(!(ownerAgent->cells.at(c->getId())->isMapped()) && ((ownerAgent->cells.at(c->getId())->isTargetOf.size())==0))
+    {
+      isElegible = true;
+    }
+    if(!(ownerAgent->cells.at(c->getId())->isMapped()) && distanceToTargetingAgent<=ownerAgent->GetCommunicationsRange()
+    && targetingAgent!=nullptr && targetingAgent->getTargetId() != c->getId())
+    {
+      isElegible = true;
+    }
+    if(!(ownerAgent->cells.at(c->getId())->isMapped()) && distanceToTargetingAgent>ownerAgent->GetCommunicationsRange())
+    {
+      isElegible = true;
+    }
+
+
+    return isElegible;
   }
 }
 bool inRadius(unsigned x, unsigned y, Cell* c, unsigned radius){
@@ -338,7 +380,7 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
 
 float RandomWalkStrategy::computeDirectionFactor(std::array<float,3> agentPos, Cell* c, Eigen::Vector2f directionVector){
   
-  bool DEBUG_FUNCTION = false;
+  bool DEBUG_FUNCTION = true;
 
   
   Eigen::Vector2f pos((c->getX())-agentPos.at(0), (c->getY())-agentPos.at(1));
@@ -362,13 +404,21 @@ float RandomWalkStrategy::computeDirectionFactor(std::array<float,3> agentPos, C
   }
   float cauchyParameter = 1-exp(-(directionVector.norm()/2));
   float beta = 15;
-  float sigmoid = (1-exp(-beta * directionVector.norm()))/(1+exp(-beta * directionVector.norm()));
+  double sigmoid = (1-exp(-beta * directionVector.norm()))/(1+exp(-beta * directionVector.norm()));
+  if(sigmoid == 1)
+  {
+    sigmoid = 0.99;
+  }
   // Cauchy PDF
   // c++ 1 only offers the random number generator
 
    if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
    {
+      std::cout << "Arc cosine: " << std::abs(arc_cosine) << std::endl;
+      std::cout << "Sigmoid 1: " << -beta * directionVector.norm() << std::endl;
+      std::cout << "Sigmoid 2: " << (exp(-beta * directionVector.norm())) << std::endl;
       std::cout << "Sigmoid: " << sigmoid << std::endl;
+      std::cout << "Direction vector: " << directionVector.norm() << std::endl;
       std::cout << "Cauchy: " << cauchyPDF(std::abs(arc_cosine),sigmoid) << std::endl;
    }
   return cauchyPDF(std::abs(arc_cosine),sigmoid); //cauchy parameter replaced by sigmoid

@@ -34,6 +34,8 @@ private:
   float beacon = 0;  
   Weed* weed;
 
+  int lastWeedsSeen = -1;
+
   Mesh* mesh = nullptr; 
   glm::vec4 nonInspectedColor = glm::vec4(0.309f, 0.176f, 0.152f, 1.0f);
   glm::vec4 inspectedColor = glm::vec4(0.725f, 0.564f, 0.533f, 1.0f);
@@ -76,8 +78,12 @@ public:
   inline float getResidual() const {return residual_uncertainty;}
   inline bool isMapped() const { return mapped; }
   inline float getBeacon() const { return beacon; }
+  inline int getLastWeeedsSeen() const {return lastWeedsSeen; }
+
 
   void setBeacon(float beacon);
+  void setLastWeeedsSeen(int weeds);
+
 
   inline std::vector<Cell*> get3x3() { return cells_3x3; }
   inline std::vector<Cell*> get5x5() { return cells_5x5; }

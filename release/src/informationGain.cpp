@@ -116,7 +116,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
 
     if(ownerAgent->GetUseDistanceForIG()) // compute my probability for elegible i considering also the distance
     {
-      myProbabilities.push_back((1/elegibles.at(i).second)*ig);
+      myProbabilities.push_back((1.0/elegibles.at(i).second)*ig);
     } 
     else
     {myProbabilities.push_back(ig);}
@@ -264,7 +264,7 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
                 distance_t2 = t->calculateLinearDistanceToTarget(elegibles.at(j).first->getPosition());
               }
               
-              nextNearAgentProbabilities.push_back((1/distance_t2)*ig2); // probability of t to choose j 
+              nextNearAgentProbabilities.push_back((1.0/distance_t2)*ig2); // probability of t to choose j 
               sum2 += nextNearAgentProbabilities.at(j);
 
               if(DEBUG_IG && ownerAgent->getId() == testingId)
@@ -544,11 +544,11 @@ if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
       cumulative += repeatedMaxProbs.at(i);
       if(random <= cumulative)
       {
-                Cell* c = elegibles.at(repeatedMaxIDs[i]).first;
-                //c->isTargetOf.push_back(id);
-                //ag->cells.at(c->getId())->isTargetOf.push_back(id);
-                std::array<unsigned,3> cellPos = c->getPosition();
-                return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
+          Cell* c = elegibles.at(repeatedMaxIDs[i]).first;
+          //c->isTargetOf.push_back(id);
+          //ag->cells.at(c->getId())->isTargetOf.push_back(id);
+          std::array<unsigned,3> cellPos = c->getPosition();
+          return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
       }
     }
   }
