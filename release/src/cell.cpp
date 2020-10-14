@@ -1,6 +1,7 @@
 #include "sim/cell.hpp"
 //#include "sim/WObject.h"
 //#include "graphics/Mesh.h"
+#include "agent/agent.hpp" 
 #include "sim/world.hpp"
 #include "sim/engine.hpp"
 
@@ -16,6 +17,7 @@ Cell::Cell(int id, float x, float y, float z, float size, bool mapped, float uti
     this->knowledgeVector.fill(1.0/13.0);
     this->observationVector.fill(0.0);
     this->mapped = mapped;
+    this->ownerAgent = nullptr;
 
     //std::cout << "receiving ID " << id << std::endl;
 
@@ -61,10 +63,72 @@ void Cell::setUtility(float inUtility)
     */
 }
 
+void Cell::setOwnerAgent(Agent* ag)
+{
+    this->ownerAgent = ag;
+}
+
+void Cell::restartTimer(float maxTime)
+{
+    //std::cout << "Restarting time by " << maxTime << " for cell " << id << std::endl;
+
+    timerToForgetTarget = maxTime;
+}
+
+void Cell::restartBeaconTimer(float maxTime)
+{
+    //std::cout << "Restarting time by " << maxTime << " for cell " << id << std::endl;
+
+    timerToForgetBeacon = maxTime;
+}
+
+void Cell::decreaseTimer(float time)
+{         
+    if(timerToForgetTarget>0)
+    {
+        //std::cout << "Decreasing timer " << timerToForgetTarget << " by " << time << " for cell " << id << std::endl;
+
+        timerToForgetTarget-=time;
+
+        //std::cout << "Remaining timer " << timerToForgetTarget << " reduced by " << time << " for cell " << id << std::endl;
+
+        if(timerToForgetTarget <= 0)
+        {
+            //std::cout << "Timer's up, forgeting cell " << id << std::endl;
+            forgetTargetOf();
+        }
+    }
+
+    if(timerToForgetBeacon>0)
+    {
+        timerToForgetBeacon -=time;
+        if(timerToForgetBeacon <= 0)
+        {
+            forgetBeacon();
+        }
+    }
+}
+
+void Cell::forgetBeacon()
+{
+    timerToForgetBeacon = 0;
+    ownerAgent->removeBeacon(this);
+}
+
+void Cell::forgetTargetOf()
+{
+    //std::cout << "Forgeting targets of " << id << std::endl;
+    timerToForgetTarget = 0;
+    isTargetOf.clear();
+}
+
 void Cell::setBeacon(float beacon) 
 {
-    this->beacon = beacon; 
-    
+    this->beacon = beacon;    
+    if(beacon = 0)
+    {
+        timerToForgetBeacon=0;
+    } 
     if(mesh!=nullptr && beacon>0)
     {ChangeColor(beaconColor);}
 
@@ -227,3 +291,5 @@ void Cell::ResetColor()
     }
     
 }
+
+

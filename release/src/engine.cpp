@@ -249,8 +249,8 @@ static float minScale = 0.1f;
       }
     }
    
-    knowledgeBasesFile << "Knowledge Base (registration of each scan)" << std::endl;
-    knowledgeBasesFile << "cell_ID / agent_ID / timestep / current observation / knowledge vector (13) / observation vector (13)" << std::endl << std::endl;
+    //knowledgeBasesFile << "Knowledge Base (registration of each scan)" << std::endl;
+    //knowledgeBasesFile << "cell_ID / agent_ID / timestep / current observation / knowledge vector (13) / observation vector (13)" << std::endl << std::endl;
 
   }
 
@@ -385,6 +385,154 @@ void Engine::run() {
       std::cout << "Agent " << a->getId() << " : " << a->getCollisions()  << std::endl;
     } 
     std::cout << "Collisions " << tot_collisions  << std::endl;
+
+
+    // Square error calculations
+    int world_weedsSeen_greedy = 0;
+    int world_weedsSeen_random = 0;
+    float world_highestProbability = 0;
+
+    double world_squaredCumulative_greedy = 0.0;
+    double world_squaredCumulative_random = 0.0;
+    double world_MSE_greedy = 0.0;
+    double world_MSE_random = 0.0;
+    int world_dataPoints = 0;
+
+    if(communicationsRange==-1)
+    {
+      for(Cell* c : this->world->getCells())
+      {
+        world_weedsSeen_greedy = 0;
+        world_weedsSeen_random = 0;
+        world_highestProbability = 0;
+        double random = RandomGenerator::getInstance().nextFloat(1);
+        for (unsigned i = 0; i < (13+1); i++)
+        {
+          if(c->knowledgeVector[i] > world_highestProbability)
+          {
+            world_highestProbability = c->knowledgeVector[i];
+            world_weedsSeen_greedy = i;
+          }
+
+          random -= c->knowledgeVector[i];
+          if(random <= 0 && world_weedsSeen_random == 0)
+          {
+            world_weedsSeen_random = i;
+          }
+        }
+        
+        world_squaredCumulative_greedy += pow((world_weedsSeen_greedy - c->getUtility()),2);
+        world_squaredCumulative_random += pow((world_weedsSeen_random - c->getUtility()),2);
+        world_dataPoints++;
+      }
+
+      world_MSE_greedy = world_squaredCumulative_greedy/world_dataPoints;
+      world_MSE_random = world_squaredCumulative_random/world_dataPoints;
+
+      knowledgeBasesFile << world_MSE_greedy << " " << world_MSE_random << "\n";
+    }
+
+
+    if(communicationsRange>0) 
+    {
+      float lowestEntropy = 0.0;
+      std::vector<int> cells_lowestEntropy;
+      cells_lowestEntropy.resize(this->world->getCells().size());
+        
+      for (unsigned i = 0; i < cells_lowestEntropy.size(); i++)
+      {
+        lowestEntropy = 0.0;
+        for(Agent* ag : this->world->getAgents())
+        {
+          if(ag->cells.at(i)->getResidual()<lowestEntropy || lowestEntropy == 0)
+          {
+            lowestEntropy=ag->cells.at(i)->getResidual();
+            cells_lowestEntropy[i]=ag->getId();
+          }        
+        }
+      }
+
+      world_squaredCumulative_greedy = 0;
+      world_squaredCumulative_random = 0;
+      world_dataPoints = 0;
+
+      for (unsigned c = 0; c < cells_lowestEntropy.size(); c++)
+      {
+        world_weedsSeen_greedy = 0;
+        world_weedsSeen_random = 0;
+        world_highestProbability = 0;
+        double random = RandomGenerator::getInstance().nextFloat(1);
+        for (unsigned i = 0; i < (13+1); i++)
+        {
+          Cell* cellOfInterest = this->world->getAgents().at(cells_lowestEntropy[c])->cells.at(c);
+          if(cellOfInterest->knowledgeVector[i] > world_highestProbability)
+          {
+            world_highestProbability = cellOfInterest->knowledgeVector[i];
+            world_weedsSeen_greedy = i;
+          }
+
+          random -= cellOfInterest->knowledgeVector[i];
+          if(random <= 0 && world_weedsSeen_random == 0)
+          {
+            world_weedsSeen_random = i;
+          }
+        }
+        
+        world_squaredCumulative_greedy += pow((world_weedsSeen_greedy - this->world->getCells().at(c)->getUtility()),2);
+        world_squaredCumulative_random += pow((world_weedsSeen_random - this->world->getCells().at(c)->getUtility()),2);
+        world_dataPoints++;
+      }
+      world_MSE_greedy = world_squaredCumulative_greedy/world_dataPoints;
+      world_MSE_random = world_squaredCumulative_random/world_dataPoints;
+
+      knowledgeBasesFile << world_MSE_greedy << " " << world_MSE_random << " ";
+
+      for(Agent* ag : this->world->getAgents())
+      {
+        world_squaredCumulative_greedy = 0;
+        world_squaredCumulative_random = 0;
+        world_dataPoints = 0;
+        for(Cell* c : ag->cellsPointers)
+        {
+          world_weedsSeen_greedy = 0;
+          world_weedsSeen_random = 0;
+          world_highestProbability = 0;
+          double random = RandomGenerator::getInstance().nextFloat(1);
+          for (unsigned i = 0; i < (13+1); i++)
+          {
+            if(c->knowledgeVector[i] > world_highestProbability)
+            {
+              world_highestProbability = c->knowledgeVector[i];
+              world_weedsSeen_greedy = i;
+            }
+
+            random -= c->knowledgeVector[i];
+            if(random <= 0 && world_weedsSeen_random == 0)
+            {
+              world_weedsSeen_random = i;
+            }
+          }
+          
+          world_squaredCumulative_greedy += pow((world_weedsSeen_greedy - c->getUtility()),2);
+          world_squaredCumulative_random += pow((world_weedsSeen_random - c->getUtility()),2);
+          world_dataPoints++;
+        }
+
+        world_MSE_greedy = world_squaredCumulative_greedy/world_dataPoints;
+        world_MSE_random = world_squaredCumulative_random/world_dataPoints;
+
+        knowledgeBasesFile << world_MSE_greedy << " " << world_MSE_random << " ";
+
+      }
+
+      knowledgeBasesFile << "\n";
+    }
+
+
+
+
+
+
 }
 
 
@@ -602,7 +750,7 @@ void Engine::TestFunction_Scan(bool printThis)
     //std::cout << std::endl;    
 
     //get amount of weeds seen by sensor in current observation
-    unsigned weedsSeen;
+    unsigned world_weedsSeen;
     float random = RandomGenerator::getInstance().nextFloat(1);
     //std::cout << "random observation: " << random << std::endl;
     for (unsigned i = 0; i < test_maxWeedsPerCell+1; i++)
@@ -610,8 +758,8 @@ void Engine::TestFunction_Scan(bool printThis)
       random -= test_sensorTable[i][test_cell->getUtility()];
       if(random <= 0)
       {
-        weedsSeen = i;
-        test_weeds_seen = weedsSeen;
+        world_weedsSeen = i;
+        test_weeds_seen = world_weedsSeen;
         break;
       }
     } 
@@ -620,12 +768,12 @@ void Engine::TestFunction_Scan(bool printThis)
     float entr = 0;
 
     if(DEBUG_THIS)
-    {std::cout << "Knowledge Vector for cell with " << test_cell->getUtility() << " weeds and " << weedsSeen << " seen weeds:" << std::endl;}
+    {std::cout << "Knowledge Vector for cell with " << test_cell->getUtility() << " weeds and " << world_weedsSeen << " seen weeds:" << std::endl;}
     
     for(unsigned i = 0; i<test_maxWeedsPerCell+1; i++)
     {
-      test_cell->knowledgeVector[i] = test_cell->knowledgeVector[i] * test_sensorTable[weedsSeen][i] 
-                                  / test_cell->observationVector[weedsSeen]; //current cell, equation 5
+      test_cell->knowledgeVector[i] = test_cell->knowledgeVector[i] * test_sensorTable[world_weedsSeen][i] 
+                                  / test_cell->observationVector[world_weedsSeen]; //current cell, equation 5
       
       if(DEBUG_THIS)
       {std::cout << test_cell->knowledgeVector[i] << " ";}   
@@ -650,7 +798,7 @@ void Engine::TestFunction_Scan(bool printThis)
     //scanReport << "Agent " << this->getId() << " at timestep " << timeStep << " scanned cell " << currentCell->getId() 
     //<< "" << std::endl; 
     if(DEBUG_THIS)
-    {scanReport << test_cell->getId() << " " << weedsSeen << " ";}
+    {scanReport << test_cell->getId() << " " << world_weedsSeen << " ";}
     for(float f : test_cell->knowledgeVector)
     {
       scanReport << f << " ";
@@ -664,7 +812,7 @@ void Engine::TestFunction_Scan(bool printThis)
     std::string outString;
     outString = scanReport.str();
 
-    //std::cout << weedsSeen << std::endl;
+    //std::cout << world_weedsSeen << std::endl;
 
 }
 

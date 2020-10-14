@@ -10,6 +10,9 @@
 #include <array>
 #include <map>
 
+
+class Agent;
+
 class Cell : public WObject {
 
 private:
@@ -34,6 +37,12 @@ private:
   float beacon = 0;  
   Weed* weed;
 
+  Agent* ownerAgent = nullptr;  
+
+  float timerToForgetTarget = 0;
+  float timerToForgetBeacon = 0;
+
+
   int lastWeedsSeen = -1;
 
   Mesh* mesh = nullptr; 
@@ -48,6 +57,7 @@ private:
 public:
 
   float residual_uncertainty = 1;
+  int firstTimeVisit = -1;
   unsigned lastTimeVisit = 0;
   unsigned numOfVisits = 0;
   std::vector<unsigned> isTargetOf;       /** < store the id of agent with this target (size should be always one) */
@@ -70,6 +80,12 @@ public:
   inline std::array<unsigned,3> getPosition() const{ 
     return {x,y,z}; 
   }
+
+  void restartTimer(float maxTime);
+  void restartBeaconTimer(float maxTime);
+  void decreaseTimer(float time);
+  void forgetTargetOf();
+  void forgetBeacon();
 
   inline unsigned getVisits() const { return numOfVisits; }
   
@@ -97,6 +113,8 @@ public:
   void addWeed(Weed* inWeed);
 
   void SetNeighbors(std::vector<Cell*> inCells);
+
+  void setOwnerAgent(Agent* ag);
 
   void setMapped();
 

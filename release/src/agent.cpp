@@ -68,6 +68,7 @@ Agent::Agent(unsigned id, float x, float y, float z) {
     for(unsigned x=0; x<size.at(0); x++){
       Cell* spawnedCell = new Cell(cellId,x,y,0,cellSize, 0);
       spawnedCell->setUtility(Engine::getInstance().getWorld()->getCells().at(cellId)->getUtility());
+      spawnedCell->setOwnerAgent(this);
       this->cells.insert(std::make_pair<>(cellId, spawnedCell));
       this->cellsPointers.push_back(spawnedCell);
       cellId++;
@@ -136,15 +137,28 @@ void Agent::forgetTarget()
     {
         cellToForget = this->cells.at(this->getTargetId());
     }
-    cellToForget->isTargetOf.clear();
+    //cellToForget->isTargetOf.clear();
+    cellToForget->forgetTargetOf();
     BroadcastCell(this, cellToForget);
 
     this->target = {-1,-1,-1};
     this->targetId = -1;
   }
-  
+}
 
+void Agent::removeBeacon(Cell* c)
+{
+  if(c->getBeacon() != 0 && currentInspectionStrategy == "rw")
+  {
+    if(communicationsRange == -1)
+    {Engine::getInstance().getWorld()->beacons.erase(c->getId());}
+    if(communicationsRange > 0)
+    {
+      this->beacons.erase(c->getId());
+    }
 
+    c->setBeacon(0);
+  }
 }
 
 std::array<float,3> Agent::getNextPosition(){
@@ -362,7 +376,16 @@ void Agent::ReceiveCell(Agent* sendingAgent, Cell* receivedCell) //recieving bro
 
     Cell* updatingCell = this->cells.at(receivedCell->getId());
     updatingCell->isTargetOf = receivedCell->isTargetOf;
+    if(receivedCell->isTargetOf.size()>0)
+    {
+      updatingCell->restartTimer(limitForCellTargetReset);
+    }
+    else
+    {
+      updatingCell->forgetTargetOf();
+    }
     
+
     if(!(updatingCell->isMapped())) // checking if the cell is mapped or not in the current agent KB
     {
       if(receivedCell->isMapped())
@@ -373,11 +396,10 @@ void Agent::ReceiveCell(Agent* sendingAgent, Cell* receivedCell) //recieving bro
         }
 
         updatingCell->setMapped();
-        if(currentInspectionStrategy == "rw")
+        scanCurrentLocation(updatingCell, receivedCell->getLastWeeedsSeen());
+        if(updatingCell->getBeacon() != 0 && currentInspectionStrategy == "rw")
         {
-        updatingCell->setBeacon(receivedCell->getBeacon());
-        this->beacons.insert(std::make_pair<>(receivedCell->getId(), this->cells.at(receivedCell->getId())));
-        this->beacons.at(receivedCell->getId()) = this->cells.at(receivedCell->getId());
+          removeBeacon(updatingCell);
         }
         /*
         updatingCell->observationVector = receivedCell->observationVector;
@@ -396,9 +418,10 @@ void Agent::ReceiveCell(Agent* sendingAgent, Cell* receivedCell) //recieving bro
           }
 
           scanCurrentLocation(updatingCell, receivedCell->getLastWeeedsSeen());
-          if(currentInspectionStrategy == "rw")
+          if(currentInspectionStrategy == "rw" && receivedCell->getBeacon()>0)
           {
           updatingCell->setBeacon(receivedCell->getBeacon());
+          updatingCell->restartBeaconTimer(limitForCellBeaconReset);
           this->beacons.insert(std::make_pair<>(receivedCell->getId(), this->cells.at(receivedCell->getId())));
           this->beacons.at(receivedCell->getId()) = this->cells.at(receivedCell->getId());
           }
@@ -454,6 +477,16 @@ bool Agent::doStep(unsigned timeStep){
   SetWorldLocation(std::vector<float> {getX(), getY(), getZ()});
   //mesh->SetWorldLocation(std::vector<float> {getX(), getY(), getZ()});
 
+  if(communicationsRange>0)
+  {
+    for(auto c : this->cells)
+    {
+      c.second->decreaseTimer(1);
+    }
+  }
+
+  
+
   switch(nextAction()){
     case PICK:
     {
@@ -467,7 +500,7 @@ bool Agent::doStep(unsigned timeStep){
 
         if(DEBUG_THIS  && (id == testingId || id == testingId_2))
         {
-          std::cout << "Target picked at " << this->getTargetX() << "x, " << this->getTargetY() << "y, " << this->getTargetZ() << "z" << std::endl;
+          std::cout << "Target picked in time step " << timeStep <<  " at " << this->getTargetX() << "x, " << this->getTargetY() << "y, " << this->getTargetZ() << "z" << std::endl;
         }
 
         if(this->getTargetZ() == 0)
@@ -574,13 +607,20 @@ bool Agent::doStep(unsigned timeStep){
       Cell* scanningCell;
 
       if(communicationsRange == -1)
-      {scanningCell = c;}
+      {
+        scanningCell = c;
+      }
       if(communicationsRange > 0)
       {
-      unsigned targetId = c->getId();
-      scanningCell = this->cells.at(targetId);
-      scanningCell->lastTimeVisit = timeStep;    
+        unsigned targetId = c->getId();
+        scanningCell = this->cells.at(targetId);
       }        
+
+      scanningCell->lastTimeVisit = timeStep;    
+      if(scanningCell->firstTimeVisit==-1)
+      {
+        scanningCell->firstTimeVisit = timeStep;
+      } 
 
       if(!scanningCell->isMapped())
       {            
@@ -595,23 +635,21 @@ bool Agent::doStep(unsigned timeStep){
         
         if(scanningCell->getResidual() < 0.27 )
         { 
-          //if(scanningCell->getUtility()>0)
-          //{std::cout<< "Cell " << scanningCell->getId() << " was mapped by agent " << this->getId()  << std::endl;}
+          if(scanningCell->getUtility()>0 && false)
+          {std::cout<< "Cell " << scanningCell->getId() << " was mapped by agent " << this->getId() << " on time step " << timeStep
+          << " with first visit at time step " << scanningCell->firstTimeVisit << " that is a difference of " 
+          << (scanningCell->lastTimeVisit - scanningCell->firstTimeVisit) << std::endl;}
           
           scanningCell->setMapped();
           Engine::getInstance().getWorld()->remainingTasksToMap.erase(scanningCell->getId());
           Engine::getInstance().getWorld()->remainingTasksIntoClusters.erase(scanningCell->getId());
           Engine::getInstance().getWorld()->getCells().at(scanningCell->getId())->setMapped();
-          
+         
           if(scanningCell->getBeacon() != 0 && currentInspectionStrategy == "rw")
           {
-            if(communicationsRange == -1)
-            {Engine::getInstance().getWorld()->beacons.erase(scanningCell->getId());}
-            if(communicationsRange > 0)
-            {this->beacons.erase(scanningCell->getId());}
-
-            scanningCell->setBeacon(0);
+            removeBeacon(scanningCell);
           }
+
         }
         else
         {    // the cell is not yet mapped
@@ -622,6 +660,7 @@ bool Agent::doStep(unsigned timeStep){
 
             float beacon = weedsSeen/14;
             scanningCell->setBeacon(beacon);
+            scanningCell->restartBeaconTimer(limitForCellBeaconReset);
             if(communicationsRange == -1)
             {
               Engine::getInstance().getWorld()->beacons.insert(std::make_pair<>(scanningCell->getId(), scanningCell));
@@ -794,6 +833,7 @@ float Agent::scanCurrentLocation(Cell* currentCell, int weedsReceived)
     if(DEBUG_THIS  && testingId == id)
     {std::cout << "Residual Entropy " << -entr << std::endl << std::endl;}
     
+    /*
     if(currentCell->residual_uncertainty<0.27 && !(currentCell->isMapped()))
     {
       std::stringstream scanReport;
@@ -812,10 +852,9 @@ float Agent::scanCurrentLocation(Cell* currentCell, int weedsReceived)
       }
       std::string outString;
       outString = scanReport.str();
-      Engine::getInstance().WriteKnowledgeBasesFile(outString);
-      
+      Engine::getInstance().WriteKnowledgeBasesFile(outString);  
     }
-
+    */
 
 
     return weedsSeen;

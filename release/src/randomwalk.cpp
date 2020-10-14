@@ -145,6 +145,10 @@ bool RandomWalkStrategy::isElegible(Cell* c, Agent* ag)
   }
   else
   {
+
+    return (!(ownerAgent->cells.at(c->getId())->isMapped()) && ((ownerAgent->cells.at(c->getId())->isTargetOf.size())==0));
+
+    /*
     bool isElegible = false;
     float distanceToTargetingAgent = 0;
     Agent* targetingAgent = nullptr;
@@ -168,9 +172,8 @@ bool RandomWalkStrategy::isElegible(Cell* c, Agent* ag)
     {
       isElegible = true;
     }
-
-
     return isElegible;
+    */
   }
 }
 bool inRadius(unsigned x, unsigned y, Cell* c, unsigned radius){
@@ -403,12 +406,10 @@ float RandomWalkStrategy::computeDirectionFactor(std::array<float,3> agentPos, C
     }
   }
   float cauchyParameter = 1-exp(-(directionVector.norm()/2));
-  float beta = 15;
+  float beta = 0.1;
   double sigmoid = (1-exp(-beta * directionVector.norm()))/(1+exp(-beta * directionVector.norm()));
-  if(sigmoid == 1)
-  {
-    sigmoid = 0.99;
-  }
+  sigmoid *= 0.99;
+  
   // Cauchy PDF
   // c++ 1 only offers the random number generator
 
@@ -488,8 +489,8 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
     {
       std::cout << "Repulsion found: " << newX << " x, " << newY << " y. With: " << agentsInRange << " agents" << std::endl;
     }
-    repulsion[0]/=agentsInRange;
-    repulsion[1]/=agentsInRange;
+    repulsion[0];///=agentsInRange;
+    repulsion[1];///=agentsInRange;
 
     if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
     {
@@ -527,7 +528,7 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
   {
     beaconsCells = ownerAgent->beacons;
       if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
-      {std::cout << "checking" << beaconsCells.size() << std::endl;}
+      {std::cout << "beacons set for limited range, found " << beaconsCells.size() << " beacons" << std::endl;}
   }
 
   
@@ -564,8 +565,8 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
       std::cout << "Attraction found: " << newX << " x, " << newY << " y. With: " << beaconsCount << " beacons" << std::endl;
     }
 
-    attraction[0]/=beaconsCount;
-    attraction[1]/=beaconsCount;
+    attraction[0];///=beaconsCount;
+    attraction[1];///=beaconsCount;
 
     if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
     {

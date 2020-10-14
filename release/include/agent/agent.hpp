@@ -49,6 +49,8 @@ protected:
 
   float targetTravelTime = 0; // time between selecting a target and reaching it
   float limitForTargetReselection = 50; // if travel to target is higher than this reselect another target
+  float limitForCellTargetReset = 50; // if travel to target is higher than this reselect another target
+  float limitForCellBeaconReset = 1000; // if travel to target is higher than this reselect another target
 
   float communicationsRange=-1;
   bool rebroadcast = false;
@@ -249,6 +251,7 @@ public:
    */
   void forgetTarget();
 
+  void removeBeacon(Cell* c);
 
   //proposta nuova funzione: calcolare mio knowledge vector
   //per ogni cella utilizzando le conoscenze degli agenti entro un certo raggio
