@@ -667,8 +667,8 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
       {
         ret2.push_back(std::make_pair<>(c, distanceToCell));
       }
-    if(c->isTargetOf.empty())
-      {ret4.push_back(std::make_pair<>(c, distanceToCell));}
+    //if(c->isTargetOf.empty())
+      //{ret4.push_back(std::make_pair<>(c, distanceToCell));}
   }
   for(Cell* c : cells_5x5)
   {

@@ -306,8 +306,8 @@ std::vector<std::pair<Cell*, float>> RandomWalkStrategy::getElegibles(Agent* ag,
     distanceToCell = sqrt(pow((float) c->getX() - ownerAgent->getX(), 2) + pow((float) c->getY() - ownerAgent->getY(), 2));
     if(isElegible(c, ownerAgent))
       {ret2.push_back(std::make_pair<>(c, distanceToCell));}
-    if(c->isTargetOf.empty())
-      {ret4.push_back(std::make_pair<>(c, distanceToCell));}
+    //if(c->isTargetOf.empty())
+      //{ret4.push_back(std::make_pair<>(c, distanceToCell));}
   }
   for(Cell* c : cells_5x5)
   {
