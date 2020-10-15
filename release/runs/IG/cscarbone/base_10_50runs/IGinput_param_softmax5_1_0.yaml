@@ -12,12 +12,12 @@ world:
   z: 1                 # world z size  
 
 
-knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_softmax__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
-movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_softmax__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
-statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_softmax__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
-randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice_softmax__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
-timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing_softmax__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
-visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells_softmax__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
+knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_softmax5__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
+movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_softmax5__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
+statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_softmax5__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
+randomChoice: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_randomChoice_softmax5__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
+timing: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_timing_softmax5__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
+visitedCells: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_visitedCells_softmax5__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__1_0.yaml"
 
 weeds:
     clusters: 4
