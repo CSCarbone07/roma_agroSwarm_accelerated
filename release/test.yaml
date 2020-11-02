@@ -1,8 +1,8 @@
 max_steps: 10000	    # termination condition for the simulation, 0 means infinite
 num_of_agents: 50	        # total number of agents in the simulation
-seed: 38	          	# seed for the random number generator (1 and 3 for tests)
+seed: 1	          	# seed for the random number generator (1 and 3 for tests)
 
-Display_Simulation: true
+Display_Simulation: false
 
 communications_range: -1    #-1 if communication range is unlimited, 5,10,25
 Rebroadcast: false
@@ -42,8 +42,8 @@ UseDistanceForIG: false #include distance in ig weights
 UseCommRangeForSocial: false #use communication range to consider social info instead of the 5x5 range
 
 #visit
-attraction: 0 #4
-repulsion: 0 #16
+attraction: 4 #4
+repulsion: 4 #16
 
 MappingThreshold: 0.27
 

@@ -129,8 +129,6 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
       sensorTable[o][c] = tableSum; 
 
       sensorTable[o][this->maxWeed4Cell+1] = 0;
-
-
     }
 
     sensorTable[this->maxWeed4Cell+1][c] = 0;

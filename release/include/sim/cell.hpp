@@ -50,7 +50,7 @@ private:
   glm::vec4 inspectedColor = glm::vec4(0.725f, 0.564f, 0.533f, 1.0f);
   glm::vec4 beaconColor = glm::vec4(0.525f, 0.364f, 0.333f, 1.0f);
   
-  int testingId = 1275;
+  int testingId = -1;//1275;
   glm::vec4 testColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 

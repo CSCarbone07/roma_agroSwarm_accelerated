@@ -327,13 +327,53 @@ void Engine::run() {
       }
       if((this->world->isCovered() && this->world->isMapped()) || stop){// || this->world->getTree()->getRoot()->getUtility() == 0.f){
         statusFile << ' '<< timeToCoverage <<' '<<timeToMapping<<' '<<timeToMappingOnlyClusters<<"\n";
-        std::cout << "\n\n### world mapped ---- at Step:" << timeStep<<std::endl;
+        std::cout << "\n\n### world finished ---- at Step:" << timeStep<<std::endl;
         break;
       }
 
       // limit the cout
-      if(timeStep % 1000 == 0)
-        std::cout << "#### time_step: " << timeStep << std::endl;
+      if(timeStep % 500 == 0)
+        std::cout << "---- time_step: " << timeStep << std::endl;
+
+      if(this->world->remainingTasksToVisit.size() == 0 && finishVisit == false)
+      {
+        finishVisit = true;
+        std::cout << "XXXX visits finished: " << timeStep << std::endl;
+      }
+
+      if(this->world->remainingTasksToMap.size() == 0 && finishMapping == false)
+      {
+        finishMapping = true;
+        std::cout << "XXXX Mapping finished: " << timeStep << std::endl;
+      }
+
+      if(this->world->remainingTasksIntoClusters.size() == 0 && finishCluster == false)
+      {
+        finishCluster = true;
+        std::cout << "XXXX Clusters finished: " << timeStep << std::endl;
+      }
+
+
+      if(2500 - this->world->remainingTasksToVisit.size() >= nextRemainingVisitsStack)// && this->world->remainingTasksToVisit.size() != lastRemainingVisits)
+      {
+        std::cout << "#### remaining visits: " << this->world->remainingTasksToVisit.size() << std::endl;
+        //lastRemainingVisits = this->world->remainingTasksToVisit.size();
+        nextRemainingVisitsStack += 500;
+      }  
+
+      if(this->world->remainingTasksToMap.size() % 50 == 0 && this->world->remainingTasksToMap.size() != lastRemainingMapping)
+      {
+        std::cout << "#### remaining mapping: " << this->world->remainingTasksToMap.size() << std::endl;
+        lastRemainingMapping = this->world->remainingTasksToMap.size();
+      }
+
+      if(this->world->remainingTasksIntoClusters.size() % 50 == 0 && this->world->remainingTasksIntoClusters.size() != lastRemainingClusters)
+      {
+        std::cout << "#### remaining clusters: " << this->world->remainingTasksIntoClusters.size() << std::endl;
+        lastRemainingClusters = this->world->remainingTasksIntoClusters.size();
+      }
+
+
 
       // shuffle the agents at every iteration
       std::shuffle(shuffled.begin(), shuffled.end(), RandomGenerator::getInstance().getGenerator());

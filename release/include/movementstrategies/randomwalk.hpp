@@ -34,6 +34,8 @@ class RandomWalkStrategy {
             return (1-pow(c,2)) / (2*M_PI*(1+pow(c,2)-2*c*cos(x)));
         }
 
+        float distance_9x9 = 5.656854249;
+
         /*
         * Get cells that can be choosen by the agent
         * @param Agent* a, is the reference to Agent a

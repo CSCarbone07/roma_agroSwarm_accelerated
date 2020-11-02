@@ -43,7 +43,7 @@ protected:
   glm::vec4 receivingMessageColor = glm::vec4(0.0f, 0.0f, 0.5f, 1.0f);
   glm::vec4 scanningColor = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
 
-  int testingId = 23; //10, 27, 20 //33 for top right //27 for top in cluster //37 one close to the other; 48 was for the last error
+  int testingId = 27;//23; //10, 27, 20 //33 for top right //27 for top in cluster //37 one close to the other; 48 was for the last error
   int testingId_2 = -10; //48 spawning next to 37
   glm::vec4 testColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -169,6 +169,11 @@ public:
   }
   float calculateLinearDistanceToTarget(std::array<unsigned,3> t){
     return (sqrt(pow(this->getX()-((float)t.at(0)),2)+pow(this->getY()-((float)t.at(1)),2)));
+  }
+
+  float calculatePlaneLinearDistanceToObject(std::array<unsigned,3> t)
+  {
+    return (sqrt(pow(this->getX()-t.at(0),2)+pow(this->getY()-t.at(1),2)));
   }
 
   /**

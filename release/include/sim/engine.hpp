@@ -97,6 +97,15 @@ private:
 
   bool stop = false;
 
+  bool finishVisit = false;
+  bool finishMapping = false;
+  bool finishCluster = false;
+
+  int nextRemainingVisitsStack = 500;
+  int lastRemainingVisits = 0;
+  int lastRemainingMapping = 0;
+  int lastRemainingClusters = 0;
+
   GLfloat deltaTime = 0.0f;
   GLfloat lastTime = 0.0f;
 
