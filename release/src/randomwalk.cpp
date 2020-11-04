@@ -75,7 +75,17 @@ std::array<float,3> RandomWalkStrategy::pickNextTarget(Agent* ag){
   if(Engine::getInstance().getAttraction() > 0){
     attractionVector = computeAttraction(ag, agentPos);
   }
+
+  bool DEBUG_VECTORS = false;
   
+  if(DEBUG_VECTORS && ownerAgent->getId() == testingId)
+  {
+    std::cout << "attraction vector: " << attractionVector << std::endl;
+    std::cout << "repulsion vector: " << repulsionVector << std::endl;
+
+  }
+  
+
   directionVector = momentumVector + repulsionVector + attractionVector;
   
   for(unsigned i = 0; i<elegibles.size(); i++)
@@ -338,7 +348,7 @@ float RandomWalkStrategy::computeDirectionFactor(std::array<float,3> agentPos, C
     }
   }
   float cauchyParameter = 1-exp(-(directionVector.norm()/2));
-  float beta = 1;
+  float beta = 5;
   double sigmoid = (1-exp(-beta * directionVector.norm()))/(1+exp(-beta * directionVector.norm()));
   sigmoid *= 0.99;
   
@@ -448,6 +458,13 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
   float newY = 0;
   int beaconsCount = 0;
   std::map<unsigned, Cell*> beaconsCells;
+  Cell* currentOccupiedCell;
+
+  unsigned sizex = Engine::getInstance().getWorld()->getSize().at(0)-1;
+  unsigned sizey = Engine::getInstance().getWorld()->getSize().at(1)-1;
+  std::array<unsigned,3> agentDiscretePos = {unsigned(fmax(0,fmin(agentPos.at(0)+0.5,sizex))),unsigned(fmax(0,fmin(agentPos.at(1)+0.5,sizey))),0};//Engine::getInstance().getCommittedLevel()}; // Discretization of agent position  
+
+  currentOccupiedCell = Engine::getInstance().getWorld()->getCell(agentDiscretePos);
 
   if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
   {std::cout << "communication range: " << Engine::getInstance().getWorld()->communication_range << std::endl;}
@@ -455,6 +472,19 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
   if(Engine::getInstance().getWorld()->communication_range == -1)
   {
     beaconsCells = Engine::getInstance().getWorld()->beacons;
+    /*
+    beaconsCells.insert(std::make_pair<>(currentOccupiedCell->getId(),currentOccupiedCell));   
+    for (Cell* c : currentOccupiedCell->get3x3())
+    {
+      beaconsCells.insert(std::make_pair<>(c->getId(),c));
+    }
+    for (Cell* c : currentOccupiedCell->get5x5())
+    {
+      beaconsCells.insert(std::make_pair<>(c->getId(),c));
+    }
+    */
+    
+    
     if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
     {std::cout << "beacons set for unlimited range, found " << beaconsCells.size() << " beacons" << std::endl;}
   }
@@ -465,7 +495,6 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
       {std::cout << "beacons set for limited range, found " << beaconsCells.size() << " beacons" << std::endl;}
   }
 
-  
   
   //if(DEBUG_FUNCTION)
   //{std::cout << "checking" << beaconsCells.size() << std::endl;}
@@ -479,10 +508,14 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
     //if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
     //{std::cout << "Agent " << ag->getId() << " seeing cell at distance " << distance_t << std::endl;}
 
-    if(distance_t <= (distance_9x9+0.25) &&
+    if(//distance_t <= (distance_9x9+0.25) &&
     (ag->cells.at((*i).second->getId())->getBeacon() != 0 || 
     Engine::getInstance().getWorld()->communication_range == -1 && (*i).second->getBeacon() != 0))
     {
+      
+      if(abs((*i).second->getPosition().at(0)- ownerAgent->getPosition().at(0)) < (4+0.1) 
+      && abs((*i).second->getPosition().at(1)- ownerAgent->getPosition().at(1)) < (4+0.1))
+
       if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
       {
         std::cout << "Agent " << ag->getId() << " found beacon in range " << distance_t 
@@ -496,6 +529,7 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
       newX += weight*tv[0];
       newY += weight*tv[1];
       beaconsCount++;
+
     }
   }
   Eigen::Vector2f attraction(newX,newY);

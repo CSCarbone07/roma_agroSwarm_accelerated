@@ -243,8 +243,6 @@ std::array<float,3> InformationGainStrategy::pickNextTarget(Agent* ag){
           }
 
 
-
-
           if(isCellInRange==true)
           {
             for(unsigned j = 0; j<elegibles.size(); j++)
@@ -385,7 +383,6 @@ if(ownerAgent->GetTargetSelectionStrategy() == "random")
       return {cellPos.at(0),cellPos.at(1),float(cellPos.at(2))};
     }
   }
-
 }
 
 if(ownerAgent->GetTargetSelectionStrategy() == "softmax")
@@ -592,7 +589,8 @@ bool InformationGainStrategy::isElegible(Cell* c, Agent* ag)
    }
 }
 
-std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent* ag, std::array<unsigned,3> agentDiscretePos){
+std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent* ag, std::array<unsigned,3> agentDiscretePos)
+{
   std::vector<std::pair<Cell*, float>> ret;
     
 
@@ -617,37 +615,8 @@ std::vector<std::pair<Cell*, float>> InformationGainStrategy::getElegibles(Agent
     #endif
       return ret;
   }
-/*
-  #ifdef INCREMENTAL_SET
-  bool found = false;
-  //incremental valid-set 
-  for (std::map<float, std::vector<std::pair<int, int>>>::iterator it=Engine::getInstance().getWorld()->distanceVectors.begin(); it!=Engine::getInstance().getWorld()->distanceVectors.end(); ++it){
-    for(std::vector<std::pair<int,int>>::iterator it2=it->second.begin(); it2!=it->second.end(); ++it2){
-      int newX = it2->first + int (agentDiscretePos.at(0));
-      int newY = it2->second + int (agentDiscretePos.at(1));
-      if(isInBound(newX, newY)){
-        
-        //Cell* cell = Engine::getInstance().getWorld()->getCell(it2->first + agentDiscretePos.at(0), it2->second + agentDiscretePos.at(1), 0);
-         Cell* cell;
 
-         Cell* worldCell_REF = Engine::getInstance().getWorld()->getCell(it2->first + agentDiscretePos.at(0), it2->second + agentDiscretePos.at(1), 0);
-         if(ownerAgent->GetCommunicationsRange() == -1)
-         {cell = worldCell_REF;}
-         if(ownerAgent->GetCommunicationsRange() > 0)
-         {cell = ownerAgent->cells.at(worldCell_REF->getId());}  
 
-        if(isElegible(cell, ag)){
-          found = true;
-          ret.push_back(std::make_pair<>(cell, it->first));
-        }
-      }
-    }
-    if(found){
-      break;
-    }
-  }
-  #else     //fixed size valid-set 5x5
- */
   std::vector<std::pair<Cell*, float>> ret2;   //elegible cells on the boundary
   std::vector<std::pair<Cell*, float>> ret3;   //mapped but not targeted cells on the boundary
   std::vector<std::pair<Cell*, float>> ret4;   //all boundary cells
