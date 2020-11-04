@@ -471,8 +471,8 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
 
   if(Engine::getInstance().getWorld()->communication_range == -1)
   {
-    beaconsCells = Engine::getInstance().getWorld()->beacons;
-    /*
+    //beaconsCells = Engine::getInstance().getWorld()->beacons;
+    
     beaconsCells.insert(std::make_pair<>(currentOccupiedCell->getId(),currentOccupiedCell));   
     for (Cell* c : currentOccupiedCell->get3x3())
     {
@@ -482,7 +482,7 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
     {
       beaconsCells.insert(std::make_pair<>(c->getId(),c));
     }
-    */
+    
     
     
     if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
@@ -512,10 +512,10 @@ Eigen::Vector2f RandomWalkStrategy::computeAttraction(Agent* ag, std::array<floa
     (ag->cells.at((*i).second->getId())->getBeacon() != 0 || 
     Engine::getInstance().getWorld()->communication_range == -1 && (*i).second->getBeacon() != 0))
     {
-      
+      /*
       if(abs((*i).second->getPosition().at(0)- ownerAgent->getPosition().at(0)) < (4+0.1) 
       && abs((*i).second->getPosition().at(1)- ownerAgent->getPosition().at(1)) < (4+0.1))
-
+      */
       if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
       {
         std::cout << "Agent " << ag->getId() << " found beacon in range " << distance_t 
