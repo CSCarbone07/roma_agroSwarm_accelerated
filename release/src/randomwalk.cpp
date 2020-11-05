@@ -348,7 +348,7 @@ float RandomWalkStrategy::computeDirectionFactor(std::array<float,3> agentPos, C
     }
   }
   float cauchyParameter = 1-exp(-(directionVector.norm()/2));
-  float beta = 5;
+  float beta = 2;
   double sigmoid = (1-exp(-beta * directionVector.norm()))/(1+exp(-beta * directionVector.norm()));
   sigmoid *= 0.99;
   
@@ -392,31 +392,36 @@ Eigen::Vector2f RandomWalkStrategy::computeRepulsion(Agent* ag, std::array<float
     if(t->getId() != ag->getId())
     {
       float distance_t = t->calculateLinearDistanceToTarget(ag->getPosition());
-      if(distance_t <= distance_9x9 &&
+      if(//distance_t <= distance_9x9 &&
       (( distance_t != 0 && distance_t < Engine::getInstance().getWorld()->communication_range) ||  Engine::getInstance().getWorld()->communication_range == -1))
       {
-
         std::array<float,3> otherPos = t->getPosition();
         Eigen::Vector2f tv(otherPos.at(0) - agentPos.at(0), otherPos.at(1) - agentPos.at(1));
-        if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
-        {
-          std::cout << "Agent " << ag->getId() 
-          << " at " << ownerAgent->getX() << " x, " << ownerAgent->getY() << " y"
-          << " repulsing agent " << t->getId() 
-          << " at distance: " << tv[0] << " x, " << tv[1] << " y ";
-        }
-        float weight = 2*Engine::getInstance().gaussianPDF(tv.norm(), 0, Engine::getInstance().getRepulsion());  //(tc.length(), 0, Mav.potentialSpread, 2);
-        tv.normalize();
-        newX += -weight*tv[0];
-        newY += -weight*tv[1];
-        agentsInRange ++;
 
-        if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
+        if(fabs(tv[0]) < (4.5) 
+        && fabs(tv[1]) < (4.5))
         {
-          std::cout << " weight: " << weight
-          << " with repulsion: " << -weight*tv[0] << " x, " << -weight*tv[1] << " y" << std::endl;
-        }
 
+          if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
+          {
+            std::cout << "Agent " << ag->getId() 
+            << " at " << ownerAgent->getX() << " x, " << ownerAgent->getY() << " y"
+            << " repulsing agent " << t->getId() 
+            << " at distance: " << tv[0] << " x, " << tv[1] << " y "
+            << " at absolute distance: " << fabs(tv[0]) << " x, " << fabs(tv[1]) << " y ";
+          }
+          float weight = 2*Engine::getInstance().gaussianPDF(tv.norm(), 0, Engine::getInstance().getRepulsion());  //(tc.length(), 0, Mav.potentialSpread, 2);
+          tv.normalize();
+          newX += -weight*tv[0];
+          newY += -weight*tv[1];
+          agentsInRange ++;
+
+          if(DEBUG_FUNCTION && ownerAgent->getId() == ownerAgent->getTestingId())
+          {
+            std::cout << " weight: " << weight
+            << " with repulsion: " << -weight*tv[0] << " x, " << -weight*tv[1] << " y" << std::endl;
+          }
+        }
       }
     }
   }
