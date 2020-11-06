@@ -396,7 +396,7 @@ void Agent::ReceiveCell(Agent* sendingAgent, Cell* receivedCell) //recieving bro
         }
 
         updatingCell->setMapped();
-        scanCurrentLocation(updatingCell, receivedCell->getLastWeeedsSeen());
+        scanCurrentLocation(updatingCell, receivedCell->getLastWeedsSeen());
         if(updatingCell->getBeacon() != 0 && currentInspectionStrategy == "rw")
         {
           removeBeacon(updatingCell);
@@ -409,15 +409,15 @@ void Agent::ReceiveCell(Agent* sendingAgent, Cell* receivedCell) //recieving bro
       }
       else
       {
-        if(receivedCell->getLastWeeedsSeen() >= 0)
+        if(receivedCell->getLastWeedsSeen() >= 0)
         {
 
           if(DEBUG_FUNCTION && (sendingAgent->getId() == testingId || sendingAgent->getId() == testingId_2))
           {
-            std::cout << "KB updated for weeds seen " << receivedCell->getLastWeeedsSeen() << std::endl;
+            std::cout << "KB updated for weeds seen " << receivedCell->getLastWeedsSeen() << std::endl;
           }
 
-          scanCurrentLocation(updatingCell, receivedCell->getLastWeeedsSeen());
+          scanCurrentLocation(updatingCell, receivedCell->getLastWeedsSeen());
           if(currentInspectionStrategy == "rw" && receivedCell->getBeacon()>0)
           {
           updatingCell->setBeacon(receivedCell->getBeacon());
@@ -517,7 +517,7 @@ bool Agent::doStep(unsigned timeStep){
           if(communicationsRange>0)
           {
               chosenCell = cells.at(this->getTargetId());
-              chosenCell->setLastWeeedsSeen(-1);
+              chosenCell->setLastWeedsSeen(-1);
           }
           if(DEBUG_THIS  && (id == testingId || id == testingId_2))
           {
@@ -793,7 +793,7 @@ float Agent::scanCurrentLocation(Cell* currentCell, int weedsReceived)
         if(random <= 0)
         {
           weedsSeen = i;
-          currentCell->setLastWeeedsSeen(weedsSeen);
+          currentCell->setLastWeedsSeen(weedsSeen);
           break;
         }
       }  

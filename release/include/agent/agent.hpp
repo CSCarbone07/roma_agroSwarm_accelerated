@@ -125,7 +125,6 @@ protected:
     return false;
   }
 
-  float scanCurrentLocation(Cell* c, int weedsReceived);
   
   /**
    * Get Next Position
@@ -153,6 +152,7 @@ public:
   std::map<unsigned, Cell*> cells;             /** < in my agent knowledge there are cells */
   std::vector<Cell*> cellsPointers; 
 
+  float scanCurrentLocation(Cell* c, int weedsReceived);
 
   Agent(unsigned id, float x, float y, float z);
   ~Agent();
@@ -238,6 +238,9 @@ public:
   inline int getTargetId(){return this->targetId;} 
 
   inline int getTestingId(){return this->testingId;} 
+
+  inline void SetCommunicationsRange(float inLimit) { this->communicationsRange = inLimit; }
+
 
   /**
    * Do one simulation step

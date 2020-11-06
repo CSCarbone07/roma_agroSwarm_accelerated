@@ -94,11 +94,11 @@ public:
   inline float getResidual() const {return residual_uncertainty;}
   inline bool isMapped() const { return mapped; }
   inline float getBeacon() const { return beacon; }
-  inline int getLastWeeedsSeen() const {return lastWeedsSeen; }
+  inline int getLastWeedsSeen() const {return lastWeedsSeen; }
 
 
   void setBeacon(float beacon);
-  void setLastWeeedsSeen(int weeds);
+  void setLastWeedsSeen(int weeds);
 
 
   inline std::vector<Cell*> get3x3() { return cells_3x3; }
@@ -117,6 +117,7 @@ public:
   void setOwnerAgent(Agent* ag);
 
   void setMapped();
+  void resetCell();
 
   void ChangeColor(glm::vec4 inColor);
 

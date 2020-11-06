@@ -133,6 +133,7 @@ private:
 
 
   /* output file */
+  std::ofstream SensorErrorsFile;
   std::ofstream knowledgeBasesFile;
   std::ofstream movesFile;
   std::ofstream statusFile;
@@ -263,10 +264,27 @@ inline float getlimitForTargetReselection() const {
   void AddMesh(Mesh* inMesh = nullptr);
   void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
 
-
+  bool doSensorError = true;
+  void ResetWorld();
   void run();
 
+  void MeanSquareError_World(std::vector<Cell*> cells); 
+  void MeanSquareError_Agents();
+  void MeanSquareError_duringSimulation(); 
 
+  int errorRuns = 100;
+  int currentErrorRun = 1;
+
+  int errorMaxScansPerCell = 5;
+  int errorScansPerCell = 1;
+
+  double current_world_MSE_lastSeen = 0;
+  double current_world_MSE_greedy = 0;
+  double current_world_MSE_random = 0;
+
+  double accumulated_world_MSE_lastSeen = 0;
+  double accumulated_world_MSE_greedy = 0;
+  double accumulated_world_MSE_random = 0;
 
   void TestFunction_IG();
   void TestFunction_computeIG(bool printTable);

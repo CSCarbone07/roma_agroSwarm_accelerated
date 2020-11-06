@@ -37,6 +37,7 @@ static float minScale = 0.1f;
     numOfAgents = config["num_of_agents"].as<unsigned>();
     communicationsRange = config["communications_range"].as<float>();
     size = {config["world"]["x"].as<unsigned>(), config["world"]["y"].as<unsigned>(), config["world"]["z"].as<unsigned>()};
+    SensorErrorsFile.open(config["SensorErrorsFile"].as<std::string>(), std::ios_base::app);
     knowledgeBasesFile.open(config["knowledgeBasesFile"].as<std::string>(), std::ios_base::app);
     movesFile.open(config["movesFile"].as<std::string>(), std::ios_base::app);
     statusFile.open(config["statusFile"].as<std::string>(), std::ios_base::app);
@@ -301,6 +302,83 @@ void Engine::run() {
 
     }
 
+
+    //---------------------SENSOR ERROR AREA-----------------------------------//
+    if(doSensorError)
+    {
+      std::cout << "Calculating base errors" << std::endl;
+      //SensorErrorsFile << "testing input" << '\n';
+      //SensorErrorsFile << "testing input" << std::endl;
+      //SensorErrorsFile << "testing input" << std::endl;
+
+      float errorAltitude = 0.5;
+      Agent* errorAgent = new Agent(1000, 0, 0, errorAltitude); // dummy agent, needs to be destroy later
+      errorAgent->SetCommunicationsRange(-1);
+
+      for (unsigned s = 1; s <= errorMaxScansPerCell; s++)
+      {
+        errorScansPerCell = s;
+       
+        for (unsigned r = 1; r <= errorRuns; r++)
+        {
+        currentErrorRun = r;
+
+          for(Cell* c : getWorld()->getCells())
+          {
+            errorAgent->setPosition(c->getPosition().at(0),c->getPosition().at(1),errorAltitude);
+            for (unsigned sc = 1; sc <= errorScansPerCell; sc++)
+            {
+              errorAgent->scanCurrentLocation(c, -1); 
+            }
+          }
+
+          MeanSquareError_World(getWorld()->getCells());
+
+          if(currentErrorRun == 1)
+          {
+            accumulated_world_MSE_lastSeen = current_world_MSE_lastSeen;
+            accumulated_world_MSE_greedy = current_world_MSE_greedy;
+            accumulated_world_MSE_random = current_world_MSE_random;
+          }
+          else
+          {
+            //adding using the moving average
+            accumulated_world_MSE_lastSeen = accumulated_world_MSE_lastSeen + (current_world_MSE_lastSeen-accumulated_world_MSE_lastSeen)/currentErrorRun;
+            accumulated_world_MSE_greedy = accumulated_world_MSE_greedy + (current_world_MSE_greedy-accumulated_world_MSE_greedy)/currentErrorRun;
+            accumulated_world_MSE_random = accumulated_world_MSE_random + (current_world_MSE_random-accumulated_world_MSE_random)/currentErrorRun;
+          }
+
+        ResetWorld();
+        }
+
+        // this will insert into the file the error for 1-5 scans for the field with 100 scans per cell
+        // 1 = each cell with 1 scan over 100 variations, 2 = each cell with 2 scans over 100 variations
+        // this covers only the first step
+        // 
+        //SensorErrorsFile << "first input " << s << " ";
+        SensorErrorsFile << accumulated_world_MSE_lastSeen << ' ';
+        SensorErrorsFile << accumulated_world_MSE_greedy << ' ';
+        SensorErrorsFile << accumulated_world_MSE_random << ' ';
+        SensorErrorsFile << std::endl;
+  
+        accumulated_world_MSE_lastSeen = 0;
+        accumulated_world_MSE_greedy = 0;
+        accumulated_world_MSE_random = 0;
+ 
+      }
+
+
+      
+      // reset world before starting simulation
+      ResetWorld();
+      errorAgent->setPosition(-100,-100,errorAltitude);
+      //errorAgent->SetWorldLocation(-100,-100,errorAltitude); //need to move triangle mesh
+      //delete errorAgent;
+
+      std::cout << "Base errors calculated" << std::endl;
+    }
+    
+    //---------------------SIMULATION WHILE LOOP------------------------------//
     while((timeStep < maxSteps || maxSteps == 0) && !weTesting) {
       if(false)
       {std::cout << "Time step: " << timeStep << std::endl;}
@@ -333,7 +411,10 @@ void Engine::run() {
 
       // limit the cout
       if(timeStep % 500 == 0)
+      {
         std::cout << "---- time_step: " << timeStep << std::endl;
+        MeanSquareError_duringSimulation();
+      }  
 
       if(this->world->remainingTasksToVisit.size() == 0 && finishVisit == false)
       {
@@ -438,6 +519,12 @@ void Engine::run() {
     double world_MSE_random = 0.0;
     int world_dataPoints = 0;
 
+    MeanSquareError_duringSimulation();
+
+
+
+
+/*
     if(communicationsRange==-1)
     {
       for(Cell* c : this->world->getCells())
@@ -471,8 +558,8 @@ void Engine::run() {
 
       knowledgeBasesFile << world_MSE_greedy << " " << world_MSE_random << "\n";
     }
-
-
+*/
+/*
     if(communicationsRange>0) 
     {
       float lowestEntropy = 0.0;
@@ -567,12 +654,7 @@ void Engine::run() {
 
       knowledgeBasesFile << "\n";
     }
-
-
-
-
-
-
+*/
 }
 
 
@@ -627,8 +709,6 @@ void Engine::RenderScene()
 
 
 }
-
-
 
 void Engine::CreateShaders()
 {
@@ -710,6 +790,93 @@ void Engine::WriteKnowledgeBasesFile(std::string inString)
 knowledgeBasesFile << inString << std::endl;
 }
 
+
+
+
+void Engine::ResetWorld()
+{
+    for(Cell* c : getWorld()->getCells())
+    {
+      c->resetCell();
+    }
+}
+
+void Engine::MeanSquareError_World(std::vector<Cell*> cells)
+{
+  current_world_MSE_lastSeen = 0;
+  current_world_MSE_greedy = 0;
+  current_world_MSE_random = 0;
+
+  float cumulative_weedsSeen_lastSeen = 0;
+  float cumulative_weedsSeen_greedy = 0;
+  float cumulative_weedsSeen_random = 0;
+
+
+  for(Cell* c : cells)
+  {
+    float highestWeedsProbability = 0;
+    int weedsSeen_highestProbability = -1;
+    int weedsSeen_randomProbability = -1;
+
+    double random = RandomGenerator::getInstance().nextFloat(1);
+
+    for (unsigned i = 0; i < (13+1); i++)
+    {
+      if(c->knowledgeVector[i]>highestWeedsProbability)
+      {
+        highestWeedsProbability = c->knowledgeVector[i];
+        weedsSeen_highestProbability = i;
+      }
+
+      random -= c->knowledgeVector[i];
+      if(random <= 0 && weedsSeen_randomProbability == -1)
+      {
+        weedsSeen_randomProbability = i;
+      }
+    }
+
+    int lastWeedsSeen = 0;
+    if(c->getLastWeedsSeen())
+    {
+      lastWeedsSeen=c->getLastWeedsSeen();
+    }
+    cumulative_weedsSeen_lastSeen += pow(lastWeedsSeen-c->getUtility(),2);
+    cumulative_weedsSeen_greedy += pow(weedsSeen_highestProbability-c->getUtility(),2);
+    cumulative_weedsSeen_random += pow(weedsSeen_randomProbability-c->getUtility(),2);
+
+  }
+
+  current_world_MSE_lastSeen = cumulative_weedsSeen_lastSeen / cells.size();
+  current_world_MSE_greedy = cumulative_weedsSeen_greedy / cells.size();
+  current_world_MSE_random = cumulative_weedsSeen_random / cells.size();
+
+}
+
+
+void Engine::MeanSquareError_Agents()
+{
+  
+}
+
+void Engine::MeanSquareError_duringSimulation()
+{
+    if(communicationsRange==-1)
+    {
+      MeanSquareError_World(getWorld()->getCells());
+      knowledgeBasesFile << current_world_MSE_lastSeen << " " << current_world_MSE_greedy << " " << current_world_MSE_random << "\n";
+    }
+    if(communicationsRange>0)
+    {
+      MeanSquareError_World(getWorld()->getCells());
+      knowledgeBasesFile << current_world_MSE_lastSeen << " " << current_world_MSE_greedy << " " << current_world_MSE_random << " ";
+      for (Agent* a : agents)
+      {
+        MeanSquareError_World(a->cellsPointers);
+        knowledgeBasesFile << current_world_MSE_lastSeen << " " << current_world_MSE_greedy << " " << current_world_MSE_random << " ";
+      }
+      knowledgeBasesFile << "\n";
+    }
+}
 
 //-------------------- TEST FUNCTIONS AREA -----------------------------------//
 

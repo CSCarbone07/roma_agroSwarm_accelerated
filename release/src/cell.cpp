@@ -134,7 +134,7 @@ void Cell::setBeacon(float beacon)
 
 }
 
-void Cell::setLastWeeedsSeen(int weeds)
+void Cell::setLastWeedsSeen(int weeds)
 {
     lastWeedsSeen = weeds;
 }
@@ -144,6 +144,16 @@ void Cell::setMapped()
     mapped = true; 
     if(mesh!=nullptr)
     {ChangeColor(inspectedColor);}
+}
+
+void Cell::resetCell()
+{
+    mapped = false; 
+    knowledgeVector.fill(1.0/13.0);
+    observationVector.fill(0.0);
+    lastWeedsSeen=-1;
+    if(mesh!=nullptr)
+    {ChangeColor(nonInspectedColor);}
 }
 
 void Cell::SetNeighbors(std::vector<Cell*> inCells)
