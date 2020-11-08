@@ -348,7 +348,7 @@ float RandomWalkStrategy::computeDirectionFactor(std::array<float,3> agentPos, C
     }
   }
   float cauchyParameter = 1-exp(-(directionVector.norm()/2));
-  float beta = 2;
+  float beta = 5;
   double sigmoid = (1-exp(-beta * directionVector.norm()))/(1+exp(-beta * directionVector.norm()));
   sigmoid *= 0.99;
   

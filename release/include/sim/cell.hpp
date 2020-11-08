@@ -44,6 +44,7 @@ private:
 
 
   int lastWeedsSeen = -1;
+  std::vector<int> weedsSeen;
 
   Mesh* mesh = nullptr; 
   glm::vec4 nonInspectedColor = glm::vec4(0.309f, 0.176f, 0.152f, 1.0f);
@@ -95,6 +96,7 @@ public:
   inline bool isMapped() const { return mapped; }
   inline float getBeacon() const { return beacon; }
   inline int getLastWeedsSeen() const {return lastWeedsSeen; }
+  inline std::vector<int> getWeedsSeen() const {return weedsSeen; }
 
 
   void setBeacon(float beacon);

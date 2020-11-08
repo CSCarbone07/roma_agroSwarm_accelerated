@@ -70,6 +70,11 @@ private:
 
   /* Simulation Settings */
   YAML::Node config; /** < configuration file as a map */
+
+  unsigned seed = 0;
+  unsigned timeStep = 0;
+
+
   bool displaySimulation = false;
   unsigned maxSteps; /** < maximum number of steps for the simulation */
   unsigned numOfAgents; /** < total number of agents in the simulation */
@@ -269,8 +274,11 @@ inline float getlimitForTargetReselection() const {
   void run();
 
   void MeanSquareError_World(std::vector<Cell*> cells); 
-  void MeanSquareError_Agents();
   void MeanSquareError_duringSimulation(); 
+
+  std::vector<Cell*> GetAgentCells_LowestUncertainty();
+  std::vector<Cell*> cells_lowestUncertainty;
+
 
   int errorRuns = 100;
   int currentErrorRun = 1;

@@ -490,6 +490,7 @@ if(ownerAgent->GetTargetSelectionStrategy() == "greedy")
       }
     }
   }
+
 /*
   if (mappedCells == finalProbabilitiesVector.size())
   {

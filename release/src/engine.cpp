@@ -33,6 +33,7 @@ static float minScale = 0.1f;
  void Engine::init(YAML::Node config) {
 
     // Initilize agents and world
+    seed = config["seed"].as<unsigned>();
     maxSteps = config["max_steps"].as<unsigned>();
     numOfAgents = config["num_of_agents"].as<unsigned>();
     communicationsRange = config["communications_range"].as<float>();
@@ -271,7 +272,7 @@ void Engine::run() {
     this->world->getPopulationInfo(ss);
     //std::cout << "test" << std::endl;
     movesFile << "population:\n" << ss.rdbuf();
-    unsigned timeStep = 0;
+    timeStep = 0;
 
     // support vector for shuffled agents
     std::vector<Steppable*> shuffled(agents.begin(), agents.end());
@@ -348,7 +349,15 @@ void Engine::run() {
             accumulated_world_MSE_random = accumulated_world_MSE_random + (current_world_MSE_random-accumulated_world_MSE_random)/currentErrorRun;
           }
 
-        ResetWorld();
+          SensorErrorsFile << seed << ' ';
+          SensorErrorsFile << errorScansPerCell << ' ';
+          SensorErrorsFile << currentErrorRun << ' ';
+          SensorErrorsFile << accumulated_world_MSE_lastSeen << ' ';
+          SensorErrorsFile << accumulated_world_MSE_greedy << ' ';
+          SensorErrorsFile << accumulated_world_MSE_random << ' ';
+          SensorErrorsFile << std::endl;
+
+          ResetWorld();
         }
 
         // this will insert into the file the error for 1-5 scans for the field with 100 scans per cell
@@ -356,6 +365,9 @@ void Engine::run() {
         // this covers only the first step
         // 
         //SensorErrorsFile << "first input " << s << " ";
+        SensorErrorsFile << seed << ' ';
+        SensorErrorsFile << errorScansPerCell << ' ';
+        SensorErrorsFile << "-1" << ' ';
         SensorErrorsFile << accumulated_world_MSE_lastSeen << ' ';
         SensorErrorsFile << accumulated_world_MSE_greedy << ' ';
         SensorErrorsFile << accumulated_world_MSE_random << ' ';
@@ -376,6 +388,8 @@ void Engine::run() {
       //delete errorAgent;
 
       std::cout << "Base errors calculated" << std::endl;
+      
+      doSensorError = false; // this is to change how the last seen weed affects the MSE
     }
     
     //---------------------SIMULATION WHILE LOOP------------------------------//
@@ -523,138 +537,6 @@ void Engine::run() {
 
 
 
-
-/*
-    if(communicationsRange==-1)
-    {
-      for(Cell* c : this->world->getCells())
-      {
-        world_weedsSeen_greedy = 0;
-        world_weedsSeen_random = 0;
-        world_highestProbability = 0;
-        double random = RandomGenerator::getInstance().nextFloat(1);
-        for (unsigned i = 0; i < (13+1); i++)
-        {
-          if(c->knowledgeVector[i] > world_highestProbability)
-          {
-            world_highestProbability = c->knowledgeVector[i];
-            world_weedsSeen_greedy = i;
-          }
-
-          random -= c->knowledgeVector[i];
-          if(random <= 0 && world_weedsSeen_random == 0)
-          {
-            world_weedsSeen_random = i;
-          }
-        }
-        
-        world_squaredCumulative_greedy += pow((world_weedsSeen_greedy - c->getUtility()),2);
-        world_squaredCumulative_random += pow((world_weedsSeen_random - c->getUtility()),2);
-        world_dataPoints++;
-      }
-
-      world_MSE_greedy = world_squaredCumulative_greedy/world_dataPoints;
-      world_MSE_random = world_squaredCumulative_random/world_dataPoints;
-
-      knowledgeBasesFile << world_MSE_greedy << " " << world_MSE_random << "\n";
-    }
-*/
-/*
-    if(communicationsRange>0) 
-    {
-      float lowestEntropy = 0.0;
-      std::vector<int> cells_lowestEntropy;
-      cells_lowestEntropy.resize(this->world->getCells().size());
-        
-      for (unsigned i = 0; i < cells_lowestEntropy.size(); i++)
-      {
-        lowestEntropy = 0.0;
-        for(Agent* ag : this->world->getAgents())
-        {
-          if(ag->cells.at(i)->getResidual()<lowestEntropy || lowestEntropy == 0)
-          {
-            lowestEntropy=ag->cells.at(i)->getResidual();
-            cells_lowestEntropy[i]=ag->getId();
-          }        
-        }
-      }
-
-      world_squaredCumulative_greedy = 0;
-      world_squaredCumulative_random = 0;
-      world_dataPoints = 0;
-
-      for (unsigned c = 0; c < cells_lowestEntropy.size(); c++)
-      {
-        world_weedsSeen_greedy = 0;
-        world_weedsSeen_random = 0;
-        world_highestProbability = 0;
-        double random = RandomGenerator::getInstance().nextFloat(1);
-        for (unsigned i = 0; i < (13+1); i++)
-        {
-          Cell* cellOfInterest = this->world->getAgents().at(cells_lowestEntropy[c])->cells.at(c);
-          if(cellOfInterest->knowledgeVector[i] > world_highestProbability)
-          {
-            world_highestProbability = cellOfInterest->knowledgeVector[i];
-            world_weedsSeen_greedy = i;
-          }
-
-          random -= cellOfInterest->knowledgeVector[i];
-          if(random <= 0 && world_weedsSeen_random == 0)
-          {
-            world_weedsSeen_random = i;
-          }
-        }
-        
-        world_squaredCumulative_greedy += pow((world_weedsSeen_greedy - this->world->getCells().at(c)->getUtility()),2);
-        world_squaredCumulative_random += pow((world_weedsSeen_random - this->world->getCells().at(c)->getUtility()),2);
-        world_dataPoints++;
-      }
-      world_MSE_greedy = world_squaredCumulative_greedy/world_dataPoints;
-      world_MSE_random = world_squaredCumulative_random/world_dataPoints;
-
-      knowledgeBasesFile << world_MSE_greedy << " " << world_MSE_random << " ";
-
-      for(Agent* ag : this->world->getAgents())
-      {
-        world_squaredCumulative_greedy = 0;
-        world_squaredCumulative_random = 0;
-        world_dataPoints = 0;
-        for(Cell* c : ag->cellsPointers)
-        {
-          world_weedsSeen_greedy = 0;
-          world_weedsSeen_random = 0;
-          world_highestProbability = 0;
-          double random = RandomGenerator::getInstance().nextFloat(1);
-          for (unsigned i = 0; i < (13+1); i++)
-          {
-            if(c->knowledgeVector[i] > world_highestProbability)
-            {
-              world_highestProbability = c->knowledgeVector[i];
-              world_weedsSeen_greedy = i;
-            }
-
-            random -= c->knowledgeVector[i];
-            if(random <= 0 && world_weedsSeen_random == 0)
-            {
-              world_weedsSeen_random = i;
-            }
-          }
-          
-          world_squaredCumulative_greedy += pow((world_weedsSeen_greedy - c->getUtility()),2);
-          world_squaredCumulative_random += pow((world_weedsSeen_random - c->getUtility()),2);
-          world_dataPoints++;
-        }
-
-        world_MSE_greedy = world_squaredCumulative_greedy/world_dataPoints;
-        world_MSE_random = world_squaredCumulative_random/world_dataPoints;
-
-        knowledgeBasesFile << world_MSE_greedy << " " << world_MSE_random << " ";
-
-      }
-
-      knowledgeBasesFile << "\n";
-    }
-*/
 }
 
 
@@ -817,6 +699,7 @@ void Engine::MeanSquareError_World(std::vector<Cell*> cells)
     float highestWeedsProbability = 0;
     int weedsSeen_highestProbability = -1;
     int weedsSeen_randomProbability = -1;
+    std::vector<int> repeated_highestProbability_indexes;
 
     double random = RandomGenerator::getInstance().nextFloat(1);
 
@@ -826,6 +709,11 @@ void Engine::MeanSquareError_World(std::vector<Cell*> cells)
       {
         highestWeedsProbability = c->knowledgeVector[i];
         weedsSeen_highestProbability = i;
+        repeated_highestProbability_indexes.clear();
+      }
+      if(c->knowledgeVector[i]==highestWeedsProbability)
+      {
+        repeated_highestProbability_indexes.push_back(i);
       }
 
       random -= c->knowledgeVector[i];
@@ -835,11 +723,34 @@ void Engine::MeanSquareError_World(std::vector<Cell*> cells)
       }
     }
 
-    int lastWeedsSeen = 0;
-    if(c->getLastWeedsSeen())
+    // for repeated highest probabilities for greedy approach
+    if(repeated_highestProbability_indexes.size()>1)
     {
-      lastWeedsSeen=c->getLastWeedsSeen();
+      int random = RandomGenerator::getInstance().nextInt(repeated_highestProbability_indexes.size());
+
+      highestWeedsProbability = c->knowledgeVector[repeated_highestProbability_indexes.at(random)];
     }
+
+    // set last weeds seen or average of weeds seen according to simulation state
+    float lastWeedsSeen = 0.0f;
+    if(c->getLastWeedsSeen()>=0)
+    {
+      if(doSensorError)
+      {
+        float cumulativeWeedsSeen = 0.0f;
+        for(int cw : c->getWeedsSeen())
+        {
+          cumulativeWeedsSeen += cw;
+        }
+        lastWeedsSeen = cumulativeWeedsSeen / c->getWeedsSeen().size();
+      }
+      else
+      {
+        lastWeedsSeen=c->getLastWeedsSeen();
+      }
+      
+    }
+
     cumulative_weedsSeen_lastSeen += pow(lastWeedsSeen-c->getUtility(),2);
     cumulative_weedsSeen_greedy += pow(weedsSeen_highestProbability-c->getUtility(),2);
     cumulative_weedsSeen_random += pow(weedsSeen_randomProbability-c->getUtility(),2);
@@ -853,9 +764,31 @@ void Engine::MeanSquareError_World(std::vector<Cell*> cells)
 }
 
 
-void Engine::MeanSquareError_Agents()
+std::vector<Cell*> Engine::GetAgentCells_LowestUncertainty()
 {
-  
+  std::vector<Cell*> cellsToReturn;
+
+  float lowestEntropy = 0.0;
+  //std::vector<int> cells_lowestEntropy;
+  //cells_lowestEntropy.resize(this->world->getCells().size());
+  Agent* agent_lowestEntropy;
+
+  for (unsigned i = 0; i < this->world->getCells().size(); i++)
+  {
+    lowestEntropy = 0.0;
+    
+    for(Agent* ag : this->world->getAgents())
+    {
+      if(ag->cells.at(i)->getResidual()<lowestEntropy || lowestEntropy == 0)
+      {
+        lowestEntropy=ag->cells.at(i)->getResidual();
+        //cells_lowestEntropy[i]=ag->getId();
+        agent_lowestEntropy = ag;
+      }   
+    }
+    cellsToReturn.push_back(agent_lowestEntropy->cells.at(i));  
+  }
+  return cellsToReturn;
 }
 
 void Engine::MeanSquareError_duringSimulation()
@@ -863,12 +796,14 @@ void Engine::MeanSquareError_duringSimulation()
     if(communicationsRange==-1)
     {
       MeanSquareError_World(getWorld()->getCells());
-      knowledgeBasesFile << current_world_MSE_lastSeen << " " << current_world_MSE_greedy << " " << current_world_MSE_random << "\n";
+      knowledgeBasesFile << seed << " " << timeStep << " " << current_world_MSE_lastSeen << " " << current_world_MSE_greedy << " " << current_world_MSE_random << "\n";
     }
     if(communicationsRange>0)
     {
-      MeanSquareError_World(getWorld()->getCells());
-      knowledgeBasesFile << current_world_MSE_lastSeen << " " << current_world_MSE_greedy << " " << current_world_MSE_random << " ";
+      cells_lowestUncertainty = GetAgentCells_LowestUncertainty();
+      MeanSquareError_World(cells_lowestUncertainty);
+      knowledgeBasesFile << seed << " " << timeStep << " " << current_world_MSE_lastSeen << " " << current_world_MSE_greedy << " " << current_world_MSE_random << " ";
+      
       for (Agent* a : agents)
       {
         MeanSquareError_World(a->cellsPointers);

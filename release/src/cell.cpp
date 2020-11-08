@@ -136,6 +136,7 @@ void Cell::setBeacon(float beacon)
 
 void Cell::setLastWeedsSeen(int weeds)
 {
+    weedsSeen.push_back(weeds);
     lastWeedsSeen = weeds;
 }
 
@@ -152,6 +153,7 @@ void Cell::resetCell()
     knowledgeVector.fill(1.0/13.0);
     observationVector.fill(0.0);
     lastWeedsSeen=-1;
+    weedsSeen.clear();
     if(mesh!=nullptr)
     {ChangeColor(nonInspectedColor);}
 }
