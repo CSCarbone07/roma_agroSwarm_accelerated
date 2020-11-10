@@ -12,6 +12,7 @@ world:
   z: 1                 # world z size  
 
 
+SensorErrorsFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/SensorErrors_greedy__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__0_1.yaml"
 knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_greedy__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__0_1.yaml"
 movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_greedy__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__0_1.yaml"
 statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_greedy__NUM_OF_AGENTS___COMMUNICATIONS_RANGE__0_1.yaml"
