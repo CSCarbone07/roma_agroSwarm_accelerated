@@ -106,45 +106,88 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
   }                
 */
 
-  double tableSum = 0;
-  for (unsigned c = 0; c < this->maxWeed4Cell+1; c++ )   // dimension for the real amount of weeds
+  bool abstractSensor = false;
+  if(abstractSensor)
   {
-    for (unsigned o = 0; o < this->maxWeed4Cell+1; o++ ) // dimension for the current observation the agent perceives from the cells
+    double tableSum = 0;
+    for (unsigned c = 0; c < this->maxWeed4Cell+1; c++ )   // dimension for the real amount of weeds
     {
+      for (unsigned o = 0; o < this->maxWeed4Cell+1; o++ ) // dimension for the current observation the agent perceives from the cells
+      {
+        tableSum = 0;
+        if(o<=c) //false negatives part
+        {
+          for (unsigned i = 0; i <= o; i++ )
+          {
+            tableSum += PMFBinomial(0.95, c, o-i) * MyPoissonFunction(i,0.5);   
+          }
+        }
+        else //false positives part
+        {
+          for (unsigned i = 0; i <= c; i++ ) 
+          {
+            tableSum += PMFBinomial(0.95, c, c-i) * MyPoissonFunction(i+(o-c),0.5);
+          }
+        }
+        sensorTable[o][c] = tableSum; 
+
+        sensorTable[o][this->maxWeed4Cell+1] = 0;
+      }
+
+      sensorTable[this->maxWeed4Cell+1][c] = 0;
       tableSum = 0;
-      if(o<=c) //false negatives part
+      
+      for (unsigned i = 0; i <= c; i++ ) 
       {
-        for (unsigned i = 0; i <= o; i++ )
-        {
-          tableSum += PMFBinomial(0.95, c, o-i) * MyPoissonFunction(i,0.5);   
-        }
+        tableSum += PMFBinomial(0.95, c, c-i)*(1-cdf(boostPoisson,i+(12-c)));
       }
-      else //false positives part
-      {
-        for (unsigned i = 0; i <= c; i++ ) 
-        {
-          tableSum += PMFBinomial(0.95, c, c-i) * MyPoissonFunction(i+(o-c),0.5);
-        }
-      }
-      sensorTable[o][c] = tableSum; 
-
-      sensorTable[o][this->maxWeed4Cell+1] = 0;
+      
+      sensorTable[this->maxWeed4Cell+1][c] = tableSum;
+      //sensorTable[this->maxWeed4Cell+1][c] = 5;
+      //std::cout << "o " << this->maxWeed4Cell+1 << " Table value " << sensorTable[13][c] << std::endl;
+      //std::cout << "Table size " << sizeof(sensorTable) << std::endl;
     }
-
-    sensorTable[this->maxWeed4Cell+1][c] = 0;
-    tableSum = 0;
-    
-    for (unsigned i = 0; i <= c; i++ ) 
-    {
-      tableSum += PMFBinomial(0.95, c, c-i)*(1-cdf(boostPoisson,i+(12-c)));
-    }
-    
-    sensorTable[this->maxWeed4Cell+1][c] = tableSum;
-    //sensorTable[this->maxWeed4Cell+1][c] = 5;
-    //std::cout << "o " << this->maxWeed4Cell+1 << " Table value " << sensorTable[13][c] << std::endl;
-    //std::cout << "Table size " << sizeof(sensorTable) << std::endl;
+    sensorTable[this->maxWeed4Cell+1][this->maxWeed4Cell+1] = 0;
   }
-  sensorTable[this->maxWeed4Cell+1][this->maxWeed4Cell+1] = 0;
+  else
+  {
+    
+    int fileRow = 0;
+    int fileColumn = 0;
+    std::ifstream inFile("../weed_norm.txt");
+    if (inFile.is_open())
+    {
+        std::string line;
+        while( std::getline(inFile,line) )
+        {
+            std::stringstream ss(line);
+
+            std::string prob;
+
+            while( std::getline(ss,prob,' ') )
+            {
+              //std::cout << " course " << course;
+
+              sensorTable[fileRow][fileColumn] = std::stod(prob);
+              std::cout << " prob " << prob;
+              fileColumn++;
+              if(fileColumn==13)
+              {
+                fileColumn = 0;
+                sensorTable[fileRow][13] = 0;
+                fileRow ++;
+                std::cout << std::endl;
+              }
+            }
+            std::cout<<"\n";
+            
+            
+        }
+    }
+    sensorTable[13][13] = 0;
+
+  }
+
 
   Print_SensorTable();
 
