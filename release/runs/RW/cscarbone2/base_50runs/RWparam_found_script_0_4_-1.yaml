@@ -1,6 +1,6 @@
 max_steps: 10000    # termination condition for the simulation, 0 means infinite
 num_of_agents: 50        # total number of agents in the simulation
-seed: 40                 # seed for the random number generator
+seed: 2                 # seed for the random number generator
 
 Display_Simulation: false
 
@@ -12,6 +12,7 @@ world:
   z: 1                 # world z size  
 
 
+SensorErrorsFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/SensorErrors_50_-1_0_4.yaml"
 knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_50_-1_0_4.yaml"
 movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_50_-1_0_4.yaml"
 statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_50_-1_0_4.yaml"

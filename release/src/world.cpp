@@ -154,7 +154,7 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
     
     int fileRow = 0;
     int fileColumn = 0;
-    std::ifstream inFile("../weed_norm.txt");
+    std::ifstream inFile("/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/current_sensor.txt");
     if (inFile.is_open())
     {
         std::string line;
@@ -169,14 +169,14 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
               //std::cout << " course " << course;
 
               sensorTable[fileRow][fileColumn] = std::stod(prob);
-              std::cout << " prob " << prob;
+              //std::cout << " prob " << prob;
               fileColumn++;
               if(fileColumn==13)
               {
                 fileColumn = 0;
                 sensorTable[fileRow][13] = 0;
                 fileRow ++;
-                std::cout << std::endl;
+                //std::cout << std::endl;
               }
             }
             std::cout<<"\n";
