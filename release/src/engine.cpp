@@ -329,9 +329,11 @@ void Engine::run() {
             errorAgent->setPosition(c->getPosition().at(0),c->getPosition().at(1),errorAltitude);
             for (unsigned sc = 1; sc <= errorScansPerCell; sc++)
             {
+              //std::cout << sc;
               errorAgent->scanCurrentLocation(c, -1); 
             }
           }
+          //std::cout << std::endl;
 
           MeanSquareError_World(getWorld()->getCells());
 
@@ -352,9 +354,9 @@ void Engine::run() {
           SensorErrorsFile << seed << ' ';
           SensorErrorsFile << errorScansPerCell << ' ';
           SensorErrorsFile << currentErrorRun << ' ';
-          SensorErrorsFile << accumulated_world_MSE_lastSeen << ' ';
-          SensorErrorsFile << accumulated_world_MSE_greedy << ' ';
-          SensorErrorsFile << accumulated_world_MSE_random << ' ';
+          SensorErrorsFile << current_world_MSE_lastSeen << ' ';
+          SensorErrorsFile << current_world_MSE_greedy << ' ';
+          SensorErrorsFile << current_world_MSE_random << ' ';
           SensorErrorsFile << std::endl;
 
           ResetWorld();
@@ -693,6 +695,7 @@ void Engine::MeanSquareError_World(std::vector<Cell*> cells)
   float cumulative_weedsSeen_greedy = 0;
   float cumulative_weedsSeen_random = 0;
 
+  bool DEBUG_THIS = false;
 
   for(Cell* c : cells)
   {
@@ -703,7 +706,7 @@ void Engine::MeanSquareError_World(std::vector<Cell*> cells)
 
     double random = RandomGenerator::getInstance().nextFloat(1);
 
-    for (unsigned i = 0; i < (13+1); i++)
+    for (unsigned i = 0; i < (13); i++)
     {
       if(c->knowledgeVector[i]>highestWeedsProbability)
       {
@@ -721,7 +724,16 @@ void Engine::MeanSquareError_World(std::vector<Cell*> cells)
       {
         weedsSeen_randomProbability = i;
       }
+
+      if((errorScansPerCell==2 || errorScansPerCell==3) && currentErrorRun == 1 && DEBUG_THIS)//c->getId() == 416)
+      {
+        //std::cout << weedsSeen_highestProbability-c->getUtility() << " (" << errorScansPerCell << ") ";
+        //std::cout << weedsSeen_highestProbability-c->getUtility() << " (" << errorScansPerCell << ") ";
+        std::cout << c->knowledgeVector[i] << " ";
+      }
     }
+
+
 
     // for repeated highest probabilities for greedy approach
     if(repeated_highestProbability_indexes.size()>1)
@@ -729,6 +741,8 @@ void Engine::MeanSquareError_World(std::vector<Cell*> cells)
       int random = RandomGenerator::getInstance().nextInt(repeated_highestProbability_indexes.size());
 
       highestWeedsProbability = c->knowledgeVector[repeated_highestProbability_indexes.at(random)];
+      weedsSeen_highestProbability = repeated_highestProbability_indexes.at(random);
+      //std::cout << "there was a repeated index" << std::endl;
     }
 
     // set last weeds seen or average of weeds seen according to simulation state
@@ -755,11 +769,23 @@ void Engine::MeanSquareError_World(std::vector<Cell*> cells)
     cumulative_weedsSeen_greedy += pow(weedsSeen_highestProbability-c->getUtility(),2);
     cumulative_weedsSeen_random += pow(weedsSeen_randomProbability-c->getUtility(),2);
 
+    if((errorScansPerCell==2 || errorScansPerCell==3) && currentErrorRun == 1 && DEBUG_THIS)//c->getId() == 416)
+    {
+    std::cout << " (" << errorScansPerCell << ") " << " {" << c->getUtility() << "} "  << " {" << c->getLastWeedsSeen() << "} " << " [" << cumulative_weedsSeen_greedy << "] "  << " [" << c->getId() << "] " << std::endl;
+    }
+
   }
+
 
   current_world_MSE_lastSeen = cumulative_weedsSeen_lastSeen / cells.size();
   current_world_MSE_greedy = cumulative_weedsSeen_greedy / cells.size();
   current_world_MSE_random = cumulative_weedsSeen_random / cells.size();
+
+  if((errorScansPerCell==2 || errorScansPerCell==3) && currentErrorRun == 1 && DEBUG_THIS)
+  {
+    std::cout << cumulative_weedsSeen_greedy << " (" << errorScansPerCell << ") ";
+    std::cout << std::endl;
+  }
 
 }
 
