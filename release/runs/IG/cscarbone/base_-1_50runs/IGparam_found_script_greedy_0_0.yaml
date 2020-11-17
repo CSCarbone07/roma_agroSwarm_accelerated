@@ -12,6 +12,7 @@ world:
   z: 1                 # world z size  
 
 
+SensorErrorsFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/SensorErrors_greedy_50_-1_0_0.yaml"
 knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_greedy_50_-1_0_0.yaml"
 movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_greedy_50_-1_0_0.yaml"
 statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_greedy_50_-1_0_0.yaml"
@@ -36,7 +37,7 @@ InspectionStrategy: "ig" #rw = randomwalk (default), ig = information gain
 
 #if ig is the strategy:
 TargetSelectionStrategy: "greedy"   #greedy, softmax, random (default) with weights. 
-Softmax_Lambda: 1       #lambda for softmax equation 
+Softmax_Lambda: 5       #lambda for softmax equation 
 UseSocialInfo: false    #include information from other agents
 UseDistanceForIG: false #include distance in ig weights
 UseCommRangeForSocial: false #use communication range to consider social info instead of the 5x5 range

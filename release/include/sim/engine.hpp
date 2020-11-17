@@ -294,6 +294,8 @@ inline float getlimitForTargetReselection() const {
   double accumulated_world_MSE_greedy = 0;
   double accumulated_world_MSE_random = 0;
 
+  void save_visitedCells();
+
   void TestFunction_IG();
   void TestFunction_computeIG(bool printTable);
   void TestFunction_SetSensorTable(bool printTable);

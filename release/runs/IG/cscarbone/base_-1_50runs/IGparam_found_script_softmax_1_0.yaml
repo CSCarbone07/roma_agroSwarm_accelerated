@@ -12,6 +12,7 @@ world:
   z: 1                 # world z size  
 
 
+SensorErrorsFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/SensorErrors_softmax_50_-1_1_0.yaml"
 knowledgeBasesFile:  	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/knowledgeBases_softmax_50_-1_1_0.yaml"
 movesFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_moves_softmax_50_-1_1_0.yaml"
 statusFile: 	"/home/cscarbone/SwarmSimulators/01_UAVswarmInspectionSimulator/release/results/results_status_softmax_50_-1_1_0.yaml"

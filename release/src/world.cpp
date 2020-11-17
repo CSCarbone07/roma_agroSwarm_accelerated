@@ -106,7 +106,7 @@ bool World::populateAndInitialize(const unsigned clusters, unsigned maxweeds, un
   }                
 */
 
-  bool abstractSensor = true;
+  bool abstractSensor = false;
   if(abstractSensor)
   {
     double tableSum = 0;

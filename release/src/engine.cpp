@@ -430,6 +430,7 @@ void Engine::run() {
       {
         std::cout << "---- time_step: " << timeStep << std::endl;
         MeanSquareError_duringSimulation();
+        save_visitedCells();
       }  
 
       if(this->world->remainingTasksToVisit.size() == 0 && finishVisit == false)
@@ -514,8 +515,10 @@ void Engine::run() {
     }
     for(Cell * cc : this->world->getCells()){
       std::cout<<"la cella  "<<cc->getId()<<"  con palline  "<<cc->getUtility()<<"  è stata visitata  "<<cc->numOfVisits<<"  volte!"<<std::endl;
-      visitedCells<<' '<<cc->getId()<<':'<<' '<<cc->numOfVisits<<"\n";
+      //visitedCells << seed << ' ' << timeStep << ' '<< cc->getId() << ' ' << cc->getUtility() << ' ' <<cc->numOfVisits<<"\n";
     }
+    save_visitedCells();
+
     unsigned tot_collisions = 0;
     for(Agent* a : agents){
       tot_collisions += a->getCollisions();
@@ -674,6 +677,14 @@ void Engine::WriteKnowledgeBasesFile(std::string inString)
 knowledgeBasesFile << inString << std::endl;
 }
 
+void Engine::save_visitedCells()
+{
+  for(Cell * cc : this->world->getCells())
+  {
+  visitedCells << seed << ' ' << timeStep << ' '<< cc->getId() << ' ' << cc->getUtility() << ' ' <<cc->numOfVisits<<"\n";    
+  }
+  
+}
 
 
 
@@ -761,8 +772,11 @@ void Engine::MeanSquareError_World(std::vector<Cell*> cells)
       else
       {
         lastWeedsSeen=c->getLastWeedsSeen();
-      }
-      
+      }     
+    }
+    else
+    {
+      lastWeedsSeen = RandomGenerator::getInstance().nextInt(14);
     }
 
     cumulative_weedsSeen_lastSeen += pow(lastWeedsSeen-c->getUtility(),2);
