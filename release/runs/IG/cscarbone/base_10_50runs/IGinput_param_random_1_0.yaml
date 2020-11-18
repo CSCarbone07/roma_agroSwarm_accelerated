@@ -1,4 +1,4 @@
-max_steps: 20000    # termination condition for the simulation, 0 means infinite
+max_steps: 30000    # termination condition for the simulation, 0 means infinite
 num_of_agents: _NUM_OF_AGENTS_        # total number of agents in the simulation
 seed: _SEED_                 # seed for the random number generator
 
