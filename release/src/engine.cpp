@@ -286,9 +286,9 @@ void Engine::run() {
     }
      ++timeStep;
     // do one step until max steps or for infinite time (need to terminate manually)
-    unsigned timeToCoverage = 10000;
-    unsigned timeToMapping = 10000;
-    unsigned timeToMappingOnlyClusters = 10000;
+    unsigned timeToCoverage = maxSteps;
+    unsigned timeToMapping = maxSteps;
+    unsigned timeToMappingOnlyClusters = maxSteps;
     bool isCovered = false;
     bool isMapped = false;
     bool isMappedOnlyClusters = false;
