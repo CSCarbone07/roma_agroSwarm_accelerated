@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RUNS=50
-NUM_OF_AGENTS=(10 20)
+NUM_OF_AGENTS=(10 20 30 40)
 COMMUNICATIONS_RANGE=(-1 10)
 LOCALPATH=$(pwd)/
 for x in "${NUM_OF_AGENTS[@]}"
