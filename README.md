@@ -5,4 +5,6 @@ Results for simulated experiments with an aerial swarm coverage over a field of 
 
 * [Monitoring and Mapping of Crop Fields with UAV Swarms Based on Information Gain](https://link.springer.com/chapter/10.1007/978-3-030-92790-5_24)
 
-This simulator was extended to build **[AgroSwarm](https://github.com/CSCarbone07/roma_quad_ai/)** a high fidelity simulator that includes photorealistic simulation of fields and highly realistic UAV dynamics.
+This simulator is extended to build a future high fidelity simulator that includes photorealistic simulation of fields and highly realistic UAV dynamics.
+
+<!-- **[AgroSwarm](https://github.com/CSCarbone07/roma_quad_ai/)** -->
