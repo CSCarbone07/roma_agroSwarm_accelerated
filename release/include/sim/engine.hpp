@@ -269,7 +269,7 @@ inline float getlimitForTargetReselection() const {
   void AddMesh(Mesh* inMesh = nullptr);
   void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
 
-  bool doSensorError = true;
+  bool doSensorError = false;
   void ResetWorld();
   void run();
 
